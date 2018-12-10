@@ -218,7 +218,7 @@ public class ReLoginForm extends javax.swing.JDialog {
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
 //        loading.show();
 //        try {
-        new Loading(btnOk, new Executable() {
+        Loading.show(btnOk, new Executable() {
 
             @Override
             public void execute() {
@@ -257,7 +257,7 @@ public class ReLoginForm extends javax.swing.JDialog {
     }//GEN-LAST:event_btnOkActionPerformed
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
-        new Loading(btnOk, new Executable() {
+        Loading.show(btnOk, new Executable() {
 
             @Override
             public void execute() {

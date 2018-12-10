@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -50,6 +51,8 @@ public class ModelForm extends javax.swing.JDialog {
     private int he = 390;
     private Object inputRef;
     public String entity;
+    private String ejql;
+    private List modelResult;
 
     CodeBrainManager cbManager = new CodeBrainManager();
     private InputSearchForm serachForm;
@@ -129,35 +132,95 @@ public class ModelForm extends javax.swing.JDialog {
             ((JTextField) input).addFocusListener(new java.awt.event.FocusAdapter() {
                 @Override
                 public void focusLost(java.awt.event.FocusEvent evt) {
-                    levelCodeInputFocusLost(evt);
+                    levelCodeInputFocusLost(evt, null, null, null, null, null, null);
                 }
             });
-        } 
-        /**
+        } /**
          * ComboBox
          */
         else if (input.getClass().equals(JComboBox.class)) {
             ((JComboBox) input).addFocusListener(new java.awt.event.FocusAdapter() {
                 @Override
                 public void focusLost(java.awt.event.FocusEvent evt) {
-                    levelCodeInputFocusLost(evt);
+                    levelCodeInputFocusLost(evt, null, null, null, null, null, null);
                 }
             });
-        }
-        else{
+        } else {
             System.out.println("Nothing");
         }
 
     }
 
-    private void addAction(Object field, String entity, String[] fields, String clause, List args, Object... imputsResult) {
+    public void addAction(JComponent input, String entity, String[][] parametresGrid, String[] fields, String clause, List args, Object... imputsResult) {
 
+        /**
+         * TextFields
+         */
+        if (input.getClass().equals(JTextField.class)) {
+            ((JTextField) input).addFocusListener(new java.awt.event.FocusAdapter() {
+                @Override
+                public void focusLost(java.awt.event.FocusEvent evt) {
+                    levelCodeInputFocusLost(evt, input, entity, parametresGrid, fields, clause, args, imputsResult);
+                }
+
+            });
+        } /**
+         * ComboBox
+         */
+        else if (input.getClass().equals(JComboBox.class)) {
+            ((JComboBox) input).addFocusListener(new java.awt.event.FocusAdapter() {
+                @Override
+                public void focusLost(java.awt.event.FocusEvent evt) {
+                    levelCodeInputFocusLost(evt, input, entity, parametresGrid, fields, clause, args, imputsResult);
+                }
+            });
+        } else {
+            System.out.println("Nothing");
+        }
     }
 
-    private void levelCodeInputFocusLost(java.awt.event.FocusEvent evt) {
-        System.out.println(evt.getClass());
-        serachForm = new InputSearchForm();
-        serachForm.setVisible(true);
+    private void levelCodeInputFocusLost(java.awt.event.FocusEvent evt, Object input, String entity, String[][] parametresGrid, String[] fields, String clause, List args, Object... imputsResult) {
+
+        this.ejql = null;
+        Loading.show(btnValider, new Executable() {
+            @Override
+            public void execute() throws Exception {
+
+                String slt = "select ";
+
+                String field = "";
+                int i = 0;
+                for (String f : fields) {
+                    if (i > 0) {
+                        field += ", ";
+                    }
+                    field += "entity." + f;
+                    i++;
+                }
+
+                String ety = " from " + entity + " entity";
+
+                String cls = (clause == null || clause.isEmpty()) ? "" : " where " + clause;
+
+                String odr = "";// (order by ) / (group by) entity.name ASC";
+
+                ejql = slt + field + ety + cls + odr;
+                
+//                Object[] argss = args.toArray();
+
+                modelResult = cbManager.getList(ejql, args);
+
+                serachForm = new InputSearchForm(modelResult, input, parametresGrid, imputsResult);
+                
+                serachForm.setVisible(true);
+            }
+
+            @Override
+            public void error(Exception ex) {
+                JOptionPane.showMessageDialog(rootPane, inputRef, entity, JOptionPane.OK_OPTION);
+            }
+        });
+
     }
 
     public void addFormData(String key, Object value) {
@@ -349,7 +412,7 @@ public class ModelForm extends javax.swing.JDialog {
 
     public void actionBtnValider(java.awt.event.ActionEvent evt) {
 
-        new Loading(btnValider, new Executable() {
+        Loading.show(btnValider, new Executable() {
 
             @Override
             public void execute() throws Exception {

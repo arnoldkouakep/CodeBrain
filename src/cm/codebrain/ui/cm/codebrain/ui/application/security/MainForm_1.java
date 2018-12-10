@@ -33,12 +33,10 @@ public class MainForm_1 extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
 
         jPanel1 = new javax.swing.JPanel();
         centerPanel = new javax.swing.JPanel();
         mainPanel = new javax.swing.JPanel();
-        jButton3 = new javax.swing.JButton();
         logoPanel = new javax.swing.JPanel();
         logoLabel = new javax.swing.JLabel();
         statusBar1 = new javax.swing.JToolBar();
@@ -62,13 +60,6 @@ public class MainForm_1 extends javax.swing.JFrame {
         mainPanel.setBackground(new java.awt.Color(204, 255, 102));
         mainPanel.setOpaque(false);
         mainPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEADING, 50, 25));
-
-        jButton3.setLabel("beni");
-        jButton3.setMaximumSize(new java.awt.Dimension(250, 100));
-        jButton3.setMinimumSize(new java.awt.Dimension(250, 100));
-        jButton3.setPreferredSize(new java.awt.Dimension(250, 100));
-        mainPanel.add(jButton3);
-
         centerPanel.add(mainPanel);
 
         logoPanel.setLayout(new java.awt.CardLayout());
@@ -216,7 +207,6 @@ public class MainForm_1 extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel centerPanel;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel logoLabel;
     private javax.swing.JPanel logoPanel;

@@ -17,12 +17,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.server.UID;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.Query;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -43,6 +46,10 @@ public class CodeBrainManager {
     private String entity;
 
     public CodeBrainManager() {
+    }
+    
+    public static void CodeBrainManager(){
+//        new CodeBrainManager();
     }
 
     public Users authenticate(String login, String password) throws SQLException {
@@ -66,9 +73,9 @@ public class CodeBrainManager {
 
         widgetSecurity = widgetCtrl.findWidgetFromLevel(userConnected.getLevelsId());
 
-        for (Widget w : widgetSecurity) {
+        widgetSecurity.forEach((w) -> {
             System.out.println(w.toString());
-        }
+        });
 
         GlobalParameters.addVar("widgets", widgetSecurity);
     }
@@ -118,7 +125,7 @@ public class CodeBrainManager {
         String id;
         if (GlobalParameters.getVar("user") == null) {
 
-            id = "CB-" + "1212";///+ Date.from(Instant.MIN).toString();
+            id = "CB-" + Date.from(Instant.MIN).toString();
         } else {
             id = ((Users) GlobalParameters.getVar("user")).getLogin();
         }
@@ -174,7 +181,7 @@ public class CodeBrainManager {
         }
 
         entityMethod.invoke(instance, params.toArray()); // pass args
-        
+
     }
 
     private void makeModelData(HashMap formDatas) {
@@ -197,15 +204,106 @@ public class CodeBrainManager {
         }).filter((ky) -> (formDatas.get(ky).getClass() == JTextField.class)).map((ky) -> (JTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
             modelFinal.put(this.key.toString(), ((JTextField) val).getText());
         });
-        
+
         formDatas.keySet().stream().map((ky) -> {
             this.key = ky;
             return ky;
         }).filter((ky) -> (formDatas.get(ky).getClass() == JPasswordField.class)).map((ky) -> (JPasswordField) formDatas.get(ky)).forEachOrdered((Object val) -> {
             modelFinal.put(this.key.toString(), ((JPasswordField) val).getText());
         });
-        
+
         GlobalParameters.addVar("model", modelFinal);
     }
-    
+
+    public List getList(String ejbql, List args) throws Exception {
+
+        Query query = null;
+        int nbreArgs;
+        HashMap<String, Object> arg;
+        String sqlPlus;
+        List<Map> lstMap = new ArrayList<>();
+
+        int j = 0;
+        if (args != null) {
+            for (Object arg1 : args) {
+                if (arg1 == null) {
+                    ejbql = ejbql.replaceFirst("<>:arg" + j, " is not null");
+                    ejbql = ejbql.replaceFirst("=:arg" + j, " is null");
+                    j++;
+                } else {
+                    if (arg1 instanceof Object[]) {
+                        for (Object argt : (Object[]) arg1) {
+                            arg = new HashMap();
+                            arg.put("key", j);
+                            arg.put("value", argt);
+                            lstMap.add(arg);
+                            j++;
+                        }
+                    } else {
+                        arg = new HashMap();
+                        arg.put("key", j);
+                        arg.put("value", arg1);
+                        lstMap.add(arg);
+                        j++;
+                    }
+                }
+            }
+        }
+        nbreArgs = j;
+
+        String stateDbString = "stateDb !=:arg" + nbreArgs;
+
+        if (ejbql.contains("entity")) {
+            stateDbString = "entity." + stateDbString;
+        }
+
+        if (!ejbql.contains("where")) {
+            sqlPlus = " where " + stateDbString;
+        } else {
+            sqlPlus = " and " + stateDbString;
+        }
+        String finEjb = "";
+
+        if (ejbql.contains("group by")) {
+            finEjb = "group by";
+        } else {
+            if (ejbql.contains("order by")) {
+                finEjb = "order by";
+            }
+        }
+
+        //sqlPlus="";
+        if (finEjb.length() > 0) {
+            ejbql = ejbql.replace(finEjb, sqlPlus + " " + finEjb);
+        } else {
+            ejbql = ejbql + sqlPlus;
+        }
+
+        try {
+
+            query = emfManager.createEntityManager().createQuery(ejbql);
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        List list;
+        String argsEvent = "";
+
+        if (lstMap.size() > 0) {
+            for (Map map : lstMap) {
+                query.setParameter("arg" + map.get("key"), map.get("value"));
+            }
+        }
+        query.setParameter("arg" + nbreArgs,
+                EnumLibelles.Business_Status_StateDb_Delete.toString());
+        try {
+            list = query.getResultList();
+
+            return list;
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
 }

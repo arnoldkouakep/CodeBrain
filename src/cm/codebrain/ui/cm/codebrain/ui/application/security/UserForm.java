@@ -9,7 +9,6 @@ import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,21 +30,21 @@ public class UserForm extends ModelForm {
         this.showMenuBar();
 
 //        this.addFormData("userCode", title);
-
 //    addActionSupplementaire(
     }
+
     @Override
-    public void createForm(){
-        
-        this.entity="Users";
+    public void createForm() {
+
+        this.entity = "Users";
         initComponents();
-        
+
     }
 
     @Override
     public void addActionSupplementaire() {
         super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
-        
+
         eventLevelSecurity();
     }
 
@@ -53,20 +52,26 @@ public class UserForm extends ModelForm {
     public void actionBtnValider(java.awt.event.ActionEvent evt) {
         super.actionBtnValider(evt);
     }
-    
-    
+
     private void eventLevelSecurity() {
-        String[] fields = {};
-        
-        String clause = "";
-        
-        List args =  new ArrayList();
-        
+        String[] fields = {"code", "intitule", "levelsId"};
+
+        String clause = null;
+
+        List args = null;//new ArrayList();
+
+        String[][] parametresGrid = {
+            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code),
+                "2"},
+            {"intitule",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule),
+                "3"}};
+
 //        if (this.getData("action") != null) {
-            addAction(levelCodeInput);//, "levels", fields, clause, args, levelIntituleInput);
+        addAction(levelCodeInput, "Levels", parametresGrid, fields, clause, args, levelCodeInput, levelIntituleInput);
 //        }
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -123,8 +128,10 @@ public class UserForm extends ModelForm {
 
         passwordInput.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         passwordInput.setToolTipText(Dictionnaire.get(EnumLibelles.Business_Libelle_Enter_Password)); // NOI18N
+        passwordInput.setName("passwordInput"); // NOI18N
         this.addFormData("password", passwordInput);
 
+        userNameInput.setName("userNameInput"); // NOI18N
         this.addFormData("login", userNameInput);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -175,14 +182,19 @@ public class UserForm extends ModelForm {
         labelCni.setToolTipText("");
         labelCni.setName("usernameLabel"); // NOI18N
 
+        nomInput.setName("nomInput"); // NOI18N
         this.addFormData("firstName", userNameInput);
 
+        prenomInput.setName("prenomInput"); // NOI18N
         this.addFormData("lastName", prenomInput);
 
+        telephoneInput.setName("telephoneInput"); // NOI18N
         this.addFormData("tel", telephoneInput);
 
+        emailInput.setName("emailInput"); // NOI18N
         this.addFormData("email", emailInput);
 
+        cniImput.setName("cniInput"); // NOI18N
         this.addFormData("cni", cniImput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
@@ -238,7 +250,10 @@ public class UserForm extends ModelForm {
         labelLevel.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
         labelLevel.setName("usernameLabel"); // NOI18N
 
+        levelCodeInput.setName("levelCodeInput"); // NOI18N
         this.addFormData("levelsId", levelCodeInput);
+
+        levelIntituleInput.setName("levelIntituleInput"); // NOI18N
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);

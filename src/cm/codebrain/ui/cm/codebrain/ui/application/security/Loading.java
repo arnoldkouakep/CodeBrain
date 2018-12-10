@@ -53,13 +53,17 @@ public class Loading extends javax.swing.JDialog implements
      * @param parent
      * @param exe
      */
-    public Loading(Component parent, Executable exe) {
+    private Loading(Component parent, Executable exe) {
         super(SwingUtilities.windowForComponent(parent));
         this.executable = exe;
 
         initComponents();
         logoLabel.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/logo.png")).getImage().getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));
         setVisible(true);
+    }
+    
+    public static void show(Component parent, Executable exe){
+        new Loading(parent, exe);
     }
 
     /**
@@ -98,7 +102,9 @@ public class Loading extends javax.swing.JDialog implements
         logoLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
-        setModal(true);
+        setLocationByPlatform(true);
+        setModalityType(java.awt.Dialog.ModalityType.MODELESS);
+        setUndecorated(true);
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {

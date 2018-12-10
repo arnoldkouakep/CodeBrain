@@ -5,21 +5,29 @@
  */
 package cm.codebrain.ui.application;
 
-import cm.codebrain.ui.application.controller.DefaultCellEdit;
-import cm.codebrain.ui.application.controller.DefaultCellRenderer;
 import cm.codebrain.ui.application.controller.Dictionnaire;
+import cm.codebrain.ui.application.enumerations.EnumError;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
+import cm.codebrain.ui.application.implement.Executable;
+import cm.codebrain.ui.application.security.Loading;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Vector;
+import java.util.function.Consumer;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.InputMap;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumnModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -36,14 +44,66 @@ public class InputSearchForm extends javax.swing.JDialog {
      */
     public static final int RET_OK = 1;
     private Class[] columnClasses;
-    private Object[][] data;
-    private final TableColumnModel cm;
+//    private Object[][] data;
+//    private final TableColumnModel cm;
+//    private String[] columnNames;
+    private List<String> columnValues = new ArrayList<>();
+    private List columnIndex = new ArrayList();
+    private Vector<String> columnNames;
+    private final DefaultTableModel tableModel = new DefaultTableModel();
+    private Vector<Vector<Object>> data;
+    private Vector<Object> result;
+    private Object[] imputResult;
+    private List modelResult;
 
     /**
      * Creates new form InputSearchForm
      */
     public InputSearchForm() {
         super();
+        this.columnNames = new Vector<>();
+        initComponents();
+
+        // Close the dialog when Esc is pressed
+        String cancelName = "cancel";
+        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), cancelName);
+        ActionMap actionMap = getRootPane().getActionMap();
+        actionMap.put(cancelName, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                doClose(RET_CANCEL);
+            }
+        });
+    }
+
+    public InputSearchForm(String ejql, List args, Object... imputsResult) {
+        super();
+        this.columnNames = new Vector<>();
+
+        this.imputResult = imputsResult;
+
+        initComponents();
+
+        // Close the dialog when Esc is pressed
+        String cancelName = "cancel";
+        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), cancelName);
+        ActionMap actionMap = getRootPane().getActionMap();
+        actionMap.put(cancelName, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                doClose(RET_CANCEL);
+            }
+        });
+    }
+
+    public InputSearchForm(List modelResult, Object input, String[][] parametresGrid, Object... imputsResult) {
+
+        super();
+        this.columnNames = new Vector<>();
+        this.modelResult = modelResult;
+        this.imputResult = imputsResult;
         initComponents();
 
         // Close the dialog when Esc is pressed
@@ -58,66 +118,48 @@ public class InputSearchForm extends javax.swing.JDialog {
             }
         });
 
-        DefaultComboBoxModel rendererComboModel, editorComboModel;
-        JComboBox comboBox;
+        Loading.show(okButton, new Executable() {
+            @Override
+            public void execute() throws Exception {
+                grid.setModel(setModelDataTable(modelResult, parametresGrid));
+            }
 
-        stripedTable.setModel(ModelDataTable());
-        rendererComboModel = new DefaultComboBoxModel<>(new Object[]{"Pop", "Rock", "R&B"});
-        editorComboModel = new DefaultComboBoxModel(new Object[]{"Pop", "Rock", "R&B"});
-        cm = stripedTable.getColumnModel();
-        cm.getColumn(0).setPreferredWidth(30);
-        cm.getColumn(1).setPreferredWidth(120);
-        cm.getColumn(2).setPreferredWidth(40);
-        cm.getColumn(3).setPreferredWidth(60);
-        cm.getColumn(4).setPreferredWidth(50);
-        cm.getColumn(4).setCellRenderer(new DefaultCellRenderer(comboBox = new JComboBox(rendererComboModel)));
-        comboBox.setEditable(true);
-        comboBox = new JComboBox(editorComboModel);
-        comboBox.setEditable(true);
-        cm.getColumn(4).setCellEditor(new DefaultCellEdit(comboBox));
-        stripedTable.putClientProperty("Quaqua.Table.style", "striped");
-        stripedTable.setShowHorizontalLines(false);
-        stripedTable.setAutoResizeMode(1);
-        stripedTable.setShowVerticalLines(true);
+            @Override
+            public void error(Exception ex) {
+                JOptionPane.showMessageDialog(rootPane, ex.getMessage(), Dictionnaire.get(EnumError.WorkFlowException), JOptionPane.OK_OPTION);
+            }
+
+        });
     }
 
-    public AbstractTableModel ModelDataTable() {
-        columnClasses = new Class[]{
-            Boolean.class,
-            String.class, String.class, String.class, String.class,
-            Integer.class
-        };
-        String[] columnNames = new String[]{"", "Name", "Time", "Artist", "Genre", "Year"};
-        data = new Object[6][columnClasses.length];
-        for (int i = 0; i < data.length; i++) {
-            data[i][0] = Boolean.TRUE;
-            data[i][1] = (i % 2 == 0) ? "Fooing In The Wind" : "Baring The Sea";
-            data[i][2] = (i % 2 == 0) ? "3:51" : "3:42";
-            data[i][3] = (i % 2 == 0) ? "Foo Guy" : "Bar Girl";
-            data[i][4] = (i % 2 == 0) ? "Pop" : "Rock";
-            data[i][5] = (i % 2 == 0) ? new Integer(2007) : new Integer(2008);
+    private TableModel setModelDataTable(List<Object[]> modelREsult, String[][] parametresGrid) {
+
+        this.data = new Vector<>();
+        Integer[] columnSizes = new Integer[parametresGrid.length];
+
+        for (String[] param : parametresGrid) {
+            columnValues.add(param[0]);
         }
-        return new AbstractTableModel() {
-            @Override
-            public int getRowCount() {
-                return data.length;
-            }
 
-            @Override
-            public int getColumnCount() {
-                return data[0].length;
-            }
+        for (String[] param : parametresGrid) {
+            columnNames.add(param[1]);
+        }
 
-            @Override
-            public String getColumnName(int column) {
-                return columnNames[column];
-            }
+        for (String[] param : parametresGrid) {
+            columnIndex.add(Integer.getInteger(param[2]));
+        }
 
-            @Override
-            public Object getValueAt(int rowIndex, int columnIndex) {
-                return data[rowIndex][columnIndex];
-            }
-        };
+        modelREsult.forEach((Object[] object) -> {
+            //            vector = new Vector();
+            Object[] ob = (Object[]) object;
+            Vector<Object> vector = new Vector();
+            vector.addAll(Arrays.asList(ob));
+            data.add(vector);
+        });
+
+        tableModel.setDataVector(data, columnNames);
+
+        return this.tableModel;
     }
 
     /**
@@ -140,13 +182,14 @@ public class InputSearchForm extends javax.swing.JDialog {
         labelSearch = new javax.swing.JLabel();
         searchImput = new javax.swing.JTextField();
         stripedTableScrollPane = new javax.swing.JScrollPane();
-        stripedTable = new javax.swing.JTable();
+        grid = new javax.swing.JTable();
+        footerGrid = new javax.swing.JToolBar();
         jPanel1 = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
 
         setLocationByPlatform(true);
-        setModal(true);
+        setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
@@ -164,12 +207,32 @@ public class InputSearchForm extends javax.swing.JDialog {
 
         getContentPane().add(jPanel2);
 
-        stripedTable.setAutoCreateRowSorter(true);
-        stripedTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-        stripedTable.setIntercellSpacing(new java.awt.Dimension(4, 1));
-        stripedTableScrollPane.setViewportView(stripedTable);
+        grid.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        grid.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
+        grid.setEditingColumn(0);
+        grid.setEditingRow(0);
+        grid.setIntercellSpacing(new java.awt.Dimension(4, 1));
+        grid.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        grid.setShowHorizontalLines(true);
+        grid.setShowVerticalLines(true);
+        grid.setSurrendersFocusOnKeystroke(true);
+        stripedTableScrollPane.setViewportView(grid);
+        grid.putClientProperty("Quaqua.Table.style", "striped");
 
         getContentPane().add(stripedTableScrollPane);
+
+        footerGrid.setFloatable(false);
+        footerGrid.setRollover(true);
+        footerGrid.setFocusable(false);
+        getContentPane().add(footerGrid);
+        footerGrid.putClientProperty("Quaqua.ToolBar.style", "bottom");
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -197,7 +260,39 @@ public class InputSearchForm extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        doClose(RET_OK);
+
+        Loading.show(okButton, new Executable() {
+            @Override
+            public void execute() throws Exception {
+
+                ListSelectionModel selectionModel = grid.getSelectionModel();
+
+                result = (Vector) tableModel.getDataVector().elementAt(grid.getSelectedRow());
+
+                for (int i = 0; i < imputResult.length; i++) {
+                    try {
+                        if(imputResult[i].getClass().equals(JTextField.class)){
+                            JTextField res =  (JTextField)imputResult[i];
+                            res.setText(Dictionnaire.get(result.get(i).toString()));
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+
+//        for(int b: a.){
+//            
+//        }
+                doClose(RET_OK);
+            }
+
+            @Override
+            public void error(Exception ex) {
+                JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(okButton), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
+                
+            }
+        });
+
     }//GEN-LAST:event_okButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
@@ -219,12 +314,13 @@ public class InputSearchForm extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
+    private javax.swing.JToolBar footerGrid;
+    private javax.swing.JTable grid;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel labelSearch;
     private javax.swing.JButton okButton;
     private javax.swing.JTextField searchImput;
-    private javax.swing.JTable stripedTable;
     private javax.swing.JScrollPane stripedTableScrollPane;
     // End of variables declaration//GEN-END:variables
 

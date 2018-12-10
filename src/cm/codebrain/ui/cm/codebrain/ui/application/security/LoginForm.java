@@ -200,7 +200,7 @@ public class LoginForm extends javax.swing.JDialog {
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
 //        loading.show();
 //        try {
-        new Loading(btnOk, new Executable() {
+        Loading.show(btnOk, new Executable() {
 
             @Override
             public void execute() {

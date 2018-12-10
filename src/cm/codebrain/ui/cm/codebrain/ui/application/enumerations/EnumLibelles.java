@@ -52,4 +52,6 @@ public enum EnumLibelles {
     Business_Libelle_identifiant,
     Business_Status_StateDb_Create,
     Business_Libelle_Filtre,
+    Business_Status_StateDb_Delete,
+    Business_Libelle_Intitule,
 }

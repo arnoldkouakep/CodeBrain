@@ -12,7 +12,12 @@ package cm.codebrain.ui.application.controller;
 public class Dictionnaire {
 //    public Dictionnaire(){}
     public static String get(String text){
-        return StringUtils.UTF8Encode(Locale.i18n.getString(text));
+        try{
+            return StringUtils.UTF8Encode(Locale.i18n.getString(text));
+        
+        }catch(Exception e){
+            return text;
+        }
     }
     
     public static String get(Enum value){
