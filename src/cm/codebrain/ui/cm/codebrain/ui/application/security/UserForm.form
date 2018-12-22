@@ -210,7 +210,7 @@
                     <Property name="name" type="java.lang.String" value="userNameInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;login&quot;, userNameInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;login&quot;, userNameInput);&#xd;&#xa;this.setRef(userNameInput);&#xd;&#xa;"/>
                   </AuxValues>
                 </Component>
               </SubComponents>

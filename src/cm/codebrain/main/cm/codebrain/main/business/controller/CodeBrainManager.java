@@ -26,8 +26,6 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
 
 /**
  *
@@ -40,7 +38,6 @@ public class CodeBrainManager {
     private ReLoginForm reLogin;
     private final EntityManagerFactory emfManager = Persistence.createEntityManagerFactory("Brain");
     private List<Widget> widgetSecurity;
-    private HashMap<String, Object> modelFinal;
     private Object key;
     private final CodeBrainMapper cbMapper = new CodeBrainMapper();
     private String entity;
@@ -121,7 +118,7 @@ public class CodeBrainManager {
         mainForm.refresh();
     }
 
-    public String generateUIDPrimaryKey() {
+    public static String generateUIDPrimaryKey() {
         String id;
         if (GlobalParameters.getVar("user") == null) {
 
@@ -135,19 +132,18 @@ public class CodeBrainManager {
 
     public void createEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
-        makeModelData(formDatas);
 
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formDatas);
     }
 
-    public void executeMethod(String className, String methodName, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+    public void executeMethod(String className, String methodName, HashMap modelFinal) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
 
         java.lang.reflect.Method entityMethod = null;
 
         Class<?> controllerClass = Class.forName(className); // convert string classname to class
 
-        Constructor<?> dogConstructor = controllerClass.getConstructor(EntityManagerFactory.class);
-        Object instance = dogConstructor.newInstance(emfManager);
+        Constructor<?> constructor = controllerClass.getConstructor(EntityManagerFactory.class);
+        Object instance = constructor.newInstance(emfManager);
 
         java.lang.reflect.Method[] methods = controllerClass.getMethods();
 
@@ -172,7 +168,7 @@ public class CodeBrainManager {
 
             params.add(entityObject);
 
-            System.out.println("User Value Form : " + ((Users) entityObject).getFirstName());
+//            System.out.println("User Value Form : " + ((Users) entityObject).getFirstName());
         }
 
         Class[] paramsClass = new Class[params.size()];
@@ -182,37 +178,6 @@ public class CodeBrainManager {
 
         entityMethod.invoke(instance, params.toArray()); // pass args
 
-    }
-
-    private void makeModelData(HashMap formDatas) {
-
-        System.out.println(((Users) GlobalParameters.getVar("user")).getLevelsId().getCode());
-
-        modelFinal = new HashMap<>();
-
-        modelFinal.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
-        modelFinal.put("stateDb", EnumLibelles.Business_Status_StateDb_Create.toString());
-        modelFinal.put("dtCreated", new Date());
-        modelFinal.put("dtModified", new Date());
-        modelFinal.put("userCreated", GlobalParameters.getVar("user"));
-        modelFinal.put("userModified", GlobalParameters.getVar("user"));
-        modelFinal.put("levelsId", ((Users) GlobalParameters.getVar("user")).getLevelsId());
-
-        formDatas.keySet().stream().map((ky) -> {
-            this.key = ky;
-            return ky;
-        }).filter((ky) -> (formDatas.get(ky).getClass() == JTextField.class)).map((ky) -> (JTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            modelFinal.put(this.key.toString(), ((JTextField) val).getText());
-        });
-
-        formDatas.keySet().stream().map((ky) -> {
-            this.key = ky;
-            return ky;
-        }).filter((ky) -> (formDatas.get(ky).getClass() == JPasswordField.class)).map((ky) -> (JPasswordField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            modelFinal.put(this.key.toString(), ((JPasswordField) val).getText());
-        });
-
-        GlobalParameters.addVar("model", modelFinal);
     }
 
     public List getList(String ejbql, List args) throws Exception {
@@ -305,5 +270,18 @@ public class CodeBrainManager {
         }
 
     }
+    
+    public Object convertToObject(Object obj, Class cl){
+        return cbMapper.mapper(obj, cl);
+    }
 
+    public String getUpperValue(String value) {
+		return value.substring(0, 1).toUpperCase()
+				+ value.substring(1, value.length());
+	}
+
+	public String getLowerValue(String value) {
+		return value.substring(0, 1).toLowerCase()
+				+ value.substring(1, value.length());
+	}
 }

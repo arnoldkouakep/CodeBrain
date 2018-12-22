@@ -6,6 +6,7 @@
 package cm.codebrain.ui.application;
 
 import cm.codebrain.ui.application.controller.Dictionnaire;
+import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.enumerations.EnumError;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.implement.Executable;
@@ -16,7 +17,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
-import java.util.function.Consumer;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -43,10 +43,6 @@ public class InputSearchForm extends javax.swing.JDialog {
      * A return status code - returned if OK button has been pressed
      */
     public static final int RET_OK = 1;
-    private Class[] columnClasses;
-//    private Object[][] data;
-//    private final TableColumnModel cm;
-//    private String[] columnNames;
     private List<String> columnValues = new ArrayList<>();
     private List columnIndex = new ArrayList();
     private Vector<String> columnNames;
@@ -55,6 +51,9 @@ public class InputSearchForm extends javax.swing.JDialog {
     private Vector<Object> result;
     private Object[] imputResult;
     private List modelResult;
+    private List modelComplet;
+    private String entity;
+    private Object filter;
 
     /**
      * Creates new form InputSearchForm
@@ -77,33 +76,37 @@ public class InputSearchForm extends javax.swing.JDialog {
         });
     }
 
-    public InputSearchForm(String ejql, List args, Object... imputsResult) {
-        super();
-        this.columnNames = new Vector<>();
+//    public InputSearchForm(String ejql, List args, Object... imputsResult) {
+//        super();
+//        this.columnNames = new Vector<>();
+//
+//        this.imputResult = imputsResult;
+//
+//        initComponents();
+//
+//        // Close the dialog when Esc is pressed
+//        String cancelName = "cancel";
+//        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+//        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), cancelName);
+//        ActionMap actionMap = getRootPane().getActionMap();
+//        actionMap.put(cancelName, new AbstractAction() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                doClose(RET_CANCEL);
+//            }
+//        });
+//    }
 
-        this.imputResult = imputsResult;
-
-        initComponents();
-
-        // Close the dialog when Esc is pressed
-        String cancelName = "cancel";
-        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), cancelName);
-        ActionMap actionMap = getRootPane().getActionMap();
-        actionMap.put(cancelName, new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                doClose(RET_CANCEL);
-            }
-        });
-    }
-
-    public InputSearchForm(List modelResult, Object input, String[][] parametresGrid, Object... imputsResult) {
+    public InputSearchForm(String entityName, List modelResult, List modelComplet, Object filter, String[][] parametresGrid, Object... imputsResult) {
 
         super();
         this.columnNames = new Vector<>();
         this.modelResult = modelResult;
+        this.modelComplet = modelComplet;
         this.imputResult = imputsResult;
+        this.entity = entityName;
+        this.filter = filter;
+        
         initComponents();
 
         // Close the dialog when Esc is pressed
@@ -126,7 +129,7 @@ public class InputSearchForm extends javax.swing.JDialog {
 
             @Override
             public void error(Exception ex) {
-                JOptionPane.showMessageDialog(rootPane, ex.getMessage(), Dictionnaire.get(EnumError.WorkFlowException), JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(rootPane, Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.OK_OPTION);
             }
 
         });
@@ -135,7 +138,7 @@ public class InputSearchForm extends javax.swing.JDialog {
     private TableModel setModelDataTable(List<Object[]> modelREsult, String[][] parametresGrid) {
 
         this.data = new Vector<>();
-        Integer[] columnSizes = new Integer[parametresGrid.length];
+//        Integer[] columnSizes = new Integer[parametresGrid.length];
 
         for (String[] param : parametresGrid) {
             columnValues.add(param[0]);
@@ -156,9 +159,16 @@ public class InputSearchForm extends javax.swing.JDialog {
             vector.addAll(Arrays.asList(ob));
             data.add(vector);
         });
+//        formDatas.keySet().stream().map((ky) -> {
+//            this.key = ky;
+//            return ky;
+//        }).filter((ky) -> (formDatas.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+//            modelFinal.put(this.key.toString(), ((JFormattedTextField) val).getText());
+//        });
+//        data.stream().map((ky)->{
+//        return ky;}).filter((ky) ->(ky.get(0)))
 
         tableModel.setDataVector(data, columnNames);
-
         return this.tableModel;
     }
 
@@ -190,6 +200,7 @@ public class InputSearchForm extends javax.swing.JDialog {
 
         setLocationByPlatform(true);
         setModalityType(java.awt.Dialog.ModalityType.APPLICATION_MODAL);
+        setPreferredSize(new java.awt.Dimension(443, 268));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 closeDialog(evt);
@@ -216,8 +227,6 @@ public class InputSearchForm extends javax.swing.JDialog {
             }
         ));
         grid.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_LAST_COLUMN);
-        grid.setEditingColumn(0);
-        grid.setEditingRow(0);
         grid.setIntercellSpacing(new java.awt.Dimension(4, 1));
         grid.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         grid.setShowHorizontalLines(true);
@@ -269,6 +278,8 @@ public class InputSearchForm extends javax.swing.JDialog {
 
                 result = (Vector) tableModel.getDataVector().elementAt(grid.getSelectedRow());
 
+                Object resultEntity = modelComplet.get(grid.getSelectedRow());
+                
                 for (int i = 0; i < imputResult.length; i++) {
                     try {
                         if(imputResult[i].getClass().equals(JTextField.class)){
@@ -279,10 +290,9 @@ public class InputSearchForm extends javax.swing.JDialog {
                         System.out.println(e.getMessage());
                     }
                 }
+                
+                GlobalParameters.addVar(entity, resultEntity);
 
-//        for(int b: a.){
-//            
-//        }
                 doClose(RET_OK);
             }
 

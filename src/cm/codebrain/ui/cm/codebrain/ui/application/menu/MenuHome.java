@@ -36,6 +36,7 @@ public class MenuHome extends JButton {
         mainPanel.repaint();
         
         mainPanel.add(new MenuAdministration(mainPanel, menu));
+        mainPanel.add(new MenuParametres(mainPanel, menu));
     }
     
     private void goToHere(JPanel mainPanel){

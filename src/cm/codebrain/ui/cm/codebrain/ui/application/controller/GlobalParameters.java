@@ -13,13 +13,13 @@ import java.util.HashMap;
  */
 public class GlobalParameters {
 
-    private static final HashMap<String, Object> variableGlobale = new HashMap<>();
+    private static HashMap<String, Object> variableGlobale = new HashMap<>();
 
 //    public GlobalParameters(GlobalParameters globalParameters) {
 //        super(globalParameters);
 //    }
     public GlobalParameters() {
-//        this.variableGlobale= new HashMap<>();
+        this.variableGlobale= new HashMap<>();
     }
 
     /**

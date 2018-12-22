@@ -7,6 +7,7 @@ package cm.codebrain.ui.application.security;
 
 import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
+import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.List;
  * @author KSA-INET
  */
 public class UserForm extends ModelForm {
+    
+    private final String entityLevel = "Levels";
 
     /**
      * Creates new form UserForm
@@ -68,8 +71,15 @@ public class UserForm extends ModelForm {
                 "3"}};
 
 //        if (this.getData("action") != null) {
-        addAction(levelCodeInput, "Levels", parametresGrid, fields, clause, args, levelCodeInput, levelIntituleInput);
+        addAction(levelCodeInput, entityLevel, parametresGrid, fields, clause, args, levelCodeInput, levelIntituleInput);
 //        }
+    }
+    
+    @Override
+    public void makeModelData(){
+        super.makeModelData();
+        modelFinal.put(entityLevel.toLowerCase()+"Id", GlobalParameters.getVar(entityLevel));
+
     }
 
     /**
@@ -133,6 +143,7 @@ public class UserForm extends ModelForm {
 
         userNameInput.setName("userNameInput"); // NOI18N
         this.addFormData("login", userNameInput);
+        this.setRef(userNameInput);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);

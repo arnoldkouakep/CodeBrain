@@ -7,6 +7,7 @@ package cm.codebrain.ui.application;
 
 import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.ui.application.controller.Dictionnaire;
+import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.Locale;
 import cm.codebrain.ui.application.enumerations.EnumError;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
@@ -17,13 +18,18 @@ import static cm.codebrain.ui.application.enumerations.Enums.DUPPLICATE;
 import static cm.codebrain.ui.application.enumerations.Enums.MODIF;
 import cm.codebrain.ui.application.implement.Executable;
 import cm.codebrain.ui.application.security.Loading;
+import java.awt.Color;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 
 /**
@@ -41,6 +47,7 @@ public class ModelForm extends javax.swing.JDialog {
 
     private HashMap formDatas = new HashMap();
 
+    protected HashMap<String, Object> modelFinal;
     /**
      * A return status code - returned if OK button has been pressed
      */
@@ -49,13 +56,15 @@ public class ModelForm extends javax.swing.JDialog {
     private final int height = 18;
     private int wi = 394;
     private int he = 390;
-    private Object inputRef;
+    private JTextField inputRef;
     public String entity;
     private String ejql;
     private List modelResult;
+    private List modelComplet;
 
     CodeBrainManager cbManager = new CodeBrainManager();
     private InputSearchForm serachForm;
+    private Object key;
 
 //    private MainForm mainForm;
 //    private Loading loading;
@@ -151,7 +160,7 @@ public class ModelForm extends javax.swing.JDialog {
 
     }
 
-    public void addAction(JComponent input, String entity, String[][] parametresGrid, String[] fields, String clause, List args, Object... imputsResult) {
+    public void addAction(Object input, String entity, String[][] parametresGrid, String[] fields, String clause, List args, Object... imputsResult) {
 
         /**
          * TextFields
@@ -160,7 +169,8 @@ public class ModelForm extends javax.swing.JDialog {
             ((JTextField) input).addFocusListener(new java.awt.event.FocusAdapter() {
                 @Override
                 public void focusLost(java.awt.event.FocusEvent evt) {
-                    levelCodeInputFocusLost(evt, input, entity, parametresGrid, fields, clause, args, imputsResult);
+                    Object filter = ((JTextField) input).getText();
+                    levelCodeInputFocusLost(evt, filter, entity, parametresGrid, fields, clause, args, imputsResult);
                 }
 
             });
@@ -171,7 +181,8 @@ public class ModelForm extends javax.swing.JDialog {
             ((JComboBox) input).addFocusListener(new java.awt.event.FocusAdapter() {
                 @Override
                 public void focusLost(java.awt.event.FocusEvent evt) {
-                    levelCodeInputFocusLost(evt, input, entity, parametresGrid, fields, clause, args, imputsResult);
+                    Object filter = ((JComboBox) input).getSelectedItem();
+                    levelCodeInputFocusLost(evt, filter, entity, parametresGrid, fields, clause, args, imputsResult);
                 }
             });
         } else {
@@ -179,7 +190,7 @@ public class ModelForm extends javax.swing.JDialog {
         }
     }
 
-    private void levelCodeInputFocusLost(java.awt.event.FocusEvent evt, Object input, String entity, String[][] parametresGrid, String[] fields, String clause, List args, Object... imputsResult) {
+    private void levelCodeInputFocusLost(java.awt.event.FocusEvent evt, Object filter, String entity, String[][] parametresGrid, String[] fields, String clause, List args, Object... imputsResult) {
 
         this.ejql = null;
         Loading.show(btnValider, new Executable() {
@@ -189,6 +200,7 @@ public class ModelForm extends javax.swing.JDialog {
                 String slt = "select ";
 
                 String field = "";
+                String field2 = "entity";
                 int i = 0;
                 for (String f : fields) {
                     if (i > 0) {
@@ -205,19 +217,21 @@ public class ModelForm extends javax.swing.JDialog {
                 String odr = "";// (order by ) / (group by) entity.name ASC";
 
                 ejql = slt + field + ety + cls + odr;
-                
-//                Object[] argss = args.toArray();
+
+                String ejql2 = slt + field2 + ety + cls + odr;
 
                 modelResult = cbManager.getList(ejql, args);
 
-                serachForm = new InputSearchForm(modelResult, input, parametresGrid, imputsResult);
+                modelComplet = cbManager.getList(ejql2, args);
                 
+                serachForm = new InputSearchForm(entity, modelResult, modelComplet, filter, parametresGrid, imputsResult);
+
                 serachForm.setVisible(true);
             }
 
             @Override
             public void error(Exception ex) {
-                JOptionPane.showMessageDialog(rootPane, inputRef, entity, JOptionPane.OK_OPTION);
+                JOptionPane.showMessageDialog(rootPane, ex.getMessage());
             }
         });
 
@@ -229,10 +243,6 @@ public class ModelForm extends javax.swing.JDialog {
 
     public Object getData(String key) {
         return this.formDatas.get(key);
-    }
-
-    public void setImputRef(Object input) {
-        this.inputRef = input;
     }
 
     public void showActionBar() {
@@ -393,21 +403,25 @@ public class ModelForm extends javax.swing.JDialog {
     public void actionBtnCreate(java.awt.event.ActionEvent evt) {
 //        JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnCreate), "Bonjour", JOptionPane.INFORMATION_MESSAGE);
         setActionMenu(CREATE);
+        setDefaultActionRef();
     }
 
     public void actionBtnModify(java.awt.event.ActionEvent evt) {
 //        JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnCreate), "Bonjour", JOptionPane.INFORMATION_MESSAGE);
         setActionMenu(MODIF);
+        setActionRef();
     }
 
     public void actionBtnDupplicate(java.awt.event.ActionEvent evt) {
 //        JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnCreate), "Bonjour", JOptionPane.INFORMATION_MESSAGE);
         setActionMenu(DUPPLICATE);
+        setActionRef();
     }
 
     public void actionBtnDelete(java.awt.event.ActionEvent evt) {
 //        JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnCreate), "Bonjour", JOptionPane.INFORMATION_MESSAGE);
         setActionMenu(DELETE);
+        setActionRef();
     }
 
     public void actionBtnValider(java.awt.event.ActionEvent evt) {
@@ -417,7 +431,9 @@ public class ModelForm extends javax.swing.JDialog {
             @Override
             public void execute() throws Exception {
 
-                cbManager.createEntity(entity, formDatas);
+                makeModelData();
+
+                cbManager.createEntity(entity, modelFinal);
 
                 doClose(RET_OK);
             }
@@ -430,6 +446,58 @@ public class ModelForm extends javax.swing.JDialog {
 
         });
 
+    }
+
+    public void makeModelData() {
+
+        modelFinal = new HashMap<>();
+
+        modelFinal.put(entity.toLowerCase() + "Id", CodeBrainManager.generateUIDPrimaryKey());
+        modelFinal.put("stateDb", EnumLibelles.Business_Status_StateDb_Create.toString());
+        modelFinal.put("dtCreated", new Date());
+        modelFinal.put("dtModified", new Date());
+        modelFinal.put("userCreated", GlobalParameters.getVar("user"));
+        modelFinal.put("userModified", GlobalParameters.getVar("user"));
+//        modelFinal.put("levelsId", ((Users) GlobalParameters.getVar("user")).getLevelsId());
+       
+        /**
+         *JTextField.class
+         */
+        formDatas.keySet().stream().map((ky) -> {
+            this.key = ky;
+            return ky;
+        }).filter((ky) -> (formDatas.get(ky).getClass() == JTextField.class)).map((ky) -> (JTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+            modelFinal.put(this.key.toString(), ((JTextField) val).getText());
+        });
+        /**
+         *JPasswordField.class
+         */
+        formDatas.keySet().stream().map((ky) -> {
+            this.key = ky;
+            return ky;
+        }).filter((ky) -> (formDatas.get(ky).getClass() == JPasswordField.class)).map((ky) -> (JPasswordField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+            modelFinal.put(this.key.toString(), ((JPasswordField) val).getText());
+        });
+        /**
+         *JTextPane.class
+         */
+        formDatas.keySet().stream().map((ky) -> {
+            this.key = ky;
+            return ky;
+        }).filter((ky) -> (formDatas.get(ky).getClass() == JTextPane.class)).map((ky) -> (JTextPane) formDatas.get(ky)).forEachOrdered((Object val) -> {
+            modelFinal.put(this.key.toString(), ((JTextPane) val).getText());
+        });
+        /**
+         *JFormattedTextField.class
+         */
+        formDatas.keySet().stream().map((ky) -> {
+            this.key = ky;
+            return ky;
+        }).filter((ky) -> (formDatas.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+            modelFinal.put(this.key.toString(), ((JFormattedTextField) val).getText());
+        });
+
+        GlobalParameters.addVar("model", modelFinal);
     }
 
     private void actionBtnCancel(java.awt.event.ActionEvent evt) {
@@ -467,8 +535,24 @@ public class ModelForm extends javax.swing.JDialog {
         }
     }
 
-    public void setActionRef(Object fieldActionRef) {
-        this.inputRef = fieldActionRef;
+    public void setActionRef() {
+//        this.inputRef = fieldActionRef;
+        this.inputRef.setBackground(new Color(68, 127, 255));
+        this.inputRef.requestFocus();
+    }
+
+    public void setDefaultActionRef() {
+//        this.inputRef = fieldActionRef;
+        this.inputRef.setBackground(new Color(255, 255, 255));
+        this.inputRef.setFocusable(true);
+    }
+
+    public void setRef(JTextField inputRef) {
+        this.inputRef = inputRef;
+    }
+
+    public JTextField getRef() {
+        return this.inputRef;
     }
 
     public void addActionSupplementaire() {

@@ -7,17 +7,17 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
-public class MenuAdministration extends JButton {
+public class MenuParametres extends JButton {
 
     private final JToolBar menu;
     private JButton menuButton;
     private final int menuIndex;
 
-    public MenuAdministration(JPanel mainPanel, JToolBar menu) {
+    public MenuParametres(JPanel mainPanel, JToolBar menu) {
         this.menu = menu;
         
         this.menuIndex=menu.getComponents().length;
-        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Administration));
+        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Parametres));
 //        setText(StringUtil.UTF8Encode(Locale.i18n.getString(EnumLibelles.Business_Libelle_Administration.toString())));
         putClientProperty("JButton.buttonType", "bevel");
         addActionListener((ActionEvent e) -> {
@@ -38,7 +38,7 @@ public class MenuAdministration extends JButton {
         mainPanel.repaint();
         
         this.menuButton = new JButton();
-        this.menuButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Administration));
+        this.menuButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Parametres));
         this.menuButton.putClientProperty("JButton.buttonType", "bevel");
         this.menuButton.addActionListener((ActionEvent e) -> {
             goToHere(mainPanel);
@@ -51,8 +51,9 @@ public class MenuAdministration extends JButton {
         *
         */
         
-        mainPanel.add(new MenuUser(mainPanel, menu));
-//        mainPanel.add(new MenuClasse(mainPanel, menu));
+        mainPanel.add(new MenuEtablissement(mainPanel, menu));
+        mainPanel.add(new MenuCategorie(mainPanel, menu));
+        mainPanel.add(new MenuClasse(mainPanel, menu));
         
     }
     
@@ -70,6 +71,6 @@ public class MenuAdministration extends JButton {
         menu.revalidate();
         menu.repaint();
         
-        new MenuAdministration(mainPanel, menu).addComponentPanel(mainPanel, menu);
+        new MenuParametres(mainPanel, menu).addComponentPanel(mainPanel, menu);
     }
 }

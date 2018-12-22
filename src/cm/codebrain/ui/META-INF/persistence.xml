@@ -6,6 +6,7 @@
     <class>cm.codebrain.main.business.entitie.Levels</class>
     <class>cm.codebrain.main.business.entitie.Widget</class>
     <class>cm.codebrain.main.business.entitie.Users</class>
+    <class>cm.codebrain.main.business.entitie.Etablissement</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/brain"/>
       <property name="javax.persistence.jdbc.user" value="brain"/>
