@@ -10,23 +10,27 @@ import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
+import static cm.codebrain.ui.application.enumerations.Enums.Type;
+import static cm.codebrain.ui.application.enumerations.Enums.Entity;
 import java.util.HashMap;
+import static cm.codebrain.ui.application.enumerations.Enums.Value;
 
 /**
  *
  * @author KSA-INET
  */
-public class ClasseForm extends ModelForm {
+public class SalleForm extends ModelForm {
     
     private final String entitySections = "Sections";
+    private final String entityClasse = "Classe";
 
     /**
      * Creates new form UserForm
      *
      * @param title
      */
-    public ClasseForm(String title) {
-        super(title, 520, 320);
+    public SalleForm(String title) {
+        super(title, 520, 400);
 
         this.showActionBar();
         this.setActionMenu(CREATE);
@@ -39,10 +43,9 @@ public class ClasseForm extends ModelForm {
     @Override
     public void createForm() {
 
-        this.entity = "Classe";
+        this.entity = "Salle";
         initComponents();
-        setAllComponents(sectionsInput, sectionsIntituleInput, codeInput, intituleInput);
-
+        setAllComponents(sectionsInput, sectionsIntituleInput, classeInput, classeIntituleInput, codeInput, intituleInput);
     }
 
     @Override
@@ -50,6 +53,7 @@ public class ClasseForm extends ModelForm {
         super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
         
         eventSections();
+        eventClasse();
     }
 
     private void eventSections() {
@@ -63,6 +67,30 @@ public class ClasseForm extends ModelForm {
 
         addAction(sectionsInput, entitySections, parametresGrid, null, args, sectionsInput, sectionsIntituleInput);
     }
+
+    private void eventClasse() {
+
+        HashMap[] args = new HashMap[1];
+        
+        HashMap arg = new HashMap();
+        
+        String filter = "entity.sectionsId=:arg0";
+        
+        arg.put(Type, Entity);
+        arg.put(Entity, entitySections);
+//        arg.put(clause, "categorie==");
+        arg.put(Value, sectionsInput);
+        
+        args[0] = arg;
+
+        String[][] parametresGrid = {
+            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)},
+            {"intitule",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
+
+        addAction(classeInput, entityClasse, parametresGrid, filter, args, classeInput, classeIntituleInput);
+    }
+    
     @Override
     public void actionBtnValider(java.awt.event.ActionEvent evt) {
         super.actionBtnValider(evt);
@@ -72,6 +100,7 @@ public class ClasseForm extends ModelForm {
     public void makeModelData(){
         super.makeModelData();
         modelFinal.put(entitySections.toLowerCase()+"Id", GlobalParameters.getVar(entitySections));
+        modelFinal.put(entityClasse.toLowerCase()+"Id", GlobalParameters.getVar(entityClasse));
 
     }
 
@@ -91,10 +120,14 @@ public class ClasseForm extends ModelForm {
         javax.swing.JLabel labelIntitule = new javax.swing.JLabel();
         codeInput = new javax.swing.JTextField();
         intituleInput = new javax.swing.JTextField();
-        javax.swing.JPanel panelCategorie = new javax.swing.JPanel();
-        javax.swing.JLabel labelSections = new javax.swing.JLabel();
+        javax.swing.JPanel panelSections = new javax.swing.JPanel();
+        javax.swing.JLabel labelCategorie = new javax.swing.JLabel();
         sectionsInput = new javax.swing.JTextField();
         sectionsIntituleInput = new javax.swing.JTextField();
+        javax.swing.JPanel panelClasse = new javax.swing.JPanel();
+        javax.swing.JLabel labelClasse = new javax.swing.JLabel();
+        classeInput = new javax.swing.JTextField();
+        classeIntituleInput = new javax.swing.JTextField();
 
         mainPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
 
@@ -145,38 +178,73 @@ public class ClasseForm extends ModelForm {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        panelCategorie.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Sections))); // NOI18N
-        panelCategorie.setOpaque(false);
+        panelSections.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Sections))); // NOI18N
+        panelSections.setOpaque(false);
 
-        labelSections.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
-        labelSections.setName("usernameLabel"); // NOI18N
+        labelCategorie.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
+        labelCategorie.setName("usernameLabel"); // NOI18N
 
         sectionsInput.setName("code"); // NOI18N
         this.addFormData("sectionsId", sectionsInput);
 
         sectionsIntituleInput.setName("intitule"); // NOI18N
 
-        javax.swing.GroupLayout panelCategorieLayout = new javax.swing.GroupLayout(panelCategorie);
-        panelCategorie.setLayout(panelCategorieLayout);
-        panelCategorieLayout.setHorizontalGroup(
-            panelCategorieLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelCategorieLayout.createSequentialGroup()
+        javax.swing.GroupLayout panelSectionsLayout = new javax.swing.GroupLayout(panelSections);
+        panelSections.setLayout(panelSectionsLayout);
+        panelSectionsLayout.setHorizontalGroup(
+            panelSectionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelSectionsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(labelSections, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(labelCategorie, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(sectionsInput, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sectionsIntituleInput, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
                 .addContainerGap())
         );
-        panelCategorieLayout.setVerticalGroup(
-            panelCategorieLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelCategorieLayout.createSequentialGroup()
+        panelSectionsLayout.setVerticalGroup(
+            panelSectionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelSectionsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelCategorieLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(labelSections, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(panelSectionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelCategorie, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(sectionsInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(sectionsIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        panelClasse.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Classe))); // NOI18N
+        panelClasse.setOpaque(false);
+
+        labelClasse.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
+        labelClasse.setName("usernameLabel"); // NOI18N
+
+        classeInput.setName("code"); // NOI18N
+        this.addFormData("classeId", classeInput);
+
+        classeIntituleInput.setName("intitule"); // NOI18N
+
+        javax.swing.GroupLayout panelClasseLayout = new javax.swing.GroupLayout(panelClasse);
+        panelClasse.setLayout(panelClasseLayout);
+        panelClasseLayout.setHorizontalGroup(
+            panelClasseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelClasseLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(labelClasse, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(classeInput, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(classeIntituleInput, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        panelClasseLayout.setVerticalGroup(
+            panelClasseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelClasseLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelClasseLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelClasse, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(classeInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(classeIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -184,11 +252,15 @@ public class ClasseForm extends ModelForm {
         panelContent.setLayout(panelContentLayout);
         panelContentLayout.setHorizontalGroup(
             panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelContentLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(panelCategorie, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(panelIdentifiant, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(panelContentLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelContentLayout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(panelSections, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(panelIdentifiant, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(panelClasse, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         panelContentLayout.setVerticalGroup(
@@ -197,8 +269,10 @@ public class ClasseForm extends ModelForm {
                 .addContainerGap()
                 .addComponent(panelIdentifiant, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelCategorie, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addComponent(panelSections, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(panelClasse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(7, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
@@ -208,7 +282,7 @@ public class ClasseForm extends ModelForm {
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panelContent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -223,6 +297,8 @@ public class ClasseForm extends ModelForm {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField classeInput;
+    private javax.swing.JTextField classeIntituleInput;
     private javax.swing.JTextField codeInput;
     private javax.swing.JTextField intituleInput;
     private javax.swing.JTextField sectionsInput;

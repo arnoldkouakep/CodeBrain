@@ -226,6 +226,9 @@
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
                     <Component class="javax.swing.JTextPane" name="nomCompletInput">
+                      <Properties>
+                        <Property name="contentType" type="java.lang.String" value="text" noResource="true"/>
+                      </Properties>
                       <AuxValues>
                         <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;fullName&quot;, nomCompletInput);"/>
                       </AuxValues>

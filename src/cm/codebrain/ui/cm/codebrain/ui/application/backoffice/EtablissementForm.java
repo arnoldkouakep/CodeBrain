@@ -35,7 +35,7 @@ public class EtablissementForm extends ModelForm {
 
         this.entity = "Etablissement";
         initComponents();
-
+        setAllComponents(adresseInput, emailInput, nomAbregeInput, nomCompletInput, telephoneInput, villeInput);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -81,6 +81,7 @@ public class EtablissementForm extends ModelForm {
         labelNomComplet.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Nom_Complet)); // NOI18N
         labelNomComplet.setName("usernameLabel"); // NOI18N
 
+        nomCompletInput.setContentType("text"); // NOI18N
         this.addFormData("fullName", nomCompletInput);
         jScrollPane1.setViewportView(nomCompletInput);
 

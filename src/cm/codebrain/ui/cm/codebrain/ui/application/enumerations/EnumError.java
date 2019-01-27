@@ -12,4 +12,5 @@ package cm.codebrain.ui.application.enumerations;
 public enum EnumError {
     BusinessLibelleError,
     WorkFlowException,
+    Business_Libelle_No_Result_Found,
 }

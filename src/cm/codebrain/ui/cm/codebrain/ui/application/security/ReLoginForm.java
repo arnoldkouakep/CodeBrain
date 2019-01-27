@@ -218,10 +218,10 @@ public class ReLoginForm extends javax.swing.JDialog {
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
 //        loading.show();
 //        try {
-        Loading.show(btnOk, new Executable() {
+        Loading.show(btnOk, new Executable<String>() {
 
             @Override
-            public void execute() {
+            public String execute() {
 
                 String login = usernameInput.getText();
                 String password = String.valueOf(passwordInput.getPassword());
@@ -237,9 +237,12 @@ public class ReLoginForm extends javax.swing.JDialog {
 //                    JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), "User : " + res + " Connecté.", JOptionPane.INFORMATION_MESSAGE);
                     System.out.println("User : " + res + " Connecté.");
                     doClose(RET_OK);
+                    
+                    return res;
                 } catch (SQLException ex) {
                     JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
                 }
+                return null;
             }
 
             @Override
@@ -260,7 +263,7 @@ public class ReLoginForm extends javax.swing.JDialog {
         Loading.show(btnOk, new Executable() {
 
             @Override
-            public void execute() {
+            public Object execute() {
 
                 String login = usernameInput.getText();
                 String password = String.valueOf(passwordInput.getPassword());
@@ -280,6 +283,7 @@ public class ReLoginForm extends javax.swing.JDialog {
 //                    JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
                     JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnOk), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
                 }
+                return null;
             }
 
             @Override

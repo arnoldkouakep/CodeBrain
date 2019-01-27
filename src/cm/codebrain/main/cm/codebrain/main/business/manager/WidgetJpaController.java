@@ -5,12 +5,13 @@
  */
 package cm.codebrain.main.business.manager;
 
-import cm.codebrain.main.business.entitie.Levels;
 import java.io.Serializable;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import cm.codebrain.main.business.entitie.Levels;
+import cm.codebrain.main.business.entitie.Users;
 import cm.codebrain.main.business.entitie.Widget;
 import cm.codebrain.main.business.manager.exceptions.IllegalOrphanException;
 import cm.codebrain.main.business.manager.exceptions.NonexistentEntityException;
@@ -18,10 +19,8 @@ import cm.codebrain.main.business.manager.exceptions.PreexistingEntityException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.criteria.CriteriaBuilder;
 
 /**
  *
@@ -46,6 +45,21 @@ public class WidgetJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Levels levelsId = widget.getLevelsId();
+            if (levelsId != null) {
+                levelsId = em.getReference(levelsId.getClass(), levelsId.getLevelsId());
+                widget.setLevelsId(levelsId);
+            }
+            Users userModified = widget.getUserModified();
+            if (userModified != null) {
+                userModified = em.getReference(userModified.getClass(), userModified.getUsersId());
+                widget.setUserModified(userModified);
+            }
+            Users userCreated = widget.getUserCreated();
+            if (userCreated != null) {
+                userCreated = em.getReference(userCreated.getClass(), userCreated.getUsersId());
+                widget.setUserCreated(userCreated);
+            }
             Widget parent = widget.getParent();
             if (parent != null) {
                 parent = em.getReference(parent.getClass(), parent.getWidgetId());
@@ -58,6 +72,18 @@ public class WidgetJpaController implements Serializable {
             }
             widget.setWidgetCollection(attachedWidgetCollection);
             em.persist(widget);
+            if (levelsId != null) {
+                levelsId.getWidgetCollection().add(widget);
+                levelsId = em.merge(levelsId);
+            }
+            if (userModified != null) {
+                userModified.getWidgetCollection().add(widget);
+                userModified = em.merge(userModified);
+            }
+            if (userCreated != null) {
+                userCreated.getWidgetCollection().add(widget);
+                userCreated = em.merge(userCreated);
+            }
             if (parent != null) {
                 parent.getWidgetCollection().add(widget);
                 parent = em.merge(parent);
@@ -90,6 +116,12 @@ public class WidgetJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Widget persistentWidget = em.find(Widget.class, widget.getWidgetId());
+            Levels levelsIdOld = persistentWidget.getLevelsId();
+            Levels levelsIdNew = widget.getLevelsId();
+            Users userModifiedOld = persistentWidget.getUserModified();
+            Users userModifiedNew = widget.getUserModified();
+            Users userCreatedOld = persistentWidget.getUserCreated();
+            Users userCreatedNew = widget.getUserCreated();
             Widget parentOld = persistentWidget.getParent();
             Widget parentNew = widget.getParent();
             Collection<Widget> widgetCollectionOld = persistentWidget.getWidgetCollection();
@@ -106,6 +138,18 @@ public class WidgetJpaController implements Serializable {
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
+            if (levelsIdNew != null) {
+                levelsIdNew = em.getReference(levelsIdNew.getClass(), levelsIdNew.getLevelsId());
+                widget.setLevelsId(levelsIdNew);
+            }
+            if (userModifiedNew != null) {
+                userModifiedNew = em.getReference(userModifiedNew.getClass(), userModifiedNew.getUsersId());
+                widget.setUserModified(userModifiedNew);
+            }
+            if (userCreatedNew != null) {
+                userCreatedNew = em.getReference(userCreatedNew.getClass(), userCreatedNew.getUsersId());
+                widget.setUserCreated(userCreatedNew);
+            }
             if (parentNew != null) {
                 parentNew = em.getReference(parentNew.getClass(), parentNew.getWidgetId());
                 widget.setParent(parentNew);
@@ -118,6 +162,30 @@ public class WidgetJpaController implements Serializable {
             widgetCollectionNew = attachedWidgetCollectionNew;
             widget.setWidgetCollection(widgetCollectionNew);
             widget = em.merge(widget);
+            if (levelsIdOld != null && !levelsIdOld.equals(levelsIdNew)) {
+                levelsIdOld.getWidgetCollection().remove(widget);
+                levelsIdOld = em.merge(levelsIdOld);
+            }
+            if (levelsIdNew != null && !levelsIdNew.equals(levelsIdOld)) {
+                levelsIdNew.getWidgetCollection().add(widget);
+                levelsIdNew = em.merge(levelsIdNew);
+            }
+            if (userModifiedOld != null && !userModifiedOld.equals(userModifiedNew)) {
+                userModifiedOld.getWidgetCollection().remove(widget);
+                userModifiedOld = em.merge(userModifiedOld);
+            }
+            if (userModifiedNew != null && !userModifiedNew.equals(userModifiedOld)) {
+                userModifiedNew.getWidgetCollection().add(widget);
+                userModifiedNew = em.merge(userModifiedNew);
+            }
+            if (userCreatedOld != null && !userCreatedOld.equals(userCreatedNew)) {
+                userCreatedOld.getWidgetCollection().remove(widget);
+                userCreatedOld = em.merge(userCreatedOld);
+            }
+            if (userCreatedNew != null && !userCreatedNew.equals(userCreatedOld)) {
+                userCreatedNew.getWidgetCollection().add(widget);
+                userCreatedNew = em.merge(userCreatedNew);
+            }
             if (parentOld != null && !parentOld.equals(parentNew)) {
                 parentOld.getWidgetCollection().remove(widget);
                 parentOld = em.merge(parentOld);
@@ -176,6 +244,21 @@ public class WidgetJpaController implements Serializable {
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
+            }
+            Levels levelsId = widget.getLevelsId();
+            if (levelsId != null) {
+                levelsId.getWidgetCollection().remove(widget);
+                levelsId = em.merge(levelsId);
+            }
+            Users userModified = widget.getUserModified();
+            if (userModified != null) {
+                userModified.getWidgetCollection().remove(widget);
+                userModified = em.merge(userModified);
+            }
+            Users userCreated = widget.getUserCreated();
+            if (userCreated != null) {
+                userCreated.getWidgetCollection().remove(widget);
+                userCreated = em.merge(userCreated);
             }
             Widget parent = widget.getParent();
             if (parent != null) {
@@ -237,31 +320,4 @@ public class WidgetJpaController implements Serializable {
         }
     }
     
-    public List<Widget> findWidgetFromLevel(Levels level) {
-        EntityManager em = getEntityManager();
-        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
-
-            CriteriaQuery cq = cb.createQuery();
-
-            Root<Widget> rt = cq.from(Widget.class);
-
-//            cq = cq.select(rt).where(cb.equal(rt.get("login"), login));
-            Query q = em.createQuery(cq);
-
-            List<Widget> listTmp = q.getResultList();
-
-            List<Widget> list = listTmp.stream().filter(w -> w.getLevelsId().getCode() >= level.getCode()).collect(Collectors.toList());
-
-//            List<Person> beerDrinkers = persons.stream()
-//                    .filter(p -> p.getAge() > 16).collect(Collectors.toList());
-
-            return list;
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-            return null;
-        } finally {
-            em.close();
-        }
-    }
 }

@@ -112,7 +112,7 @@
                 <Property name="name" type="java.lang.String" value="codeInput" noResource="true"/>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;userCode&quot;, codeInput);  "/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;userCode&quot;, codeInput);  &#xd;&#xa;this.setRef(codeInput);&#xd;&#xa;"/>
               </AuxValues>
             </Component>
             <Component class="javax.swing.JLabel" name="labelCode">
@@ -425,7 +425,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="levelCodeInput">
                   <Properties>
-                    <Property name="name" type="java.lang.String" value="levelCodeInput" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;levelsId&quot;, levelCodeInput);"/>
@@ -433,7 +433,7 @@
                 </Component>
                 <Component class="javax.swing.JTextField" name="levelIntituleInput">
                   <Properties>
-                    <Property name="name" type="java.lang.String" value="levelIntituleInput" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
                 </Component>
               </SubComponents>

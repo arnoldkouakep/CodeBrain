@@ -118,7 +118,7 @@ public class MainForm extends JFrame{
         logoLabel = new JLabel();
         logoLabel.setSize(444, 152);
 
-        logoLabel.setIcon(new ImageIcon(new ImageIcon(getClass().getResource(logoTxtImg)).getImage().getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));
+        logoLabel.setIcon(new ImageIcon(Dictionnaire.getResource(logoTxtImg).getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));//new ImageIcon(getClass().getResource(logoTxtImg)).getImage().getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));
         logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         logoPanel.add(logoLabel);
@@ -130,7 +130,7 @@ public class MainForm extends JFrame{
          */
         
         mainPanel = new JPanel();
-        mainPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEADING, 50, 25));
+        mainPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEADING, 100, 50));
 
 //        mainPanel.setLocation(25, 25);
 //        mainPanel.setLayout(new GridLayout());
@@ -284,20 +284,17 @@ public class MainForm extends JFrame{
                         : new ImageIcon(new ImageIcon(getClass().getResource(FrImg)).getImage().getScaledInstance(width, height, 0))
         );
         languageButton.putClientProperty("JButton.buttonType", "bevel");
-        languageButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (Locale.LANGUAGE == 0) {
-                    Locale.LANGUAGE = 1;
-                } else if (Locale.LANGUAGE == 1) {
-                    Locale.LANGUAGE = 0;
-                }
-                /*
-                    *Restart Application
-                    *Lock user Identification
-                 */
-                codeBrainManager.restart();
+        languageButton.addActionListener((ActionEvent e) -> {
+            if (Locale.LANGUAGE == 0) {
+                Locale.LANGUAGE = 1;
+            } else if (Locale.LANGUAGE == 1) {
+                Locale.LANGUAGE = 0;
             }
+            /*
+            *Restart Application
+            *Lock user Identification
+            */
+            codeBrainManager.restart();
         });
         statusBarRight.add(languageButton);
 
@@ -310,11 +307,8 @@ public class MainForm extends JFrame{
         logoutButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Logout));
         logoutButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource(logoutImg)).getImage().getScaledInstance(width, height, 0)));        
         logoutButton.putClientProperty("JButton.buttonType", "bevel");
-        logoutButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                codeBrainManager.logout();
-            }
+        logoutButton.addActionListener((ActionEvent e) -> {
+            codeBrainManager.logout();
         });
         statusBarRight.add(logoutButton);
 
@@ -328,11 +322,8 @@ public class MainForm extends JFrame{
         exitButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource(exitImg)).getImage().getScaledInstance(width, height, 0)));        
         exitButton.setFont(new java.awt.Font("sansserif", 1, 12));
         exitButton.putClientProperty("JButton.buttonType", "bevel");
-        exitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
+        exitButton.addActionListener((ActionEvent e) -> {
+            System.exit(0);
         });
         statusBarRight.add(exitButton);
 

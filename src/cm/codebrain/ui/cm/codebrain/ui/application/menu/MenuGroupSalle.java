@@ -1,6 +1,6 @@
 package cm.codebrain.ui.application.menu;
 
-import cm.codebrain.ui.application.backoffice.SectionsForm;
+import cm.codebrain.ui.application.backoffice.GroupSalleForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import java.awt.event.ActionEvent;
@@ -8,13 +8,13 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
-public class MenuCategorie extends JButton {
+public class MenuGroupSalle extends JButton {
 
-    private SectionsForm form;
+    private GroupSalleForm form;
 
-    public MenuCategorie(JPanel mainPanel, JToolBar menu) {
+    public MenuGroupSalle(JPanel mainPanel, JToolBar menu) {
 
-        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Sections));
+        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_GrouperSalles));
         putClientProperty("JButton.buttonType", "bevel");
         addActionListener((ActionEvent e) -> {
             addComponentPanel(mainPanel, menu);
@@ -29,7 +29,7 @@ public class MenuCategorie extends JButton {
     }
 
     public void addComponentPanel(JPanel mainPanel, JToolBar menu) {
-        form = new SectionsForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Sections));
+        form = new GroupSalleForm(Dictionnaire.get(EnumLibelles.Business_Libelle_GrouperSalles));
         form.setVisible(true);
     }
 }

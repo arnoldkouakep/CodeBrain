@@ -15,19 +15,27 @@ import cm.codebrain.ui.application.enumerations.Enums;
 import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
 import static cm.codebrain.ui.application.enumerations.Enums.DELETE;
 import static cm.codebrain.ui.application.enumerations.Enums.DUPPLICATE;
+import static cm.codebrain.ui.application.enumerations.Enums.Entity;
 import static cm.codebrain.ui.application.enumerations.Enums.MODIF;
+import static cm.codebrain.ui.application.enumerations.Enums.Type;
+import static cm.codebrain.ui.application.enumerations.Enums.Value;
 import cm.codebrain.ui.application.implement.Executable;
 import cm.codebrain.ui.application.security.Loading;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
+import java.util.stream.Collectors;
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
@@ -43,7 +51,7 @@ public class ModelForm extends javax.swing.JDialog {
      */
     public static final int RET_CANCEL = 0;
 
-    public int etatAction = 1;
+    public Enum etatAction = CREATE;
 
     private HashMap formDatas = new HashMap();
 
@@ -52,19 +60,32 @@ public class ModelForm extends javax.swing.JDialog {
      * A return status code - returned if OK button has been pressed
      */
     public static final int RET_OK = 1;
-    private final int width = 18;
-    private final int height = 18;
+    public final int width = 18;
+    public final int height = 18;
     private int wi = 394;
     private int he = 390;
     private JTextField inputRef;
     public String entity;
-    private String ejql;
     private List modelResult;
-    private List modelComplet;
+//    private List modelComplet;
 
+//    private String filter;
     CodeBrainManager cbManager = new CodeBrainManager();
     private InputSearchForm serachForm;
     private Object key;
+    private List<HashMap> allComponents;
+    
+    
+    public final String VALIDATE="/images/accept.png";
+    public final String ADD="/images/add.png";
+    public final String DEL="/images/desactiver.png";
+    public final String EDIT="/images/cancel.png";
+    public final String PRINT="/images/printer.png";
+    public final String CANCEL="/images/cancel.png";
+    public final String LOAD="/images/load.png";
+    public final String RESET="/images/grid.png";
+    public final String CLEAR="/images/effacer.png";
+    public final String EXIT="/images/exit.png";
 
 //    private MainForm mainForm;
 //    private Loading loading;
@@ -93,6 +114,8 @@ public class ModelForm extends javax.swing.JDialog {
 
         btnValider.addActionListener(this::actionBtnValider);
 
+        btnNew.addActionListener(this::actionBtnReset);
+
     }
 
     public ModelForm(String title, int width, int height) {
@@ -117,6 +140,8 @@ public class ModelForm extends javax.swing.JDialog {
 
         btnValider.addActionListener(this::actionBtnValider);
 
+        btnNew.addActionListener(this::actionBtnReset);
+
         createForm();
 
         addActionSupplementaire();
@@ -133,7 +158,34 @@ public class ModelForm extends javax.swing.JDialog {
         return returnStatus;
     }
 
-    public void addAction(Object input) {
+//    public void addAction(Object input) {
+//        /**
+//         * TextFields
+//         */
+//        if (input.getClass().equals(JTextField.class)) {
+//            ((JTextField) input).addFocusListener(new java.awt.event.FocusAdapter() {
+//                @Override
+//                public void focusLost(java.awt.event.FocusEvent evt) {
+////                    levelCodeInputFocusLost(evt, null, null, null, null, null, null);
+//                }
+//            });
+//        } /**
+//         * ComboBox
+//         */
+//        else if (input.getClass().equals(JComboBox.class)) {
+//            ((JComboBox) input).addFocusListener(new java.awt.event.FocusAdapter() {
+//                @Override
+//                public void focusLost(java.awt.event.FocusEvent evt) {
+////                    levelCodeInputFocusLost(evt, null, null, null, null, null, (Object) null);
+//                }
+//            });
+//        } else {
+//            System.out.println("Nothing");
+//        }
+//
+//    }
+    public void addAction(Object input, String entity, String[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
+
         /**
          * TextFields
          */
@@ -141,7 +193,8 @@ public class ModelForm extends javax.swing.JDialog {
             ((JTextField) input).addFocusListener(new java.awt.event.FocusAdapter() {
                 @Override
                 public void focusLost(java.awt.event.FocusEvent evt) {
-                    levelCodeInputFocusLost(evt, null, null, null, null, null, null);
+                    if (!((JTextField) input).getText().isEmpty())
+                        levelCodeInputFocusLost(evt, input, entity, parametresGrid, filter, args, imputsResult);
                 }
             });
         } /**
@@ -151,38 +204,8 @@ public class ModelForm extends javax.swing.JDialog {
             ((JComboBox) input).addFocusListener(new java.awt.event.FocusAdapter() {
                 @Override
                 public void focusLost(java.awt.event.FocusEvent evt) {
-                    levelCodeInputFocusLost(evt, null, null, null, null, null, null);
-                }
-            });
-        } else {
-            System.out.println("Nothing");
-        }
-
-    }
-
-    public void addAction(Object input, String entity, String[][] parametresGrid, String[] fields, String clause, List args, Object... imputsResult) {
-
-        /**
-         * TextFields
-         */
-        if (input.getClass().equals(JTextField.class)) {
-            ((JTextField) input).addFocusListener(new java.awt.event.FocusAdapter() {
-                @Override
-                public void focusLost(java.awt.event.FocusEvent evt) {
-                    Object filter = ((JTextField) input).getText();
-                    levelCodeInputFocusLost(evt, filter, entity, parametresGrid, fields, clause, args, imputsResult);
-                }
-
-            });
-        } /**
-         * ComboBox
-         */
-        else if (input.getClass().equals(JComboBox.class)) {
-            ((JComboBox) input).addFocusListener(new java.awt.event.FocusAdapter() {
-                @Override
-                public void focusLost(java.awt.event.FocusEvent evt) {
-                    Object filter = ((JComboBox) input).getSelectedItem();
-                    levelCodeInputFocusLost(evt, filter, entity, parametresGrid, fields, clause, args, imputsResult);
+                    if (!((JComboBox) input).getSelectedItem().toString().isEmpty())
+                        levelCodeInputFocusLost(evt, input, entity, parametresGrid, filter, args, imputsResult);
                 }
             });
         } else {
@@ -190,51 +213,98 @@ public class ModelForm extends javax.swing.JDialog {
         }
     }
 
-    private void levelCodeInputFocusLost(java.awt.event.FocusEvent evt, Object filter, String entity, String[][] parametresGrid, String[] fields, String clause, List args, Object... imputsResult) {
+    private void levelCodeInputFocusLost(java.awt.event.FocusEvent evt, Object input, String entity, String[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
 
-        this.ejql = null;
-        Loading.show(btnValider, new Executable() {
+//        this.ejql = null;
+        Loading.show(btnValider, new Executable<List<HashMap>>() {
+            private Object key;
+            private Boolean find;
+            String filtre = getValueInputObject(input);
+
             @Override
-            public void execute() throws Exception {
+            public List<HashMap> execute() throws Exception {
 
-                String slt = "select ";
+//                HashMap filterArg = new HashMap();
+                ArrayList parameterArgs = new ArrayList();
 
-                String field = "";
-                String field2 = "entity";
-                int i = 0;
-                for (String f : fields) {
-                    if (i > 0) {
-                        field += ", ";
+                if (args != null) {
+
+                    for (HashMap arg : args) {
+                        if (arg.get(Type).equals(Entity)) {
+//                            if (arg.get(value).getClass().equals(JTextField.class)) {
+                            String entitie = arg.get(Entity).toString();
+                            HashMap data = (HashMap) GlobalParameters.getVar(arg.get(Entity).toString());
+
+                            Object dataObject = cbManager.convertToObject(data, entitie);
+//                            filterArg.put(value, dataObject);//GlobalParameters.getVar(arg.get(Entity).toString()));
+                            parameterArgs.add(dataObject);
+//                            }
+                        } else {
+//                            filterArg.put(arg.get(clause), arg.get(value));
+                            parameterArgs.add(arg.get(Value));
+                        }
                     }
-                    field += "entity." + f;
-                    i++;
                 }
+//                modelResult = cbManager.getList(entity, filterArg);
+                modelResult = cbManager.getListEntity(entity, filter, parameterArgs.toArray());
 
-                String ety = " from " + entity + " entity";
+                List<HashMap> modelComplet = cbManager.convertToListObject(modelResult, HashMap.class);
 
-                String cls = (clause == null || clause.isEmpty()) ? "" : " where " + clause;
-
-                String odr = "";// (order by ) / (group by) entity.name ASC";
-
-                ejql = slt + field + ety + cls + odr;
-
-                String ejql2 = slt + field2 + ety + cls + odr;
-
-                modelResult = cbManager.getList(ejql, args);
-
-                modelComplet = cbManager.getList(ejql2, args);
-                
-                serachForm = new InputSearchForm(entity, modelResult, modelComplet, filter, parametresGrid, imputsResult);
+                if (!filtre.equals("*")) {
+                    modelComplet = modelComplet.stream().map((mapper) -> {
+                        find = false;
+                        return mapper;
+                    }).filter(((model) -> {
+                        model.keySet().stream().map((ky) -> {
+                            this.key = ky;
+                            return ky;
+                        }
+                        ).forEachOrdered((Object val) -> {
+                            Boolean b = model.get(key).toString().contains(filtre);
+                            if (b) {
+                                find = true;
+                            }
+                        });
+                        return find;
+                    })).collect(Collectors.toList());
+                }
+                if (modelComplet.isEmpty()) {
+                    throw new Exception(Dictionnaire.get(EnumError.Business_Libelle_No_Result_Found.toString()));
+                }
+                serachForm = new InputSearchForm(entity, modelComplet, parametresGrid, imputsResult);
 
                 serachForm.setVisible(true);
+                return modelComplet;
             }
 
             @Override
             public void error(Exception ex) {
+                //System.out.println(ex);
+                ex.printStackTrace();
                 JOptionPane.showMessageDialog(rootPane, ex.getMessage());
             }
+
         });
 
+    }
+
+    private String getValueInputObject(Object input) {
+        String filter = null;
+        /**
+         * TextFields
+         */
+        if (input.getClass().equals(JTextField.class)) {
+            filter = ((JTextField) input).getText();
+        } /**
+         * ComboBox
+         */
+        else if (input.getClass().equals(JComboBox.class)) {
+            filter = ((JComboBox) input).getSelectedItem().toString();
+        } else {
+            System.out.println("Nothing");
+        }
+
+        return filter;
     }
 
     public void addFormData(String key, Object value) {
@@ -291,13 +361,13 @@ public class ModelForm extends javax.swing.JDialog {
         labelCopyright.setEnabled(false);
         bottonPanel.add(labelCopyright, java.awt.BorderLayout.WEST);
 
-        btnValider.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/accept.png")).getImage().getScaledInstance(width, height, 0)));
+        btnValider.setIcon(new ImageIcon(Dictionnaire.getResource(VALIDATE).getScaledInstance(width, height, 0)));//new ImageIcon(getClass().getResource()).getImage().getScaledInstance(width, height, 0)));
         btnValider.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_valider)); // NOI18N
         btnValider.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         panelButtons.add(btnValider);
         getRootPane().setDefaultButton(btnValider);
 
-        cancelButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/cancel.png")).getImage().getScaledInstance(width, height, 0)));
+        cancelButton.setIcon(new ImageIcon(Dictionnaire.getResource(CANCEL).getScaledInstance(width, height, 0)));//new ImageIcon(getClass().getResource()).getImage().getScaledInstance(width, height, 0)));//"/images/cancel.png"
         cancelButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Annuler)); // NOI18N
         cancelButton.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         cancelButton.addActionListener(this::actionBtnCancel);
@@ -311,25 +381,25 @@ public class ModelForm extends javax.swing.JDialog {
         menuBar.setRollover(true);
         menuBar.putClientProperty("Quaqua.ToolBar.style", "bottom");
 
-        btnNew.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/add.png")).getImage().getScaledInstance(width, height, 0)));
+        btnNew.setIcon(new ImageIcon(Dictionnaire.getResource(ADD).getScaledInstance(width, height, 0)));//new ImageIcon(getClass().getResource()).getImage().getScaledInstance(width, height, 0)));//"/images/add.png"
         btnNew.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Nouveau)); // NOI18N
         btnNew.setFocusable(false);
         btnNew.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         menuBar.add(btnNew);
 
-        btnClear.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/effacer.png")).getImage().getScaledInstance(width, height, 0)));
+        btnClear.setIcon(new ImageIcon(Dictionnaire.getResource(CLEAR).getScaledInstance(width, height, 0)));//new ImageIcon(getClass().getResource(CLEAR)).getImage().getScaledInstance(width, height, 0)));//"/images/effacer.png"
         btnClear.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Effacer)); // NOI18N
         btnClear.setFocusable(false);
         btnClear.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         menuBar.add(btnClear);
 
-        btnPrint.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/printer.png")).getImage().getScaledInstance(width, height, 0)));
+        btnPrint.setIcon(new ImageIcon(Dictionnaire.getResource(PRINT).getScaledInstance(width, height, 0)));//new ImageIcon(getClass().getResource(PRINT)).getImage().getScaledInstance(width, height, 0)));//"/images/printer.png"
         btnPrint.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Print)); // NOI18N
         btnPrint.setFocusable(false);
         btnPrint.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
         menuBar.add(btnPrint);
 
-        btnCancel.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/cancel.png")).getImage().getScaledInstance(width, height, 0)));
+        btnCancel.setIcon(new ImageIcon(Dictionnaire.getResource(CANCEL).getScaledInstance(width, height, 0)));//new ImageIcon(getClass().getResource(CANCEL)).getImage().getScaledInstance(width, height, 0)));//"/images/cancel.png"
         btnCancel.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Annuler)); // NOI18N
         btnCancel.setFocusable(false);
         btnCancel.setHorizontalTextPosition(javax.swing.SwingConstants.RIGHT);
@@ -426,26 +496,38 @@ public class ModelForm extends javax.swing.JDialog {
 
     public void actionBtnValider(java.awt.event.ActionEvent evt) {
 
-        Loading.show(btnValider, new Executable() {
+        Loading.show(btnValider, new Executable<HashMap>() {
 
             @Override
-            public void execute() throws Exception {
-
+            public HashMap execute() throws Exception {
                 makeModelData();
+                if (etatAction == CREATE) {
 
-                cbManager.createEntity(entity, modelFinal);
+                    cbManager.createEntity(entity, modelFinal);
 
-                doClose(RET_OK);
+                } else {
+
+                    cbManager.updateEntity(entity, modelFinal);
+
+                }
+                JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnValider), Dictionnaire.get(EnumLibelles.Business_Libelle_Message_Sucess.toString()), "Message", JOptionPane.INFORMATION_MESSAGE);
+
+                reset();
+                return modelFinal;
             }
 
             @Override
             public void error(Exception ex) {
-//                    System.out.println("Error : "+ex.getLocalizedMessage());
+                System.out.println("Error : " + ex.getLocalizedMessage());
                 JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnValider), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
             }
 
         });
 
+    }
+
+    public void actionBtnReset(java.awt.event.ActionEvent evt) {
+        reset();
     }
 
     public void makeModelData() {
@@ -459,9 +541,9 @@ public class ModelForm extends javax.swing.JDialog {
         modelFinal.put("userCreated", GlobalParameters.getVar("user"));
         modelFinal.put("userModified", GlobalParameters.getVar("user"));
 //        modelFinal.put("levelsId", ((Users) GlobalParameters.getVar("user")).getLevelsId());
-       
+
         /**
-         *JTextField.class
+         * JTextField.class
          */
         formDatas.keySet().stream().map((ky) -> {
             this.key = ky;
@@ -470,7 +552,7 @@ public class ModelForm extends javax.swing.JDialog {
             modelFinal.put(this.key.toString(), ((JTextField) val).getText());
         });
         /**
-         *JPasswordField.class
+         * JPasswordField.class
          */
         formDatas.keySet().stream().map((ky) -> {
             this.key = ky;
@@ -479,7 +561,7 @@ public class ModelForm extends javax.swing.JDialog {
             modelFinal.put(this.key.toString(), ((JPasswordField) val).getText());
         });
         /**
-         *JTextPane.class
+         * JTextPane.class
          */
         formDatas.keySet().stream().map((ky) -> {
             this.key = ky;
@@ -488,7 +570,7 @@ public class ModelForm extends javax.swing.JDialog {
             modelFinal.put(this.key.toString(), ((JTextPane) val).getText());
         });
         /**
-         *JFormattedTextField.class
+         * JFormattedTextField.class
          */
         formDatas.keySet().stream().map((ky) -> {
             this.key = ky;
@@ -514,8 +596,10 @@ public class ModelForm extends javax.swing.JDialog {
     public void setActionMenu(Enums etatAction) {
         if (null == etatAction) {
             btnCreate.setSelected(true);
+            this.etatAction = CREATE;
         } else//        this.etatAction = Enums.CREATE;
         {
+            this.etatAction = etatAction;
             switch (etatAction) {
                 case CREATE:
                     btnCreate.setSelected(true);
@@ -537,7 +621,7 @@ public class ModelForm extends javax.swing.JDialog {
 
     public void setActionRef() {
 //        this.inputRef = fieldActionRef;
-        this.inputRef.setBackground(new Color(68, 127, 255));
+        this.inputRef.setBackground(new Color(223, 246, 238));//68, 127, 255));
         this.inputRef.requestFocus();
     }
 
@@ -557,6 +641,138 @@ public class ModelForm extends javax.swing.JDialog {
 
     public void addActionSupplementaire() {
 
+    }
+
+    public void setAllComponents(Object... components) {
+        allComponents = new ArrayList<>();
+        HashMap component;
+        for (Object com : components) {
+            component = new HashMap();
+            component.put(Type, com.getClass());
+            component.put(Value, com);
+            
+            allComponents.add(component);
+        }
+    }
+
+    public void reset() {
+        if (allComponents == null || allComponents.isEmpty()) {
+            resetFormData();
+        } else {
+            allComponents.forEach((HashMap component) -> {
+                /**
+                 * JTextField.class
+                 */
+                if (component.get(Type) == JTextField.class) {
+                    ((JTextField) component.get(Value)).setText("");
+                    ((JTextField) component.get(Value)).setFocusable(true);
+                    
+                    /**
+                     * JPasswordField.class
+                     */
+                } else if (component.get(Type) == JPasswordField.class) {
+                    ((JPasswordField) component.get(Value)).setText("");
+                    /**
+                     * JTextPane.class
+                     */
+                } else if (component.get(Type) == JTextPane.class) {
+                    ((JTextPane) component.get(Value)).setText("");
+                    /**
+                     * JFormattedTextField.class
+                     */
+                } else if (component.get(Type) == JFormattedTextField.class) {
+                    ((JFormattedTextField) component.get(Value)).setText("");
+                } else {
+                    System.out.println(component.get(Type).toString() + " : Type non géré.");
+                }
+            });
+        }
+    }
+
+    public void reset(Object... components) {
+        if (components != null || components.length>0) {
+            for(Object component : components){
+                if (component.getClass() == JTextField.class) {
+                    ((JTextField) component).setText("");
+                    ((JTextField) component).setFocusable(true);
+
+                    /**
+                     * JPasswordField.class
+                     */
+                } else if (component.getClass() == JPasswordField.class) {
+                    ((JPasswordField) component).setText("");
+                    /**
+                     * JTextPane.class
+                     */
+                } else if (component.getClass() == JTextPane.class) {
+                    ((JTextPane) component).setText("");
+                    /**
+                     * JFormattedTextField.class
+                     */
+                } else if (component.getClass() == JFormattedTextField.class) {
+                    ((JFormattedTextField) component).setText("");
+                } else {
+                    System.out.println(component.toString() + " : Type non géré.");
+                }
+            }
+        }
+    }
+
+    public void resetFormData() {
+
+        /**
+         * JTextField.class
+         */
+        formDatas.keySet().stream().map((ky) -> {
+            this.key = ky;
+            return ky;
+        }).filter((ky) -> (formDatas.get(ky).getClass() == JTextField.class)).map((ky) -> (JTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+            ((JTextField) formDatas.get(this.key.toString())).setText("");
+        });
+        /**
+         * JPasswordField.class
+         */
+        formDatas.keySet().stream().map((ky) -> {
+            this.key = ky;
+            return ky;
+        }).filter((ky) -> (formDatas.get(ky).getClass() == JPasswordField.class)).map((ky) -> (JPasswordField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+            ((JPasswordField) formDatas.get(this.key.toString())).setText("");
+        });
+        /**
+         * JTextPane.class
+         */
+        formDatas.keySet().stream().map((ky) -> {
+            this.key = ky;
+            return ky;
+        }).filter((ky) -> (formDatas.get(ky).getClass() == JTextPane.class)).map((ky) -> (JTextPane) formDatas.get(ky)).forEachOrdered((Object val) -> {
+            ((JTextPane) formDatas.get(this.key.toString())).setText("");
+        });
+        /**
+         * JFormattedTextField.class
+         */
+        formDatas.keySet().stream().map((ky) -> {
+            this.key = ky;
+            return ky;
+        }).filter((ky) -> (formDatas.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+            ((JFormattedTextField) formDatas.get(this.key.toString())).setText("");
+        });
+
+    }
+    
+    public void setRadiBottun(ButtonGroup group, JRadioButton... rdButtons){
+       ActionListener action = (ActionEvent e) -> {
+           
+           for(JRadioButton rdBtn : rdButtons){
+               if(rdBtn.isSelected() && rdBtn == group.getSelection()){
+                   group.setSelected(rdBtn.getModel(), true);
+                   break;
+               }
+           }
+       };
+//            public void actionPerformed(java.awt.event.ActionEvent evt) {
+//                masculinRadioButtonActionPerformed(evt);
+//            }
+//        });
     }
 
     // Variables declaration - do not modify                     

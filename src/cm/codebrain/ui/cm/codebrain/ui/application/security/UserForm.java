@@ -10,7 +10,7 @@ import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  *
@@ -57,29 +57,21 @@ public class UserForm extends ModelForm {
     }
 
     private void eventLevelSecurity() {
-        String[] fields = {"code", "intitule", "levelsId"};
 
-        String clause = null;
-
-        List args = null;//new ArrayList();
+        HashMap[] args = null;
 
         String[][] parametresGrid = {
-            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code),
-                "2"},
+            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)},
             {"intitule",
-                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule),
-                "3"}};
+                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-//        if (this.getData("action") != null) {
-        addAction(levelCodeInput, entityLevel, parametresGrid, fields, clause, args, levelCodeInput, levelIntituleInput);
-//        }
+        addAction(levelCodeInput, entityLevel, parametresGrid, null, args, levelCodeInput, levelIntituleInput);
     }
     
     @Override
     public void makeModelData(){
         super.makeModelData();
         modelFinal.put(entityLevel.toLowerCase()+"Id", GlobalParameters.getVar(entityLevel));
-
     }
 
     /**
@@ -122,7 +114,8 @@ public class UserForm extends ModelForm {
 
         codeInput.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         codeInput.setName("codeInput"); // NOI18N
-        this.addFormData("userCode", codeInput);
+        this.addFormData("userCode", codeInput);  
+        this.setRef(codeInput);
 
         labelCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code)); // NOI18N
         labelCode.setName("passwordLabel"); // NOI18N
@@ -261,10 +254,10 @@ public class UserForm extends ModelForm {
         labelLevel.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
         labelLevel.setName("usernameLabel"); // NOI18N
 
-        levelCodeInput.setName("levelCodeInput"); // NOI18N
+        levelCodeInput.setName("code"); // NOI18N
         this.addFormData("levelsId", levelCodeInput);
 
-        levelIntituleInput.setName("levelIntituleInput"); // NOI18N
+        levelIntituleInput.setName("intitule"); // NOI18N
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);

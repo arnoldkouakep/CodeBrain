@@ -13,10 +13,10 @@ import cm.codebrain.ui.application.implement.Executable;
 import cm.codebrain.ui.application.security.Loading;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import static java.awt.image.ImageObserver.WIDTH;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -25,9 +25,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowFilter;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -45,23 +47,26 @@ public class InputSearchForm extends javax.swing.JDialog {
     public static final int RET_OK = 1;
     private List<String> columnValues = new ArrayList<>();
     private List columnIndex = new ArrayList();
-    private Vector<String> columnNames;
-    private final DefaultTableModel tableModel = new DefaultTableModel();
-    private Vector<Vector<Object>> data;
-    private Vector<Object> result;
-    private Object[] imputResult;
-    private List modelResult;
-    private List modelComplet;
+    private List<String> columnNames;
+    private DefaultTableModel tableModel;
+//    private Vector<Vector<Object>> data;
+//    private Vector<Object> result;
+    private Object[] imputsResultFields;
+    private List<HashMap> modelFinal;
+//    private List modelComplet;
     private String entity;
     private Object filter;
+    private TableRowSorter<TableModel> sorter;
 
     /**
      * Creates new form InputSearchForm
      */
     public InputSearchForm() {
         super();
-        this.columnNames = new Vector<>();
+//        this.columnNames = new Vector<>();
         initComponents();
+        columnNames = new ArrayList<>();
+        tableModel = new DefaultTableModel();
 
         // Close the dialog when Esc is pressed
         String cancelName = "cancel";
@@ -76,38 +81,18 @@ public class InputSearchForm extends javax.swing.JDialog {
         });
     }
 
-//    public InputSearchForm(String ejql, List args, Object... imputsResult) {
-//        super();
-//        this.columnNames = new Vector<>();
-//
-//        this.imputResult = imputsResult;
-//
-//        initComponents();
-//
-//        // Close the dialog when Esc is pressed
-//        String cancelName = "cancel";
-//        InputMap inputMap = getRootPane().getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-//        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), cancelName);
-//        ActionMap actionMap = getRootPane().getActionMap();
-//        actionMap.put(cancelName, new AbstractAction() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                doClose(RET_CANCEL);
-//            }
-//        });
-//    }
-
-    public InputSearchForm(String entityName, List modelResult, List modelComplet, Object filter, String[][] parametresGrid, Object... imputsResult) {
+    public InputSearchForm(String entityName, List<HashMap> modelFinal, String[][] parametresGrid, Object... imputsResultFields) {
 
         super();
-        this.columnNames = new Vector<>();
-        this.modelResult = modelResult;
-        this.modelComplet = modelComplet;
-        this.imputResult = imputsResult;
-        this.entity = entityName;
-        this.filter = filter;
         
+        this.modelFinal = modelFinal;
+        this.imputsResultFields = imputsResultFields;
+        this.entity = entityName;
+
         initComponents();
+
+        columnNames = new ArrayList<>();
+        tableModel = new DefaultTableModel();
 
         // Close the dialog when Esc is pressed
         String cancelName = "cancel";
@@ -121,10 +106,13 @@ public class InputSearchForm extends javax.swing.JDialog {
             }
         });
 
-        Loading.show(okButton, new Executable() {
+        Loading.show(okButton, new Executable<List<HashMap>>() {
             @Override
-            public void execute() throws Exception {
-                grid.setModel(setModelDataTable(modelResult, parametresGrid));
+            public List<HashMap> execute() throws Exception {
+                grid.setModel(setModelDataTable(modelFinal, parametresGrid));
+                grid.setRowSorter(sorter);
+                
+                return modelFinal;
             }
 
             @Override
@@ -135,41 +123,64 @@ public class InputSearchForm extends javax.swing.JDialog {
         });
     }
 
-    private TableModel setModelDataTable(List<Object[]> modelREsult, String[][] parametresGrid) {
+    private void newFilter() {
+        RowFilter<TableModel, Object> rf = null;
+        //If current expression doesn't parse, don't update.
+        try {
+            rf = RowFilter.regexFilter(searchImput.getText(), 0);
+        } catch (java.util.regex.PatternSyntaxException e) {
+            return;
+        }
+        sorter.setRowFilter(rf);
+    }
 
-        this.data = new Vector<>();
-//        Integer[] columnSizes = new Integer[parametresGrid.length];
+    private TableModel setModelDataTable(List<HashMap> modelFinal, String[][] parametresGrid) {
 
         for (String[] param : parametresGrid) {
             columnValues.add(param[0]);
-        }
-
-        for (String[] param : parametresGrid) {
             columnNames.add(param[1]);
         }
 
-        for (String[] param : parametresGrid) {
-            columnIndex.add(Integer.getInteger(param[2]));
-        }
+        tableModel = new DefaultTableModel() {
+            @Override
+            public int getRowCount() {
+                return modelFinal.size();
+            }
 
-        modelREsult.forEach((Object[] object) -> {
-            //            vector = new Vector();
-            Object[] ob = (Object[]) object;
-            Vector<Object> vector = new Vector();
-            vector.addAll(Arrays.asList(ob));
-            data.add(vector);
-        });
-//        formDatas.keySet().stream().map((ky) -> {
-//            this.key = ky;
-//            return ky;
-//        }).filter((ky) -> (formDatas.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-//            modelFinal.put(this.key.toString(), ((JFormattedTextField) val).getText());
-//        });
-//        data.stream().map((ky)->{
-//        return ky;}).filter((ky) ->(ky.get(0)))
+            @Override
+            public int getColumnCount() {
+                return columnNames.size();
+            }
 
-        tableModel.setDataVector(data, columnNames);
-        return this.tableModel;
+            @Override
+            public String getColumnName(int columnIndex) {
+                return columnNames.get(columnIndex);
+            }
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                return modelFinal.get(0).get(columnValues.get(columnIndex)).getClass();
+            }
+
+            @Override
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return false;
+            }
+
+            @Override
+            public Object getValueAt(int row, int column) {
+                return modelFinal.get(row).get(columnValues.get(column));
+            }
+
+            @Override
+            public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+                super.setValueAt(modelFinal.get(rowIndex).get(columnValues.get(columnIndex)), rowIndex, columnIndex);
+            }
+        };
+
+        sorter = new TableRowSorter<>(tableModel);
+
+        return tableModel;
     }
 
     /**
@@ -188,13 +199,14 @@ public class InputSearchForm extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel2 = new javax.swing.JPanel();
+        javax.swing.JPanel panelSearch = new javax.swing.JPanel();
         labelSearch = new javax.swing.JLabel();
         searchImput = new javax.swing.JTextField();
+        btnSearch = new javax.swing.JButton();
         stripedTableScrollPane = new javax.swing.JScrollPane();
         grid = new javax.swing.JTable();
         footerGrid = new javax.swing.JToolBar();
-        jPanel1 = new javax.swing.JPanel();
+        javax.swing.JPanel panelButtons = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
 
@@ -209,14 +221,22 @@ public class InputSearchForm extends javax.swing.JDialog {
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
         labelSearch.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Filtre)); // NOI18N
-        jPanel2.add(labelSearch);
+        panelSearch.add(labelSearch);
 
         searchImput.setMaximumSize(new java.awt.Dimension(200, 28));
         searchImput.setMinimumSize(new java.awt.Dimension(200, 28));
         searchImput.setPreferredSize(new java.awt.Dimension(200, 28));
-        jPanel2.add(searchImput);
+        panelSearch.add(searchImput);
 
-        getContentPane().add(jPanel2);
+        btnSearch.setText("Search");
+        btnSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSearchActionPerformed(evt);
+            }
+        });
+        panelSearch.add(btnSearch);
+
+        getContentPane().add(panelSearch);
 
         grid.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -232,6 +252,7 @@ public class InputSearchForm extends javax.swing.JDialog {
         grid.setShowHorizontalLines(true);
         grid.setShowVerticalLines(true);
         grid.setSurrendersFocusOnKeystroke(true);
+        grid.setUpdateSelectionOnSort(false);
         stripedTableScrollPane.setViewportView(grid);
         grid.putClientProperty("Quaqua.Table.style", "striped");
 
@@ -243,7 +264,7 @@ public class InputSearchForm extends javax.swing.JDialog {
         getContentPane().add(footerGrid);
         footerGrid.putClientProperty("Quaqua.ToolBar.style", "bottom");
 
-        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        panelButtons.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         okButton.setText("OK");
         okButton.addActionListener(new java.awt.event.ActionListener() {
@@ -251,7 +272,7 @@ public class InputSearchForm extends javax.swing.JDialog {
                 okButtonActionPerformed(evt);
             }
         });
-        jPanel1.add(okButton);
+        panelButtons.add(okButton);
         getRootPane().setDefaultButton(okButton);
 
         cancelButton.setText("Cancel");
@@ -260,9 +281,9 @@ public class InputSearchForm extends javax.swing.JDialog {
                 cancelButtonActionPerformed(evt);
             }
         });
-        jPanel1.add(cancelButton);
+        panelButtons.add(cancelButton);
 
-        getContentPane().add(jPanel1);
+        getContentPane().add(panelButtons);
 
         pack();
         setLocationRelativeTo(null);
@@ -270,36 +291,48 @@ public class InputSearchForm extends javax.swing.JDialog {
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
 
-        Loading.show(okButton, new Executable() {
+        Loading.show(okButton, new Executable<HashMap>() {
             @Override
-            public void execute() throws Exception {
+            public HashMap execute() throws Exception {
 
                 ListSelectionModel selectionModel = grid.getSelectionModel();
 
-                result = (Vector) tableModel.getDataVector().elementAt(grid.getSelectedRow());
-
-                Object resultEntity = modelComplet.get(grid.getSelectedRow());
+                TableModel model = grid.getModel();
                 
-                for (int i = 0; i < imputResult.length; i++) {
+                
+                int rowIndex = grid.convertRowIndexToModel(grid.getSelectedRow());
+                int columnIndex = grid.getSelectedColumn();
+//                int x = grid.convertRowIndexToModel(grid.getSelectedRow());
+//                int y = grid.convertColumnIndexToModel(columnIndex);
+                
+//                grid.getModel().
+                
+//                int columnIndex = grid.getSelectedRow();
+//                Object obj = model.getValueAt(x, columnIndex);
+//                System.out.println(String.valueOf(obj));
+                HashMap result = modelFinal.get(rowIndex);// tableModel.getDataVector().elementAt(grid.getSelectedRow());
+
+//                Object resultEntity = modelComplet.get(grid.getSelectedRow());
+                for (Object field : imputsResultFields) {
                     try {
-                        if(imputResult[i].getClass().equals(JTextField.class)){
-                            JTextField res =  (JTextField)imputResult[i];
-                            res.setText(Dictionnaire.get(result.get(i).toString()));
+                        if (field.getClass().equals(JTextField.class)) {
+                            JTextField res = (JTextField) field;
+                            res.setText(Dictionnaire.get(result.get(res.getName()).toString()));
                         }
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
                 }
-                
-                GlobalParameters.addVar(entity, resultEntity);
 
+                GlobalParameters.addVar(entity, result);
                 doClose(RET_OK);
+                return result;
             }
 
             @Override
             public void error(Exception ex) {
                 JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(okButton), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
-                
+
             }
         });
 
@@ -316,6 +349,18 @@ public class InputSearchForm extends javax.swing.JDialog {
         doClose(RET_CANCEL);
     }//GEN-LAST:event_closeDialog
 
+    private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
+        System.out.println("2: " + searchImput.getText());
+        RowFilter<TableModel, Object> rf = null;
+        //If current expression doesn't parse, don't update.
+        try {
+            rf = RowFilter.regexFilter(searchImput.getText(), 0);
+        } catch (java.util.regex.PatternSyntaxException e) {
+            return;
+        }
+        sorter.setRowFilter(rf);
+    }//GEN-LAST:event_btnSearchActionPerformed
+
     private void doClose(int retStatus) {
         returnStatus = retStatus;
         setVisible(false);
@@ -323,11 +368,10 @@ public class InputSearchForm extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSearch;
     private javax.swing.JButton cancelButton;
     private javax.swing.JToolBar footerGrid;
     private javax.swing.JTable grid;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JLabel labelSearch;
     private javax.swing.JButton okButton;
     private javax.swing.JTextField searchImput;

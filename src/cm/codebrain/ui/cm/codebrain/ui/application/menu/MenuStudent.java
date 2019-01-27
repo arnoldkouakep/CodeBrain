@@ -1,6 +1,6 @@
 package cm.codebrain.ui.application.menu;
 
-import cm.codebrain.ui.application.backoffice.SectionsForm;
+import cm.codebrain.ui.application.backoffice.StudentForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import java.awt.event.ActionEvent;
@@ -8,13 +8,13 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
-public class MenuCategorie extends JButton {
+public class MenuStudent extends JButton {
 
-    private SectionsForm form;
+    private StudentForm form;
 
-    public MenuCategorie(JPanel mainPanel, JToolBar menu) {
+    public MenuStudent(JPanel mainPanel, JToolBar menu) {
 
-        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Sections));
+        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Student));
         putClientProperty("JButton.buttonType", "bevel");
         addActionListener((ActionEvent e) -> {
             addComponentPanel(mainPanel, menu);
@@ -29,7 +29,7 @@ public class MenuCategorie extends JButton {
     }
 
     public void addComponentPanel(JPanel mainPanel, JToolBar menu) {
-        form = new SectionsForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Sections));
+        form = new StudentForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Student));
         form.setVisible(true);
     }
 }

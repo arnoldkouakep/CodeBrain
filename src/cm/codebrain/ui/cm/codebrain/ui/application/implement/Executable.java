@@ -9,12 +9,12 @@ package cm.codebrain.ui.application.implement;
  *
  * @author KSA-INET
  */
-public interface Executable {
+public interface Executable<T> {
     /*
      *
      * 
      */
-    public abstract void execute() throws Exception;
+    public abstract T execute() throws Exception;
     
     public void error(Exception ex);
 }

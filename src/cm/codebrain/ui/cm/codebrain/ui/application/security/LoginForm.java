@@ -200,10 +200,10 @@ public class LoginForm extends javax.swing.JDialog {
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
 //        loading.show();
 //        try {
-        Loading.show(btnOk, new Executable() {
+        Loading.show(btnOk, new Executable<String>() {
 
             @Override
-            public void execute() {
+            public String execute() {
 
                 String login = usernameInput.getText();
                 String password = String.valueOf(passwordInput.getPassword());
@@ -220,10 +220,12 @@ public class LoginForm extends javax.swing.JDialog {
                     System.out.println("User : " + res + " Connecté.");
                     codeBrainManager.load();
                     doClose(RET_OK);
+                    return res;
                 } catch (SQLException ex) {
 //                    JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
                     JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnOk), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
                 }
+                return null;
             }
 
             @Override

@@ -5,9 +5,12 @@
  */
 package cm.codebrain.main.business.entitie;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -15,17 +18,19 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author KSA-INET
  */
 @Entity
-@Table(name = "ETABLISSEMENT")
+@Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Etablissement.findAll", query = "SELECT e FROM Etablissement e")
@@ -44,27 +49,27 @@ public class Etablissement implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "ETABLISSEMENT_ID")
+    @Column(name = "ETABLISSEMENT_ID", nullable = false, length = 64)
     private String etablissementId;
     @Basic(optional = false)
-    @Column(name = "NAME_ABREGE")
+    @Column(name = "NAME_ABREGE", nullable = false, length = 64)
     private String nameAbrege;
     @Basic(optional = false)
-    @Column(name = "FULL_NAME")
+    @Column(name = "FULL_NAME", nullable = false, length = 255)
     private String fullName;
     @Basic(optional = false)
-    @Column(name = "ADRESSE")
+    @Column(nullable = false, length = 255)
     private String adresse;
     @Basic(optional = false)
-    @Column(name = "VILLE")
+    @Column(nullable = false, length = 255)
     private String ville;
     @Basic(optional = false)
-    @Column(name = "TELEPHONE")
+    @Column(nullable = false, length = 16)
     private String telephone;
     @Basic(optional = false)
-    @Column(name = "EMAIL")
+    @Column(nullable = false, length = 64)
     private String email;
-    @Column(name = "STATE_DB")
+    @Column(name = "STATE_DB", length = 64)
     private String stateDb;
     @Column(name = "DT_CREATED")
     @Temporal(TemporalType.DATE)
@@ -72,11 +77,15 @@ public class Etablissement implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "etablissementId")
+    private Collection<Sections> sectionsCollection;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
+    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
+    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
 
     public Etablissement() {
@@ -174,6 +183,15 @@ public class Etablissement implements Serializable {
 
     public void setDtModified(Date dtModified) {
         this.dtModified = dtModified;
+    }
+
+    @XmlTransient
+    public Collection<Sections> getSectionsCollection() {
+        return sectionsCollection;
+    }
+
+    public void setSectionsCollection(Collection<Sections> sectionsCollection) {
+        this.sectionsCollection = sectionsCollection;
     }
 
     public Users getUserModified() {

@@ -14,7 +14,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,0,-42,0,0,1,-112"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,21,0,0,1,-118"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -43,7 +43,7 @@
               <Group type="102" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="panelContent" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace pref="12" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -74,11 +74,17 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="panelCategorie" alignment="0" max="32767" attributes="0"/>
-                          <Component id="panelIdentifiant" alignment="0" max="32767" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" alignment="1" attributes="0">
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Component id="panelSections" alignment="0" max="32767" attributes="0"/>
+                                  <Component id="panelIdentifiant" alignment="0" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Component id="panelClasse" alignment="1" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
@@ -90,8 +96,10 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="panelIdentifiant" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="panelCategorie" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="16" max="32767" attributes="0"/>
+                      <Component id="panelSections" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="panelClasse" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="7" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -122,7 +130,7 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                              <Component id="labelPrenom" alignment="0" pref="120" max="32767" attributes="0"/>
+                              <Component id="labelIntitule" alignment="0" pref="120" max="32767" attributes="0"/>
                               <Component id="labelCode" alignment="0" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
@@ -144,7 +152,7 @@
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="labelPrenom" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                              <Component id="labelIntitule" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
                               <Component id="intituleInput" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
@@ -165,7 +173,7 @@
                     <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
                   </AuxValues>
                 </Component>
-                <Component class="javax.swing.JLabel" name="labelPrenom">
+                <Component class="javax.swing.JLabel" name="labelIntitule">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="i18n.properties" key="Business_Libelle_Intitule" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
@@ -182,7 +190,7 @@
                     <Property name="name" type="java.lang.String" value="codeInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;code&quot;, codeInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;code&quot;, codeInput);&#xd;&#xa;this.setRef(codeInput);&#xd;&#xa;"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="intituleInput">
@@ -195,15 +203,15 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="panelCategorie">
+            <Container class="javax.swing.JPanel" name="panelSections">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Etablissement">
+                    <TitledBorder title="Sections">
                       <Border PropertyName="innerBorder" info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
                         <EtchetBorder bevelType="0"/>
                       </Border>
-                      <ResourceString PropertyName="titleX" bundle="i18n.properties" key="Business_Libelle_Etablissement" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
+                      <ResourceString PropertyName="titleX" bundle="i18n.properties" key="Business_Libelle_Sections" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
                     </TitledBorder>
                   </Border>
                 </Property>
@@ -219,11 +227,11 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="labelLevel" min="-2" pref="120" max="-2" attributes="0"/>
+                          <Component id="labelCategorie" min="-2" pref="120" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="etablissementCodeInput" min="-2" pref="53" max="-2" attributes="0"/>
+                          <Component id="sectionsInput" min="-2" pref="53" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="etablissementIntituleInput" pref="141" max="32767" attributes="0"/>
+                          <Component id="sectionsIntituleInput" pref="141" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -233,9 +241,9 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="labelLevel" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
-                              <Component id="etablissementCodeInput" alignment="3" min="-2" max="-2" attributes="0"/>
-                              <Component id="etablissementIntituleInput" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="labelCategorie" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                              <Component id="sectionsInput" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="sectionsIntituleInput" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
@@ -243,7 +251,7 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JLabel" name="labelLevel">
+                <Component class="javax.swing.JLabel" name="labelCategorie">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="i18n.properties" key="Business_Libelle_level" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
@@ -255,17 +263,92 @@
                     <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
                   </AuxValues>
                 </Component>
-                <Component class="javax.swing.JTextField" name="etablissementCodeInput">
+                <Component class="javax.swing.JTextField" name="sectionsInput">
                   <Properties>
-                    <Property name="name" type="java.lang.String" value="etablissementCodeInput" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;etablissementId&quot;, etablissementCodeInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;sectionsId&quot;, sectionsInput);"/>
                   </AuxValues>
                 </Component>
-                <Component class="javax.swing.JTextField" name="etablissementIntituleInput">
+                <Component class="javax.swing.JTextField" name="sectionsIntituleInput">
                   <Properties>
-                    <Property name="name" type="java.lang.String" value="etablissementIntituleInput" noResource="true"/>
+                    <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="panelClasse">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Classe">
+                      <Border PropertyName="innerBorder" info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+                        <EtchetBorder bevelType="0"/>
+                      </Border>
+                      <ResourceString PropertyName="titleX" bundle="i18n.properties" key="Business_Libelle_Classe" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
+                    </TitledBorder>
+                  </Border>
+                </Property>
+                <Property name="opaque" type="boolean" value="false"/>
+              </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+                <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+              </AuxValues>
+
+              <Layout>
+                <DimensionLayout dim="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="labelClasse" min="-2" pref="120" max="-2" attributes="0"/>
+                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                          <Component id="classeInput" min="-2" pref="53" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="classeIntituleInput" pref="141" max="32767" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+                <DimensionLayout dim="1">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Group type="103" groupAlignment="3" attributes="0">
+                              <Component id="labelClasse" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
+                              <Component id="classeInput" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="classeIntituleInput" alignment="3" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <EmptySpace max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                </DimensionLayout>
+              </Layout>
+              <SubComponents>
+                <Component class="javax.swing.JLabel" name="labelClasse">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="i18n.properties" key="Business_Libelle_level" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
+                    </Property>
+                    <Property name="name" type="java.lang.String" value="usernameLabel" noResource="true"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_VariableLocal" type="java.lang.Boolean" value="true"/>
+                    <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JTextField" name="classeInput">
+                  <Properties>
+                    <Property name="name" type="java.lang.String" value="code" noResource="true"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;classeId&quot;, classeInput);"/>
+                  </AuxValues>
+                </Component>
+                <Component class="javax.swing.JTextField" name="classeIntituleInput">
+                  <Properties>
+                    <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
                 </Component>
               </SubComponents>

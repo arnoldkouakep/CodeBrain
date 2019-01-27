@@ -3,20 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cm.codebrain.ui.application.enumerations;
+package cm.codebrain.main.business.enumerations;
 
 /**
  *
  * @author KSA-INET
  */
-public enum Enums {
-    CREATE,
-    MODIF,
-    DELETE,
-    DUPPLICATE,
-    Type,
-    Clause,
-    Value,
-    Indice,
-    Entity,
+public enum EnumStatus {
+    Business_Status_StateDb_Create,
+    Business_Status_StateDb_Update,
+    Business_Status_StateDb_Delete,
 }

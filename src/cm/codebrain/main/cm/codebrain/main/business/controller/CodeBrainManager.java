@@ -7,9 +7,10 @@ package cm.codebrain.main.business.controller;
 
 import cm.codebrain.main.business.manager.*;
 import cm.codebrain.main.business.entitie.*;
+import cm.codebrain.main.business.enumerations.EnumStatus;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.StringUtils;
-import cm.codebrain.ui.application.enumerations.EnumLibelles;
+import static cm.codebrain.ui.application.enumerations.Enums.Entity;
 import cm.codebrain.ui.application.security.LoginForm;
 import cm.codebrain.ui.application.security.MainForm;
 import cm.codebrain.ui.application.security.ReLoginForm;
@@ -22,10 +23,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
 /**
  *
@@ -38,43 +43,95 @@ public class CodeBrainManager {
     private ReLoginForm reLogin;
     private final EntityManagerFactory emfManager = Persistence.createEntityManagerFactory("Brain");
     private List<Widget> widgetSecurity;
-    private Object key;
     private final CodeBrainMapper cbMapper = new CodeBrainMapper();
+    private final CodeBrainEntityManager entityManager = new CodeBrainEntityManager(emfManager);
     private String entity;
+//    private Boolean security;
 
     public CodeBrainManager() {
     }
-    
-    public static void CodeBrainManager(){
+
+    public static void CodeBrainManager() {
 //        new CodeBrainManager();
     }
 
     public Users authenticate(String login, String password) throws SQLException {
+        EntityManager em = entityManager.getEntityManager();
+        try {
 
-        UsersJpaController userCtrl = new UsersJpaController(emfManager);
+//            UsersJpaController userCtrl = new UsersJpaController(emfManager);
 
-        Users user = userCtrl.authentificate(login, MD5(password));
+//        Users user = userCtrl.authentificate(login, MD5(password));
+            CriteriaBuilder cb = em.getCriteriaBuilder();
 
-        GlobalParameters.addVar("user", user);
+            CriteriaQuery cq = cb.createQuery();
 
-        getWidgetSecurity(user);
+            Root<Users> rt = cq.from(Users.class);
 
-        mainForm.loadMenu();
-        mainForm.initStatus(Boolean.TRUE);
+            cq = cq.select(rt).where(cb.equal(rt.get("login"), login),
+                    cb.equal(rt.get("password"), MD5(password)));
 
-        return user;
+            Query q = em.createQuery(cq);
+            Users user = (Users) q.getSingleResult();
+
+            GlobalParameters.addVar("user", user);
+
+            getWidgetSecurity(user);
+
+            mainForm.loadMenu();
+            mainForm.initStatus(Boolean.TRUE);
+
+            return user;
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getLocalizedMessage());
+            return null;
+        } finally {
+            em.close();
+        }
     }
 
     public void getWidgetSecurity(Users userConnected) throws SQLException {
         WidgetJpaController widgetCtrl = new WidgetJpaController(emfManager);
 
-        widgetSecurity = widgetCtrl.findWidgetFromLevel(userConnected.getLevelsId());
+//        widgetSecurity = widgetCtrl.findWidgetFromLevel(userConnected.getLevelsId());
+//    public List<Widget> findWidgetFromLevel(Levels level) {
+        EntityManager em = entityManager.getEntityManager();
+        try {
+            Levels level = userConnected.getLevelsId();
+            if (level != null) {
+                CriteriaBuilder cb = em.getCriteriaBuilder();
 
-        widgetSecurity.forEach((w) -> {
-            System.out.println(w.toString());
-        });
+                CriteriaQuery cq = cb.createQuery();
 
-        GlobalParameters.addVar("widgets", widgetSecurity);
+                Root<Widget> rt = cq.from(Widget.class);
+
+//            cq = cq.select(rt).where(cb.equal(rt.get("login"), login));
+                Query q = em.createQuery(cq);
+
+                List<Widget> listTmp = q.getResultList();
+
+                widgetSecurity = listTmp.stream().filter(w -> w.getLevelsId().getCode() >= level.getCode()).collect(Collectors.toList());
+
+//            List<Person> beerDrinkers = persons.stream()
+//                    .filter(p -> p.getAge() > 16).collect(Collectors.toList());
+//            return list;
+//            }
+//            else
+//                return null;
+                widgetSecurity.forEach((w) -> {
+                    System.out.println(w.toString());
+                });
+
+                GlobalParameters.addVar("widgets", widgetSecurity);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getLocalizedMessage());
+//            return null;
+        } finally {
+            em.close();
+        }
+//    }
     }
 
     public void logout() {
@@ -136,6 +193,24 @@ public class CodeBrainManager {
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formDatas);
     }
 
+    public void updateEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        this.entity = entity;
+
+        executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "edit", formDatas);
+    }
+
+    public void getEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        this.entity = entity;
+
+        executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "find" + entity, formDatas);
+    }
+
+    public void getListEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        this.entity = entity;
+
+        executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formDatas);
+    }
+
     public void executeMethod(String className, String methodName, HashMap modelFinal) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
 
         java.lang.reflect.Method entityMethod = null;
@@ -179,109 +254,161 @@ public class CodeBrainManager {
         entityMethod.invoke(instance, params.toArray()); // pass args
 
     }
+//
+//    public List getList(String ejbql, Object... args) throws Exception {
+//
+//        Query query = null;
+//        int nbreArgs;
+//        HashMap<String, Object> arg;
+//        String sqlPlus;
+//        List<Map> lstMap = new ArrayList<>();
+//
+//        int j = 0;
+//        if (args != null) {
+//            for (Object arg1 : args) {
+//                if (arg1 == null) {
+//                    ejbql = ejbql.replaceFirst("<>:arg" + j, " is not null");
+//                    ejbql = ejbql.replaceFirst("=:arg" + j, " is null");
+//                    j++;
+//                } else {
+//                    if (arg1 instanceof Object[]) {
+//                        for (Object argt : (Object[]) arg1) {
+//                            arg = new HashMap();
+//                            arg.put("key", j);
+//                            arg.put("value", argt);
+//                            lstMap.add(arg);
+//                            j++;
+//                        }
+//                    } else {
+//                        arg = new HashMap();
+//                        arg.put("key", j);
+//                        arg.put("value", arg1);
+//                        lstMap.add(arg);
+//                        j++;
+//                    }
+//                }
+//            }
+//        }
+//        nbreArgs = j;
+//
+//        String stateDbString = "stateDb !=:arg" + nbreArgs;
+//
+//        if (ejbql.contains("entity")) {
+//            stateDbString = "entity." + stateDbString;
+//        }
+//
+//        if (!ejbql.contains("where")) {
+//            sqlPlus = " where " + stateDbString;
+//        } else {
+//            sqlPlus = " and " + stateDbString;
+//        }
+//        String finEjb = "";
+//
+//        if (ejbql.contains("group by")) {
+//            finEjb = "group by";
+//        } else {
+//            if (ejbql.contains("order by")) {
+//                finEjb = "order by";
+//            }
+//        }
+//
+//        //sqlPlus="";
+//        if (finEjb.length() > 0) {
+//            ejbql = ejbql.replace(finEjb, sqlPlus + " " + finEjb);
+//        } else {
+//            ejbql = ejbql + sqlPlus;
+//        }
+//
+//        try {
+//
+//            query = emfManager.createEntityManager().createQuery(ejbql);
+//
+//        } catch (Exception e) {
+//            System.out.println(e.getMessage());
+//        }
+//        List list;
+//        String argsEvent = "";
+//
+//        if (lstMap.size() > 0) {
+//            for (Map map : lstMap) {
+//                query.setParameter("arg" + map.get("key"), map.get("value"));
+//            }
+//        }
+//        query.setParameter("arg" + nbreArgs,
+//                EnumLibelles.Business_Status_StateDb_Delete.toString());
+//        try {
+//            list = query.getResultList();
+//            return list;
+//        } catch (Exception e) {
+//            return null;
+//        }
+//
+//    }
 
-    public List getList(String ejbql, List args) throws Exception {
-
-        Query query = null;
-        int nbreArgs;
-        HashMap<String, Object> arg;
-        String sqlPlus;
-        List<Map> lstMap = new ArrayList<>();
-
-        int j = 0;
-        if (args != null) {
-            for (Object arg1 : args) {
-                if (arg1 == null) {
-                    ejbql = ejbql.replaceFirst("<>:arg" + j, " is not null");
-                    ejbql = ejbql.replaceFirst("=:arg" + j, " is null");
-                    j++;
-                } else {
-                    if (arg1 instanceof Object[]) {
-                        for (Object argt : (Object[]) arg1) {
-                            arg = new HashMap();
-                            arg.put("key", j);
-                            arg.put("value", argt);
-                            lstMap.add(arg);
-                            j++;
-                        }
-                    } else {
-                        arg = new HashMap();
-                        arg.put("key", j);
-                        arg.put("value", arg1);
-                        lstMap.add(arg);
-                        j++;
-                    }
-                }
-            }
-        }
-        nbreArgs = j;
-
-        String stateDbString = "stateDb !=:arg" + nbreArgs;
-
-        if (ejbql.contains("entity")) {
-            stateDbString = "entity." + stateDbString;
-        }
-
-        if (!ejbql.contains("where")) {
-            sqlPlus = " where " + stateDbString;
-        } else {
-            sqlPlus = " and " + stateDbString;
-        }
-        String finEjb = "";
-
-        if (ejbql.contains("group by")) {
-            finEjb = "group by";
-        } else {
-            if (ejbql.contains("order by")) {
-                finEjb = "order by";
-            }
-        }
-
-        //sqlPlus="";
-        if (finEjb.length() > 0) {
-            ejbql = ejbql.replace(finEjb, sqlPlus + " " + finEjb);
-        } else {
-            ejbql = ejbql + sqlPlus;
-        }
-
-        try {
-
-            query = emfManager.createEntityManager().createQuery(ejbql);
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        List list;
-        String argsEvent = "";
-
-        if (lstMap.size() > 0) {
-            for (Map map : lstMap) {
-                query.setParameter("arg" + map.get("key"), map.get("value"));
-            }
-        }
-        query.setParameter("arg" + nbreArgs,
-                EnumLibelles.Business_Status_StateDb_Delete.toString());
-        try {
-            list = query.getResultList();
-
-            return list;
-        } catch (Exception e) {
-            return null;
-        }
-
+    public List getList(String entity, HashMap args) throws Exception {
+        args.put("stateDb=!", EnumStatus.Business_Status_StateDb_Delete);
+        return entityManager.getList(entity, args);
     }
-    
-    public Object convertToObject(Object obj, Class cl){
+
+    public List getList(String entity, String filter, HashMap args) throws Exception {
+        args.put("stateDb=!", EnumStatus.Business_Status_StateDb_Delete);
+        return entityManager.getList(entity, args);
+    }
+
+    public Object convertToObject(Object obj, String entity) throws ClassNotFoundException {
+
+        String className = "cm.codebrain.main.business.entitie." + entity;
+
+        Class<?> cl = Class.forName(className); // convert string classname to class
         return cbMapper.mapper(obj, cl);
     }
 
-    public String getUpperValue(String value) {
-		return value.substring(0, 1).toUpperCase()
-				+ value.substring(1, value.length());
-	}
+    public Object convertToObject(Object obj, Class cl) {
+        return cbMapper.mapper(obj, cl);
+    }
 
-	public String getLowerValue(String value) {
-		return value.substring(0, 1).toLowerCase()
-				+ value.substring(1, value.length());
-	}
+    public List convertToListObject(List list, Class cl) {
+        List result = new ArrayList();
+        list.forEach((obj) -> {
+            result.add(cbMapper.mapper(obj, cl));
+        });
+        return result;
+    }
+
+    public String getUpperValue(String value) {
+        return value.substring(0, 1).toUpperCase()
+                + value.substring(1, value.length());
+    }
+
+    public String getLowerValue(String value) {
+        return value.substring(0, 1).toLowerCase()
+                + value.substring(1, value.length());
+    }
+
+    public List getListEntity(String entity, String criteria,
+            Object... args) throws Exception {
+
+        HashMap mod;
+        String ejbql = criteria == null ? "from " + getUpperValue(entity) + " entity" : "from " + getUpperValue(entity) + " entity where " + criteria;
+
+        Object[] objects = new Object[args.length];
+
+        try {
+            for (int i = 0; i <= args.length - 1; i++) {
+                if (args[i] instanceof HashMap) {
+                    mod = (HashMap) args[i];
+                    objects[i] = convertToObject(mod.get(Entity).toString(), entity);
+                } else {
+                    objects[i] = args[i];
+                }
+            }
+
+            List<Object> lstObjects = (List<Object>) entityManager
+                    .getList(ejbql, objects);
+
+            return lstObjects;
+        } catch (Exception e) {
+            throw new Exception(e);
+        }
+    }
 }

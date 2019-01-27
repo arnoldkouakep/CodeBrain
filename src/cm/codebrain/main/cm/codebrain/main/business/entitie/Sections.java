@@ -34,24 +34,25 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Levels.findAll", query = "SELECT l FROM Levels l")
-    , @NamedQuery(name = "Levels.findByLevelsId", query = "SELECT l FROM Levels l WHERE l.levelsId = :levelsId")
-    , @NamedQuery(name = "Levels.findByCode", query = "SELECT l FROM Levels l WHERE l.code = :code")
-    , @NamedQuery(name = "Levels.findByIntitule", query = "SELECT l FROM Levels l WHERE l.intitule = :intitule")
-    , @NamedQuery(name = "Levels.findByStateDb", query = "SELECT l FROM Levels l WHERE l.stateDb = :stateDb")
-    , @NamedQuery(name = "Levels.findByDtCreated", query = "SELECT l FROM Levels l WHERE l.dtCreated = :dtCreated")
-    , @NamedQuery(name = "Levels.findByDtModified", query = "SELECT l FROM Levels l WHERE l.dtModified = :dtModified")})
-public class Levels implements Serializable {
+    @NamedQuery(name = "Sections.findAll", query = "SELECT s FROM Sections s")
+    , @NamedQuery(name = "Sections.findBySectionsId", query = "SELECT s FROM Sections s WHERE s.sectionsId = :sectionsId")
+    , @NamedQuery(name = "Sections.findByCode", query = "SELECT s FROM Sections s WHERE s.code = :code")
+    , @NamedQuery(name = "Sections.findByIntitule", query = "SELECT s FROM Sections s WHERE s.intitule = :intitule")
+    , @NamedQuery(name = "Sections.findByStateDb", query = "SELECT s FROM Sections s WHERE s.stateDb = :stateDb")
+    , @NamedQuery(name = "Sections.findByDtCreated", query = "SELECT s FROM Sections s WHERE s.dtCreated = :dtCreated")
+    , @NamedQuery(name = "Sections.findByDtModified", query = "SELECT s FROM Sections s WHERE s.dtModified = :dtModified")})
+public class Sections implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "LEVELS_ID", nullable = false, length = 64)
-    private String levelsId;
+    @Column(name = "SECTIONS_ID", nullable = false, length = 64)
+    private String sectionsId;
     @Basic(optional = false)
-    @Column(nullable = false)
-    private int code;
-    @Column(length = 64)
+    @Column(nullable = false, length = 64)
+    private String code;
+    @Basic(optional = false)
+    @Column(nullable = false, length = 64)
     private String intitule;
     @Column(name = "STATE_DB", length = 64)
     private String stateDb;
@@ -61,6 +62,13 @@ public class Levels implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sectionsId")
+    @JsonIgnore
+    private Collection<Salle> salleCollection;
+    @JoinColumn(name = "ETABLISSEMENT_ID", referencedColumnName = "ETABLISSEMENT_ID", nullable = false)
+    @ManyToOne(optional = false)
+    @JsonBackReference(value = "ETABLISSEMENT_ID")
+    private Etablissement etablissementId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
     @JsonBackReference(value = "USER_MODIFIED")
@@ -69,38 +77,36 @@ public class Levels implements Serializable {
     @ManyToOne
     @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "levelsId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sectionsId")
     @JsonIgnore
-    private Collection<Users> usersCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "levelsId")
-    @JsonIgnore
-    private Collection<Widget> widgetCollection;
+    private Collection<Classe> classeCollection;
 
-    public Levels() {
+    public Sections() {
     }
 
-    public Levels(String levelsId) {
-        this.levelsId = levelsId;
+    public Sections(String sectionsId) {
+        this.sectionsId = sectionsId;
     }
 
-    public Levels(String levelsId, int code) {
-        this.levelsId = levelsId;
+    public Sections(String sectionsId, String code, String intitule) {
+        this.sectionsId = sectionsId;
         this.code = code;
+        this.intitule = intitule;
     }
 
-    public String getLevelsId() {
-        return levelsId;
+    public String getSectionsId() {
+        return sectionsId;
     }
 
-    public void setLevelsId(String levelsId) {
-        this.levelsId = levelsId;
+    public void setSectionsId(String sectionsId) {
+        this.sectionsId = sectionsId;
     }
 
-    public int getCode() {
+    public String getCode() {
         return code;
     }
 
-    public void setCode(int code) {
+    public void setCode(String code) {
         this.code = code;
     }
 
@@ -136,6 +142,23 @@ public class Levels implements Serializable {
         this.dtModified = dtModified;
     }
 
+    @XmlTransient
+    public Collection<Salle> getSalleCollection() {
+        return salleCollection;
+    }
+
+    public void setSalleCollection(Collection<Salle> salleCollection) {
+        this.salleCollection = salleCollection;
+    }
+
+    public Etablissement getEtablissementId() {
+        return etablissementId;
+    }
+
+    public void setEtablissementId(Etablissement etablissementId) {
+        this.etablissementId = etablissementId;
+    }
+
     public Users getUserModified() {
         return userModified;
     }
@@ -153,38 +176,29 @@ public class Levels implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Users> getUsersCollection() {
-        return usersCollection;
+    public Collection<Classe> getClasseCollection() {
+        return classeCollection;
     }
 
-    public void setUsersCollection(Collection<Users> usersCollection) {
-        this.usersCollection = usersCollection;
-    }
-
-    @XmlTransient
-    public Collection<Widget> getWidgetCollection() {
-        return widgetCollection;
-    }
-
-    public void setWidgetCollection(Collection<Widget> widgetCollection) {
-        this.widgetCollection = widgetCollection;
+    public void setClasseCollection(Collection<Classe> classeCollection) {
+        this.classeCollection = classeCollection;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (levelsId != null ? levelsId.hashCode() : 0);
+        hash += (sectionsId != null ? sectionsId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Levels)) {
+        if (!(object instanceof Sections)) {
             return false;
         }
-        Levels other = (Levels) object;
-        if ((this.levelsId == null && other.levelsId != null) || (this.levelsId != null && !this.levelsId.equals(other.levelsId))) {
+        Sections other = (Sections) object;
+        if ((this.sectionsId == null && other.sectionsId != null) || (this.sectionsId != null && !this.sectionsId.equals(other.sectionsId))) {
             return false;
         }
         return true;
@@ -192,7 +206,7 @@ public class Levels implements Serializable {
 
     @Override
     public String toString() {
-        return "cm.codebrain.main.business.entitie.Levels[ levelsId=" + levelsId + " ]";
+        return "cm.codebrain.main.business.entitie.Sections[ sectionsId=" + sectionsId + " ]";
     }
     
 }

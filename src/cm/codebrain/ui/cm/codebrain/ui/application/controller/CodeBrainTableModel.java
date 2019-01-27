@@ -4,7 +4,16 @@ import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ObjectTableModel<T> extends AbstractTableModel {
+public abstract class CodeBrainTableModel<T> extends AbstractTableModel {
+
+//    private List<HashMap> modelFinal;
+    
+    public CodeBrainTableModel(){}
+    
+    public CodeBrainTableModel(List<T> objectRows){
+        this.objectRows = objectRows;
+    }
+    
     private List<T> objectRows = new ArrayList<>();
 
     public List<T> getObjectRows() {

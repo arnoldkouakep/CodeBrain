@@ -10,22 +10,22 @@ import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  *
  * @author KSA-INET
  */
-public class CategorieForm extends ModelForm {
+public class SectionsForm extends ModelForm {
     
-    private final String etablissementLevel = "Etablissement";
+    private final String entityEtablissement = "Etablissement";
 
     /**
      * Creates new form CategorieForm
      *
      * @param title
      */
-    public CategorieForm(String title) {
+    public SectionsForm(String title) {
         super(title, 520, 320);
 
         this.showActionBar();
@@ -39,16 +39,16 @@ public class CategorieForm extends ModelForm {
     @Override
     public void createForm() {
 
-        this.entity = "Categorie";
+        this.entity = "Sections";
         initComponents();
-
+        setAllComponents(codeInput, etablissementCodeInput, etablissementIntituleInput, intituleInput);
     }
 
     @Override
     public void addActionSupplementaire() {
         super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
 
-        eventLevelSecurity();
+        eventEtablissement();
     }
 
     @Override
@@ -56,32 +56,24 @@ public class CategorieForm extends ModelForm {
         super.actionBtnValider(evt);
     }
 
-    private void eventLevelSecurity() {
-        String[] fields = {"code", "intitule", "levelsId"};
-
-        String clause = null;
-
-        List args = null;//new ArrayList();
-
-        String[][] parametresGrid = {
-            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code),
-                "2"},
-            {"intitule",
-                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule),
-                "3"}};
-
-//        if (this.getData("action") != null) {
-        addAction(etablissementCodeInput, etablissementLevel, parametresGrid, fields, clause, args, etablissementCodeInput, etablissementIntituleInput);
-//        }
-    }
-    
     @Override
     public void makeModelData(){
         super.makeModelData();
-        modelFinal.put(etablissementLevel.toLowerCase()+"Id", GlobalParameters.getVar(etablissementLevel));
+        modelFinal.put(entityEtablissement.toLowerCase()+"Id", GlobalParameters.getVar(entityEtablissement));
 
     }
 
+    private void eventEtablissement() {
+
+        HashMap[] args = null;
+
+        String[][] parametresGrid = {
+            {"nameAbrege", Dictionnaire.get(EnumLibelles.Business_Libelle_Nom_Abrege)},
+            {"fullName",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_nom)}};
+
+        addAction(etablissementCodeInput, entityEtablissement, parametresGrid, null, args, etablissementCodeInput, etablissementIntituleInput);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -118,6 +110,7 @@ public class CategorieForm extends ModelForm {
 
         codeInput.setName("codeInput"); // NOI18N
         this.addFormData("code", codeInput);
+        this.setRef(codeInput);
 
         intituleInput.setName("intituleInput"); // NOI18N
         this.addFormData("intitule", intituleInput);
@@ -157,10 +150,10 @@ public class CategorieForm extends ModelForm {
         labelLevel.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
         labelLevel.setName("usernameLabel"); // NOI18N
 
-        etablissementCodeInput.setName("etablissementCodeInput"); // NOI18N
+        etablissementCodeInput.setName("nameAbrege"); // NOI18N
         this.addFormData("etablissementId", etablissementCodeInput);
 
-        etablissementIntituleInput.setName("etablissementIntituleInput"); // NOI18N
+        etablissementIntituleInput.setName("fullName"); // NOI18N
 
         javax.swing.GroupLayout panelCategorieLayout = new javax.swing.GroupLayout(panelCategorie);
         panelCategorie.setLayout(panelCategorieLayout);
@@ -214,7 +207,7 @@ public class CategorieForm extends ModelForm {
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(panelContent, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

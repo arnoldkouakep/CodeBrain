@@ -18,7 +18,6 @@ public class MenuParametres extends JButton {
         
         this.menuIndex=menu.getComponents().length;
         setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Parametres));
-//        setText(StringUtil.UTF8Encode(Locale.i18n.getString(EnumLibelles.Business_Libelle_Administration.toString())));
         putClientProperty("JButton.buttonType", "bevel");
         addActionListener((ActionEvent e) -> {
             addComponentPanel(mainPanel, menu);
@@ -54,6 +53,9 @@ public class MenuParametres extends JButton {
         mainPanel.add(new MenuEtablissement(mainPanel, menu));
         mainPanel.add(new MenuCategorie(mainPanel, menu));
         mainPanel.add(new MenuClasse(mainPanel, menu));
+        mainPanel.add(new MenuSalle(mainPanel, menu));
+        mainPanel.add(new MenuGroupSalle(mainPanel, menu));
+        mainPanel.add(new MenuStudent(mainPanel, menu));
         
     }
     

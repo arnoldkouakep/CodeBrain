@@ -19,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -29,6 +30,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author KSA-INET
  */
 @Entity
+@Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u")
@@ -49,23 +51,28 @@ public class Users implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "USERS_ID")
+    @Column(name = "USERS_ID", nullable = false, length = 64)
     private String usersId;
     @Basic(optional = false)
-    @Column(name = "USER_CODE")
+    @Column(name = "USER_CODE", nullable = false, length = 64)
     private String userCode;
     @Basic(optional = false)
+    @Column(nullable = false, length = 100)
     private String login;
     @Basic(optional = false)
+    @Column(nullable = false, length = 32)
     private String password;
-    @Column(name = "FIRST_NAME")
+    @Column(name = "FIRST_NAME", length = 100)
     private String firstName;
-    @Column(name = "LAST_NAME")
+    @Column(name = "LAST_NAME", length = 100)
     private String lastName;
+    @Column(length = 20)
     private String tel;
+    @Column(length = 200)
     private String email;
+    @Column(length = 45)
     private String cni;
-    @Column(name = "STATE_DB")
+    @Column(name = "STATE_DB", length = 64)
     private String stateDb;
     @Column(name = "DT_CREATED")
     @Temporal(TemporalType.DATE)
@@ -73,22 +80,59 @@ public class Users implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @JoinColumn(name = "LEVELS_ID", referencedColumnName = "LEVELS_ID")
+    @OneToMany(mappedBy = "userModified")
+    @JsonIgnore
+    private Collection<Student> studentCollection;
+    @OneToMany(mappedBy = "userCreated")
+    @JsonIgnore
+    private Collection<Student> studentCollection1;
+    @OneToMany(mappedBy = "userModified")
+    @JsonIgnore
+    private Collection<Groupe> groupeCollection;
+    @OneToMany(mappedBy = "userCreated")
+    @JsonIgnore
+    private Collection<Groupe> groupeCollection1;
+    @OneToMany(mappedBy = "userModified")
+    @JsonIgnore
+    private Collection<Salle> salleCollection;
+    @OneToMany(mappedBy = "userCreated")
+    @JsonIgnore
+    private Collection<Salle> salleCollection1;
+    @OneToMany(mappedBy = "userModified")
+    @JsonIgnore
+    private Collection<Sections> sectionsCollection;
+    @OneToMany(mappedBy = "userCreated")
+    @JsonIgnore
+    private Collection<Sections> sectionsCollection1;
+    @OneToMany(mappedBy = "userModified")
+    @JsonIgnore
+    private Collection<Levels> levelsCollection;
+    @OneToMany(mappedBy = "userCreated")
+    @JsonIgnore
+    private Collection<Levels> levelsCollection1;
+    @OneToMany(mappedBy = "userModified")
+    @JsonIgnore
+    private Collection<Etablissement> etablissementCollection;
+    @OneToMany(mappedBy = "userCreated")
+    @JsonIgnore
+    private Collection<Etablissement> etablissementCollection1;
+    @JoinColumn(name = "LEVELS_ID", referencedColumnName = "LEVELS_ID", nullable = false)
     @ManyToOne(optional = false)
+    @JsonBackReference(value = "LEVELS_ID")
     private Levels levelsId;
     @OneToMany(mappedBy = "userModified")
     @JsonIgnore
     private Collection<Users> usersCollection;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @OneToMany(mappedBy = "userCreated")
     @JsonIgnore
     private Collection<Users> usersCollection1;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value="USERS_ID")
+    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
     @OneToMany(mappedBy = "userModified")
     @JsonIgnore
@@ -96,6 +140,12 @@ public class Users implements Serializable {
     @OneToMany(mappedBy = "userCreated")
     @JsonIgnore
     private Collection<Widget> widgetCollection1;
+    @OneToMany(mappedBy = "userModified")
+    @JsonIgnore
+    private Collection<Classe> classeCollection;
+    @OneToMany(mappedBy = "userCreated")
+    @JsonIgnore
+    private Collection<Classe> classeCollection1;
 
     public Users() {
     }
@@ -207,6 +257,114 @@ public class Users implements Serializable {
         this.dtModified = dtModified;
     }
 
+    @XmlTransient
+    public Collection<Student> getStudentCollection() {
+        return studentCollection;
+    }
+
+    public void setStudentCollection(Collection<Student> studentCollection) {
+        this.studentCollection = studentCollection;
+    }
+
+    @XmlTransient
+    public Collection<Student> getStudentCollection1() {
+        return studentCollection1;
+    }
+
+    public void setStudentCollection1(Collection<Student> studentCollection1) {
+        this.studentCollection1 = studentCollection1;
+    }
+
+    @XmlTransient
+    public Collection<Groupe> getGroupeCollection() {
+        return groupeCollection;
+    }
+
+    public void setGroupeCollection(Collection<Groupe> groupeCollection) {
+        this.groupeCollection = groupeCollection;
+    }
+
+    @XmlTransient
+    public Collection<Groupe> getGroupeCollection1() {
+        return groupeCollection1;
+    }
+
+    public void setGroupeCollection1(Collection<Groupe> groupeCollection1) {
+        this.groupeCollection1 = groupeCollection1;
+    }
+
+    @XmlTransient
+    public Collection<Salle> getSalleCollection() {
+        return salleCollection;
+    }
+
+    public void setSalleCollection(Collection<Salle> salleCollection) {
+        this.salleCollection = salleCollection;
+    }
+
+    @XmlTransient
+    public Collection<Salle> getSalleCollection1() {
+        return salleCollection1;
+    }
+
+    public void setSalleCollection1(Collection<Salle> salleCollection1) {
+        this.salleCollection1 = salleCollection1;
+    }
+
+    @XmlTransient
+    public Collection<Sections> getSectionsCollection() {
+        return sectionsCollection;
+    }
+
+    public void setSectionsCollection(Collection<Sections> sectionsCollection) {
+        this.sectionsCollection = sectionsCollection;
+    }
+
+    @XmlTransient
+    public Collection<Sections> getSectionsCollection1() {
+        return sectionsCollection1;
+    }
+
+    public void setSectionsCollection1(Collection<Sections> sectionsCollection1) {
+        this.sectionsCollection1 = sectionsCollection1;
+    }
+
+    @XmlTransient
+    public Collection<Levels> getLevelsCollection() {
+        return levelsCollection;
+    }
+
+    public void setLevelsCollection(Collection<Levels> levelsCollection) {
+        this.levelsCollection = levelsCollection;
+    }
+
+    @XmlTransient
+    public Collection<Levels> getLevelsCollection1() {
+        return levelsCollection1;
+    }
+
+    public void setLevelsCollection1(Collection<Levels> levelsCollection1) {
+        this.levelsCollection1 = levelsCollection1;
+    }
+
+    @XmlTransient
+    public Collection<Etablissement> getEtablissementCollection() {
+        return etablissementCollection;
+    }
+
+    public void setEtablissementCollection(Collection<Etablissement> etablissementCollection) {
+        this.etablissementCollection = etablissementCollection;
+    }
+
+    @XmlTransient
+    public Collection<Etablissement> getEtablissementCollection1() {
+        return etablissementCollection1;
+    }
+
+    public void setEtablissementCollection1(Collection<Etablissement> etablissementCollection1) {
+        this.etablissementCollection1 = etablissementCollection1;
+    }
+
     public Levels getLevelsId() {
         return levelsId;
     }
@@ -265,6 +423,24 @@ public class Users implements Serializable {
 
     public void setWidgetCollection1(Collection<Widget> widgetCollection1) {
         this.widgetCollection1 = widgetCollection1;
+    }
+
+    @XmlTransient
+    public Collection<Classe> getClasseCollection() {
+        return classeCollection;
+    }
+
+    public void setClasseCollection(Collection<Classe> classeCollection) {
+        this.classeCollection = classeCollection;
+    }
+
+    @XmlTransient
+    public Collection<Classe> getClasseCollection1() {
+        return classeCollection1;
+    }
+
+    public void setClasseCollection1(Collection<Classe> classeCollection1) {
+        this.classeCollection1 = classeCollection1;
     }
 
     @Override

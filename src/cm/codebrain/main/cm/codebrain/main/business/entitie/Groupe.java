@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -34,37 +33,37 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Widget.findAll", query = "SELECT w FROM Widget w")
-    , @NamedQuery(name = "Widget.findByWidgetId", query = "SELECT w FROM Widget w WHERE w.widgetId = :widgetId")
-    , @NamedQuery(name = "Widget.findByName", query = "SELECT w FROM Widget w WHERE w.name = :name")
-    , @NamedQuery(name = "Widget.findByLabel", query = "SELECT w FROM Widget w WHERE w.label = :label")
-    , @NamedQuery(name = "Widget.findByAvailable", query = "SELECT w FROM Widget w WHERE w.available = :available")
-    , @NamedQuery(name = "Widget.findByDtCreated", query = "SELECT w FROM Widget w WHERE w.dtCreated = :dtCreated")
-    , @NamedQuery(name = "Widget.findByDtModified", query = "SELECT w FROM Widget w WHERE w.dtModified = :dtModified")})
-public class Widget implements Serializable {
+    @NamedQuery(name = "Groupe.findAll", query = "SELECT g FROM Groupe g")
+    , @NamedQuery(name = "Groupe.findByGroupeId", query = "SELECT g FROM Groupe g WHERE g.groupeId = :groupeId")
+    , @NamedQuery(name = "Groupe.findByCode", query = "SELECT g FROM Groupe g WHERE g.code = :code")
+    , @NamedQuery(name = "Groupe.findByIntitule", query = "SELECT g FROM Groupe g WHERE g.intitule = :intitule")
+    , @NamedQuery(name = "Groupe.findByStateDb", query = "SELECT g FROM Groupe g WHERE g.stateDb = :stateDb")
+    , @NamedQuery(name = "Groupe.findByDtCreated", query = "SELECT g FROM Groupe g WHERE g.dtCreated = :dtCreated")
+    , @NamedQuery(name = "Groupe.findByDtModified", query = "SELECT g FROM Groupe g WHERE g.dtModified = :dtModified")})
+public class Groupe implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "WIDGET_ID", nullable = false, length = 64)
-    private String widgetId;
+    @Column(name = "GROUPE_ID", nullable = false, length = 64)
+    private String groupeId;
     @Basic(optional = false)
     @Column(nullable = false, length = 64)
-    private String name;
+    private String code;
     @Basic(optional = false)
     @Column(nullable = false, length = 64)
-    private String label;
-    private Short available;
+    private String intitule;
+    @Column(name = "STATE_DB", length = 64)
+    private String stateDb;
     @Column(name = "DT_CREATED")
     @Temporal(TemporalType.DATE)
     private Date dtCreated;
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @JoinColumn(name = "LEVELS_ID", referencedColumnName = "LEVELS_ID", nullable = false)
+    @JoinColumn(name = "SALLE_ID", referencedColumnName = "SALLE_ID", nullable = false)
     @ManyToOne(optional = false)
-    @JsonBackReference(value = "USER_CREATED")
-    private Levels levelsId;
+    private Salle salleId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
     @JsonBackReference(value = "USER_MODIFIED")
@@ -73,57 +72,53 @@ public class Widget implements Serializable {
     @ManyToOne
     @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
+    @OneToMany(mappedBy = "groupeId")
     @JsonIgnore
-     Collection<Widget> widgetCollection;
-    @JoinColumn(name = "PARENT", referencedColumnName = "WIDGET_ID", nullable = false)
-    @ManyToOne(optional = false)
-    @JsonBackReference(value = "PARENT")
-    private Widget parent;
+    private Collection<Classe> classeCollection;
 
-    public Widget() {
+    public Groupe() {
     }
 
-    public Widget(String widgetId) {
-        this.widgetId = widgetId;
+    public Groupe(String groupeId) {
+        this.groupeId = groupeId;
     }
 
-    public Widget(String widgetId, String name, String label) {
-        this.widgetId = widgetId;
-        this.name = name;
-        this.label = label;
+    public Groupe(String groupeId, String code, String intitule) {
+        this.groupeId = groupeId;
+        this.code = code;
+        this.intitule = intitule;
     }
 
-    public String getWidgetId() {
-        return widgetId;
+    public String getGroupeId() {
+        return groupeId;
     }
 
-    public void setWidgetId(String widgetId) {
-        this.widgetId = widgetId;
+    public void setGroupeId(String groupeId) {
+        this.groupeId = groupeId;
     }
 
-    public String getName() {
-        return name;
+    public String getCode() {
+        return code;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public String getLabel() {
-        return label;
+    public String getIntitule() {
+        return intitule;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setIntitule(String intitule) {
+        this.intitule = intitule;
     }
 
-    public Short getAvailable() {
-        return available;
+    public String getStateDb() {
+        return stateDb;
     }
 
-    public void setAvailable(Short available) {
-        this.available = available;
+    public void setStateDb(String stateDb) {
+        this.stateDb = stateDb;
     }
 
     public Date getDtCreated() {
@@ -142,12 +137,12 @@ public class Widget implements Serializable {
         this.dtModified = dtModified;
     }
 
-    public Levels getLevelsId() {
-        return levelsId;
+    public Salle getSalleId() {
+        return salleId;
     }
 
-    public void setLevelsId(Levels levelsId) {
-        this.levelsId = levelsId;
+    public void setSalleId(Salle salleId) {
+        this.salleId = salleId;
     }
 
     public Users getUserModified() {
@@ -167,37 +162,29 @@ public class Widget implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Widget> getWidgetCollection() {
-        return widgetCollection;
+    public Collection<Classe> getClasseCollection() {
+        return classeCollection;
     }
 
-    public void setWidgetCollection(Collection<Widget> widgetCollection) {
-        this.widgetCollection = widgetCollection;
-    }
-
-    public Widget getParent() {
-        return parent;
-    }
-
-    public void setParent(Widget parent) {
-        this.parent = parent;
+    public void setClasseCollection(Collection<Classe> classeCollection) {
+        this.classeCollection = classeCollection;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (widgetId != null ? widgetId.hashCode() : 0);
+        hash += (groupeId != null ? groupeId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Widget)) {
+        if (!(object instanceof Groupe)) {
             return false;
         }
-        Widget other = (Widget) object;
-        if ((this.widgetId == null && other.widgetId != null) || (this.widgetId != null && !this.widgetId.equals(other.widgetId))) {
+        Groupe other = (Groupe) object;
+        if ((this.groupeId == null && other.groupeId != null) || (this.groupeId != null && !this.groupeId.equals(other.groupeId))) {
             return false;
         }
         return true;
@@ -205,7 +192,7 @@ public class Widget implements Serializable {
 
     @Override
     public String toString() {
-        return "cm.codebrain.main.business.entitie.Widget[ widgetId=" + widgetId + " ]";
+        return "cm.codebrain.main.business.entitie.Groupe[ groupeId=" + groupeId + " ]";
     }
     
 }
