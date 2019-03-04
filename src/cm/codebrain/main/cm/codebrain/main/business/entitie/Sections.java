@@ -5,8 +5,8 @@
  */
 package cm.codebrain.main.business.entitie;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Sections.findByStateDb", query = "SELECT s FROM Sections s WHERE s.stateDb = :stateDb")
     , @NamedQuery(name = "Sections.findByDtCreated", query = "SELECT s FROM Sections s WHERE s.dtCreated = :dtCreated")
     , @NamedQuery(name = "Sections.findByDtModified", query = "SELECT s FROM Sections s WHERE s.dtModified = :dtModified")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Sections.class)
 public class Sections implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -62,23 +63,16 @@ public class Sections implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sectionsId")
-    @JsonIgnore
-    private Collection<Salle> salleCollection;
     @JoinColumn(name = "ETABLISSEMENT_ID", referencedColumnName = "ETABLISSEMENT_ID", nullable = false)
     @ManyToOne(optional = false)
-    @JsonBackReference(value = "ETABLISSEMENT_ID")
     private Etablissement etablissementId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sectionsId")
-    @JsonIgnore
     private Collection<Classe> classeCollection;
 
     public Sections() {
@@ -140,15 +134,6 @@ public class Sections implements Serializable {
 
     public void setDtModified(Date dtModified) {
         this.dtModified = dtModified;
-    }
-
-    @XmlTransient
-    public Collection<Salle> getSalleCollection() {
-        return salleCollection;
-    }
-
-    public void setSalleCollection(Collection<Salle> salleCollection) {
-        this.salleCollection = salleCollection;
     }
 
     public Etablissement getEtablissementId() {

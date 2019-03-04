@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package cm.codebrain.main.business.manager;
+package cm.codebrain.main.business.controller;
 
 import cm.codebrain.main.business.enumerations.EnumStatus;
 import java.util.ArrayList;

@@ -5,8 +5,8 @@
  */
 package cm.codebrain.main.business.entitie;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Widget.findByAvailable", query = "SELECT w FROM Widget w WHERE w.available = :available")
     , @NamedQuery(name = "Widget.findByDtCreated", query = "SELECT w FROM Widget w WHERE w.dtCreated = :dtCreated")
     , @NamedQuery(name = "Widget.findByDtModified", query = "SELECT w FROM Widget w WHERE w.dtModified = :dtModified")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Widget.class)
 public class Widget implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,22 +64,17 @@ public class Widget implements Serializable {
     private Date dtModified;
     @JoinColumn(name = "LEVELS_ID", referencedColumnName = "LEVELS_ID", nullable = false)
     @ManyToOne(optional = false)
-    @JsonBackReference(value = "USER_CREATED")
     private Levels levelsId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
-    @JsonIgnore
-     Collection<Widget> widgetCollection;
+    private Collection<Widget> widgetCollection;
     @JoinColumn(name = "PARENT", referencedColumnName = "WIDGET_ID", nullable = false)
     @ManyToOne(optional = false)
-    @JsonBackReference(value = "PARENT")
     private Widget parent;
 
     public Widget() {

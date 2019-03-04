@@ -29,7 +29,7 @@ public class SectionsForm extends ModelForm {
         super(title, 520, 320);
 
         this.showActionBar();
-        this.setActionMenu(CREATE);
+        etatAction = CREATE;
         this.showMenuBar();
 
 //        this.addFormData("userCode", title);
@@ -41,7 +41,7 @@ public class SectionsForm extends ModelForm {
 
         this.entity = "Sections";
         initComponents();
-        setAllComponents(codeInput, etablissementCodeInput, etablissementIntituleInput, intituleInput);
+        setAllComponents(codeInput, intituleInput, etablissementCodeInput, etablissementIntituleInput);
     }
 
     @Override
@@ -52,17 +52,23 @@ public class SectionsForm extends ModelForm {
     }
 
     @Override
-    public void actionBtnValider(java.awt.event.ActionEvent evt) {
-        super.actionBtnValider(evt);
+    public void makeModelData(){
+        super.makeModelData();
+        modelFinal.put(entityEtablissement.toLowerCase()+"Id", GlobalParameters.getVar(entityEtablissement.toLowerCase()+"Id"));
+
     }
 
     @Override
-    public void makeModelData(){
-        super.makeModelData();
-        modelFinal.put(entityEtablissement.toLowerCase()+"Id", GlobalParameters.getVar(entityEtablissement));
+    protected void eventActionRef() {
 
+        String[][] parametresGrid = {
+            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)},
+            {"intitule",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
+
+        addAction(codeInput, entity, entity.toLowerCase()+"Id", parametresGrid, null, null, codeInput);
     }
-
+    
     private void eventEtablissement() {
 
         HashMap[] args = null;
@@ -72,7 +78,7 @@ public class SectionsForm extends ModelForm {
             {"fullName",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_nom)}};
 
-        addAction(etablissementCodeInput, entityEtablissement, parametresGrid, null, args, etablissementCodeInput, etablissementIntituleInput);
+        addAction(etablissementCodeInput, entityEtablissement, entityEtablissement.toLowerCase()+"Id", parametresGrid, null, args, etablissementCodeInput, etablissementIntituleInput);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -108,12 +114,14 @@ public class SectionsForm extends ModelForm {
         labelPrenom.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)); // NOI18N
         labelPrenom.setName("usernameLabel"); // NOI18N
 
-        codeInput.setName("codeInput"); // NOI18N
+        codeInput.setName("code"); // NOI18N
         this.addFormData("code", codeInput);
         this.setRef(codeInput);
+        fieldSearch("code", codeInput);
 
-        intituleInput.setName("intituleInput"); // NOI18N
+        intituleInput.setName("intitule"); // NOI18N
         this.addFormData("intitule", intituleInput);
+        fieldSearch("intitule", intituleInput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
         panelIdentifiant.setLayout(panelIdentifiantLayout);
@@ -152,8 +160,10 @@ public class SectionsForm extends ModelForm {
 
         etablissementCodeInput.setName("nameAbrege"); // NOI18N
         this.addFormData("etablissementId", etablissementCodeInput);
+        fieldSearch("Etablissement->etablissementId->nameAbrege", etablissementCodeInput);
 
         etablissementIntituleInput.setName("fullName"); // NOI18N
+        fieldSearch("Etablissement->etablissementId->fullName", etablissementIntituleInput);
 
         javax.swing.GroupLayout panelCategorieLayout = new javax.swing.GroupLayout(panelCategorie);
         panelCategorie.setLayout(panelCategorieLayout);

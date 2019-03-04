@@ -5,8 +5,8 @@
  */
 package cm.codebrain.main.business.entitie;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Levels.findByStateDb", query = "SELECT l FROM Levels l WHERE l.stateDb = :stateDb")
     , @NamedQuery(name = "Levels.findByDtCreated", query = "SELECT l FROM Levels l WHERE l.dtCreated = :dtCreated")
     , @NamedQuery(name = "Levels.findByDtModified", query = "SELECT l FROM Levels l WHERE l.dtModified = :dtModified")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Levels.class)
 public class Levels implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,17 +64,13 @@ public class Levels implements Serializable {
     private Date dtModified;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "levelsId")
-    @JsonIgnore
     private Collection<Users> usersCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "levelsId")
-    @JsonIgnore
     private Collection<Widget> widgetCollection;
 
     public Levels() {

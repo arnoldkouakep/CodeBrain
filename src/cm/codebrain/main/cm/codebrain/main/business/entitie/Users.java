@@ -5,8 +5,8 @@
  */
 package cm.codebrain.main.business.entitie;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -46,6 +46,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Users.findByStateDb", query = "SELECT u FROM Users u WHERE u.stateDb = :stateDb")
     , @NamedQuery(name = "Users.findByDtCreated", query = "SELECT u FROM Users u WHERE u.dtCreated = :dtCreated")
     , @NamedQuery(name = "Users.findByDtModified", query = "SELECT u FROM Users u WHERE u.dtModified = :dtModified")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Users.class)
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -81,70 +82,49 @@ public class Users implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
     @OneToMany(mappedBy = "userModified")
-    @JsonIgnore
     private Collection<Student> studentCollection;
     @OneToMany(mappedBy = "userCreated")
-    @JsonIgnore
     private Collection<Student> studentCollection1;
     @OneToMany(mappedBy = "userModified")
-    @JsonIgnore
     private Collection<Groupe> groupeCollection;
     @OneToMany(mappedBy = "userCreated")
-    @JsonIgnore
     private Collection<Groupe> groupeCollection1;
     @OneToMany(mappedBy = "userModified")
-    @JsonIgnore
     private Collection<Salle> salleCollection;
     @OneToMany(mappedBy = "userCreated")
-    @JsonIgnore
     private Collection<Salle> salleCollection1;
     @OneToMany(mappedBy = "userModified")
-    @JsonIgnore
     private Collection<Sections> sectionsCollection;
     @OneToMany(mappedBy = "userCreated")
-    @JsonIgnore
     private Collection<Sections> sectionsCollection1;
     @OneToMany(mappedBy = "userModified")
-    @JsonIgnore
     private Collection<Levels> levelsCollection;
     @OneToMany(mappedBy = "userCreated")
-    @JsonIgnore
     private Collection<Levels> levelsCollection1;
     @OneToMany(mappedBy = "userModified")
-    @JsonIgnore
     private Collection<Etablissement> etablissementCollection;
     @OneToMany(mappedBy = "userCreated")
-    @JsonIgnore
     private Collection<Etablissement> etablissementCollection1;
     @JoinColumn(name = "LEVELS_ID", referencedColumnName = "LEVELS_ID", nullable = false)
     @ManyToOne(optional = false)
-    @JsonBackReference(value = "LEVELS_ID")
     private Levels levelsId;
     @OneToMany(mappedBy = "userModified")
-    @JsonIgnore
     private Collection<Users> usersCollection;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @OneToMany(mappedBy = "userCreated")
-    @JsonIgnore
     private Collection<Users> usersCollection1;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
     @OneToMany(mappedBy = "userModified")
-    @JsonIgnore
     private Collection<Widget> widgetCollection;
     @OneToMany(mappedBy = "userCreated")
-    @JsonIgnore
     private Collection<Widget> widgetCollection1;
     @OneToMany(mappedBy = "userModified")
-    @JsonIgnore
     private Collection<Classe> classeCollection;
     @OneToMany(mappedBy = "userCreated")
-    @JsonIgnore
     private Collection<Classe> classeCollection1;
 
     public Users() {

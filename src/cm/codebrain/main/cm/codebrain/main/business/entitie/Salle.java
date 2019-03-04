@@ -5,7 +5,8 @@
  */
 package cm.codebrain.main.business.entitie;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -40,6 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Salle.findByStateDb", query = "SELECT s FROM Salle s WHERE s.stateDb = :stateDb")
     , @NamedQuery(name = "Salle.findByDtCreated", query = "SELECT s FROM Salle s WHERE s.dtCreated = :dtCreated")
     , @NamedQuery(name = "Salle.findByDtModified", query = "SELECT s FROM Salle s WHERE s.dtModified = :dtModified")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Salle.class)
 public class Salle implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -67,19 +69,12 @@ public class Salle implements Serializable {
     private Collection<Groupe> groupeCollection;
     @JoinColumn(name = "CLASSE_ID", referencedColumnName = "CLASSE_ID", nullable = false)
     @ManyToOne(optional = false)
-    @JsonBackReference(value = "CLASSE_ID")
     private Classe classeId;
-    @JoinColumn(name = "SECTIONS_ID", referencedColumnName = "SECTIONS_ID", nullable = false)
-    @ManyToOne(optional = false)
-    @JsonBackReference(value = "SECTIONS_ID")
-    private Sections sectionsId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
 
     public Salle() {
@@ -167,14 +162,6 @@ public class Salle implements Serializable {
 
     public void setClasseId(Classe classeId) {
         this.classeId = classeId;
-    }
-
-    public Sections getSectionsId() {
-        return sectionsId;
-    }
-
-    public void setSectionsId(Sections sectionsId) {
-        this.sectionsId = sectionsId;
     }
 
     public Users getUserModified() {

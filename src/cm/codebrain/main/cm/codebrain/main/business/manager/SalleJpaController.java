@@ -11,7 +11,6 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import cm.codebrain.main.business.entitie.Classe;
-import cm.codebrain.main.business.entitie.Sections;
 import cm.codebrain.main.business.entitie.Users;
 import cm.codebrain.main.business.entitie.Student;
 import java.util.ArrayList;
@@ -56,11 +55,6 @@ public class SalleJpaController implements Serializable {
                 classeId = em.getReference(classeId.getClass(), classeId.getClasseId());
                 salle.setClasseId(classeId);
             }
-            Sections sectionsId = salle.getSectionsId();
-            if (sectionsId != null) {
-                sectionsId = em.getReference(sectionsId.getClass(), sectionsId.getSectionsId());
-                salle.setSectionsId(sectionsId);
-            }
             Users userModified = salle.getUserModified();
             if (userModified != null) {
                 userModified = em.getReference(userModified.getClass(), userModified.getUsersId());
@@ -87,10 +81,6 @@ public class SalleJpaController implements Serializable {
             if (classeId != null) {
                 classeId.getSalleCollection().add(salle);
                 classeId = em.merge(classeId);
-            }
-            if (sectionsId != null) {
-                sectionsId.getSalleCollection().add(salle);
-                sectionsId = em.merge(sectionsId);
             }
             if (userModified != null) {
                 userModified.getSalleCollection().add(salle);
@@ -139,8 +129,6 @@ public class SalleJpaController implements Serializable {
             Salle persistentSalle = em.find(Salle.class, salle.getSalleId());
             Classe classeIdOld = persistentSalle.getClasseId();
             Classe classeIdNew = salle.getClasseId();
-            Sections sectionsIdOld = persistentSalle.getSectionsId();
-            Sections sectionsIdNew = salle.getSectionsId();
             Users userModifiedOld = persistentSalle.getUserModified();
             Users userModifiedNew = salle.getUserModified();
             Users userCreatedOld = persistentSalle.getUserCreated();
@@ -173,10 +161,6 @@ public class SalleJpaController implements Serializable {
                 classeIdNew = em.getReference(classeIdNew.getClass(), classeIdNew.getClasseId());
                 salle.setClasseId(classeIdNew);
             }
-            if (sectionsIdNew != null) {
-                sectionsIdNew = em.getReference(sectionsIdNew.getClass(), sectionsIdNew.getSectionsId());
-                salle.setSectionsId(sectionsIdNew);
-            }
             if (userModifiedNew != null) {
                 userModifiedNew = em.getReference(userModifiedNew.getClass(), userModifiedNew.getUsersId());
                 salle.setUserModified(userModifiedNew);
@@ -207,14 +191,6 @@ public class SalleJpaController implements Serializable {
             if (classeIdNew != null && !classeIdNew.equals(classeIdOld)) {
                 classeIdNew.getSalleCollection().add(salle);
                 classeIdNew = em.merge(classeIdNew);
-            }
-            if (sectionsIdOld != null && !sectionsIdOld.equals(sectionsIdNew)) {
-                sectionsIdOld.getSalleCollection().remove(salle);
-                sectionsIdOld = em.merge(sectionsIdOld);
-            }
-            if (sectionsIdNew != null && !sectionsIdNew.equals(sectionsIdOld)) {
-                sectionsIdNew.getSalleCollection().add(salle);
-                sectionsIdNew = em.merge(sectionsIdNew);
             }
             if (userModifiedOld != null && !userModifiedOld.equals(userModifiedNew)) {
                 userModifiedOld.getSalleCollection().remove(salle);
@@ -305,11 +281,6 @@ public class SalleJpaController implements Serializable {
             if (classeId != null) {
                 classeId.getSalleCollection().remove(salle);
                 classeId = em.merge(classeId);
-            }
-            Sections sectionsId = salle.getSectionsId();
-            if (sectionsId != null) {
-                sectionsId.getSalleCollection().remove(salle);
-                sectionsId = em.merge(sectionsId);
             }
             Users userModified = salle.getUserModified();
             if (userModified != null) {

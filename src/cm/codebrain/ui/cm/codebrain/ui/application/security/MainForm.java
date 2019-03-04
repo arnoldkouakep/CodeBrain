@@ -12,12 +12,12 @@ import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.Locale;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
+import static cm.codebrain.ui.application.enumerations.Enums.User;
 import cm.codebrain.ui.application.menu.MenuHome;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,7 +71,7 @@ public class MainForm extends JFrame{
 
         this.codeBrainManager = codeBrainManager;
 
-        userConnected = (GlobalParameters.getVar("user") == null ? null : ((Users) GlobalParameters.getVar("user")));
+        userConnected = (GlobalParameters.getVar(User.toString()) == null ? null : ((Users) GlobalParameters.getVar(User.toString())));
 
         levelGroup = (userConnected == null) ? null : userConnected.getLevelsId();
 
@@ -370,7 +370,7 @@ public class MainForm extends JFrame{
 
     public void refresh() {
 
-        userConnected = (GlobalParameters.getVar("user") == null ? null : ((Users) GlobalParameters.getVar("user")));
+        userConnected = (GlobalParameters.getVar(User.toString()) == null ? null : ((Users) GlobalParameters.getVar(User.toString())));
 
         levelGroup = (userConnected == null) ? null : userConnected.getLevelsId();
 

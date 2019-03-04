@@ -25,7 +25,7 @@ public class EtablissementForm extends ModelForm {
         super(title, 520, 450);
 
         this.showActionBar();
-        this.setActionMenu(CREATE);
+        etatAction = CREATE;
         this.showMenuBar();
 
     }
@@ -37,6 +37,25 @@ public class EtablissementForm extends ModelForm {
         initComponents();
         setAllComponents(adresseInput, emailInput, nomAbregeInput, nomCompletInput, telephoneInput, villeInput);
     }
+
+    @Override
+    public void addActionSupplementaire() {
+        super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
+        
+    }
+    
+    
+    @Override
+    protected void eventActionRef() {
+
+        String[][] parametresGrid = {
+            {"nameAbrege", Dictionnaire.get(EnumLibelles.Business_Libelle_Nom_Abrege)},
+            {"fullName",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_Nom_Complet)}};
+
+        addAction(nomAbregeInput, entity, entity.toLowerCase()+"Id", parametresGrid, null, null, nomAbregeInput);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -77,22 +96,26 @@ public class EtablissementForm extends ModelForm {
         nomAbregeInput.setName("nomAbregeInput"); // NOI18N
         this.addFormData("nameAbrege", nomAbregeInput);
         this.setRef(nomAbregeInput);
+        fieldSearch.put("nameAbrege", nomAbregeInput);
 
         labelNomComplet.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Nom_Complet)); // NOI18N
         labelNomComplet.setName("usernameLabel"); // NOI18N
 
         nomCompletInput.setContentType("text"); // NOI18N
         this.addFormData("fullName", nomCompletInput);
+        fieldSearch.put("fullName", nomCompletInput);
         jScrollPane1.setViewportView(nomCompletInput);
 
         labelAdresse.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Adresse)); // NOI18N
         labelAdresse.setName("usernameLabel"); // NOI18N
 
         this.addFormData("adresse", adresseInput);
+        fieldSearch.put("adresse", adresseInput);
         jScrollPane2.setViewportView(adresseInput);
 
         villeInput.setName("intituleInput"); // NOI18N
         this.addFormData("ville", villeInput);
+        fieldSearch.put("ville", villeInput);
 
         labelVille.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Ville)); // NOI18N
         labelVille.setName("usernameLabel"); // NOI18N
@@ -102,12 +125,14 @@ public class EtablissementForm extends ModelForm {
 
         telephoneInput.setName("intituleInput"); // NOI18N
         this.addFormData("telephone", telephoneInput);
+        fieldSearch.put("telephone", telephoneInput);
 
         labelEmail.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Email)); // NOI18N
         labelEmail.setName("usernameLabel"); // NOI18N
 
         emailInput.setName("intituleInput"); // NOI18N
         this.addFormData("email", emailInput);
+        fieldSearch.put("email", emailInput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
         panelIdentifiant.setLayout(panelIdentifiantLayout);

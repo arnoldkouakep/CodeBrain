@@ -9,6 +9,7 @@ import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.Locale;
+import cm.codebrain.ui.application.controller.TableModelObject;
 import cm.codebrain.ui.application.enumerations.EnumError;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.enumerations.Enums;
@@ -18,6 +19,7 @@ import static cm.codebrain.ui.application.enumerations.Enums.DUPPLICATE;
 import static cm.codebrain.ui.application.enumerations.Enums.Entity;
 import static cm.codebrain.ui.application.enumerations.Enums.MODIF;
 import static cm.codebrain.ui.application.enumerations.Enums.Type;
+import static cm.codebrain.ui.application.enumerations.Enums.Model;
 import static cm.codebrain.ui.application.enumerations.Enums.Value;
 import cm.codebrain.ui.application.implement.Executable;
 import cm.codebrain.ui.application.security.Loading;
@@ -27,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.swing.ButtonGroup;
@@ -51,11 +54,15 @@ public class ModelForm extends javax.swing.JDialog {
      */
     public static final int RET_CANCEL = 0;
 
-    public Enum etatAction = CREATE;
+    public Enums etatAction = CREATE;
 
     private HashMap formDatas = new HashMap();
 
+    protected HashMap fieldSearch = new HashMap();
+
     protected HashMap<String, Object> modelFinal;
+    protected TableModelObject tableModelObject;
+
     /**
      * A return status code - returned if OK button has been pressed
      */
@@ -67,25 +74,26 @@ public class ModelForm extends javax.swing.JDialog {
     private JTextField inputRef;
     public String entity;
     private List modelResult;
-//    private List modelComplet;
+    private Boolean createList = false;
+    private String title;
+    private boolean hideActionMenuTitle;
 
 //    private String filter;
     CodeBrainManager cbManager = new CodeBrainManager();
     private InputSearchForm serachForm;
     private Object key;
     private List<HashMap> allComponents;
-    
-    
-    public final String VALIDATE="/images/accept.png";
-    public final String ADD="/images/add.png";
-    public final String DEL="/images/desactiver.png";
-    public final String EDIT="/images/cancel.png";
-    public final String PRINT="/images/printer.png";
-    public final String CANCEL="/images/cancel.png";
-    public final String LOAD="/images/load.png";
-    public final String RESET="/images/grid.png";
-    public final String CLEAR="/images/effacer.png";
-    public final String EXIT="/images/exit.png";
+
+    public final String VALIDATE = "/images/accept.png";
+    public final String ADD = "/images/add.png";
+    public final String DEL = "/images/desactiver.png";
+    public final String EDIT = "/images/cancel.png";
+    public final String PRINT = "/images/printer.png";
+    public final String CANCEL = "/images/cancel.png";
+    public final String LOAD = "/images/load.png";
+    public final String RESET = "/images/grid.png";
+    public final String CLEAR = "/images/effacer.png";
+    public final String EXIT = "/images/exit.png";
 
 //    private MainForm mainForm;
 //    private Loading loading;
@@ -103,33 +111,10 @@ public class ModelForm extends javax.swing.JDialog {
 
         setSize(wi, he);
 
-        setTitle(title);
+//        setTitle(title);
+        this.title = title;
 
-        initComponents();
-
-        btnCreate.addActionListener(this::actionBtnCreate);
-        btnModify.addActionListener(this::actionBtnModify);
-        btnDupplicate.addActionListener(this::actionBtnDupplicate);
-        btnDelete.addActionListener(this::actionBtnDelete);
-
-        btnValider.addActionListener(this::actionBtnValider);
-
-        btnNew.addActionListener(this::actionBtnReset);
-
-    }
-
-    public ModelForm(String title, int width, int height) {
-
-        super();
-
-        Locale.initBundle();
-
-        setSize(width, height);
-
-        setTitle(title);
-
-        this.wi = width;
-        this.he = height;
+        createList(false);
 
         initComponents();
 
@@ -145,6 +130,68 @@ public class ModelForm extends javax.swing.JDialog {
         createForm();
 
         addActionSupplementaire();
+    }
+
+    public ModelForm(String title, int width, int height) {
+
+        super();
+
+        Locale.initBundle();
+
+        setSize(width, height);
+
+        this.title = title;
+
+        this.wi = width;
+        this.he = height;
+        hideActionMenuTitle = false;
+
+        initComponents();
+
+        btnCreate.addActionListener(this::actionBtnCreate);
+        btnModify.addActionListener(this::actionBtnModify);
+        btnDupplicate.addActionListener(this::actionBtnDupplicate);
+        btnDelete.addActionListener(this::actionBtnDelete);
+
+        btnValider.addActionListener(this::actionBtnValider);
+
+        btnNew.addActionListener(this::actionBtnReset);
+
+        createForm();
+
+        addActionSupplementaire();
+        
+        eventActionRef();
+    }
+
+    public ModelForm(String title, int width, int height, boolean hideActionMenuTitle) {
+
+        super();
+
+        Locale.initBundle();
+
+        setSize(width, height);
+
+        this.wi = width;
+        this.he = height;
+        this.hideActionMenuTitle = hideActionMenuTitle;
+
+        initComponents();
+
+        btnCreate.addActionListener(this::actionBtnCreate);
+        btnModify.addActionListener(this::actionBtnModify);
+        btnDupplicate.addActionListener(this::actionBtnDupplicate);
+        btnDelete.addActionListener(this::actionBtnDelete);
+
+        btnValider.addActionListener(this::actionBtnValider);
+
+        btnNew.addActionListener(this::actionBtnReset);
+
+        createForm();
+
+        addActionSupplementaire();
+        
+        eventActionRef();
     }
 
     public void createForm() {
@@ -185,27 +232,23 @@ public class ModelForm extends javax.swing.JDialog {
 //
 //    }
     public void addAction(Object input, String entity, String[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
-
         /**
          * TextFields
          */
         if (input.getClass().equals(JTextField.class)) {
-            ((JTextField) input).addFocusListener(new java.awt.event.FocusAdapter() {
-                @Override
-                public void focusLost(java.awt.event.FocusEvent evt) {
-                    if (!((JTextField) input).getText().isEmpty())
-                        levelCodeInputFocusLost(evt, input, entity, parametresGrid, filter, args, imputsResult);
+            ((JTextField) input).addActionListener((ActionEvent e) -> {
+                if (!((JTextField) input).getText().isEmpty()) {
+                    levelCodeInputFocusLost(e, input, entity, null, parametresGrid, filter, args, imputsResult);
                 }
             });
+
         } /**
          * ComboBox
          */
         else if (input.getClass().equals(JComboBox.class)) {
-            ((JComboBox) input).addFocusListener(new java.awt.event.FocusAdapter() {
-                @Override
-                public void focusLost(java.awt.event.FocusEvent evt) {
-                    if (!((JComboBox) input).getSelectedItem().toString().isEmpty())
-                        levelCodeInputFocusLost(evt, input, entity, parametresGrid, filter, args, imputsResult);
+            ((JComboBox) input).addActionListener((ActionEvent e) -> {
+                if (!((JComboBox) input).getSelectedItem().toString().isEmpty()) {
+                    levelCodeInputFocusLost(e, input, entity, null, parametresGrid, filter, args, imputsResult);
                 }
             });
         } else {
@@ -213,78 +256,135 @@ public class ModelForm extends javax.swing.JDialog {
         }
     }
 
-    private void levelCodeInputFocusLost(java.awt.event.FocusEvent evt, Object input, String entity, String[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
+    public void addAction(Object input, String entity, String keyParam, String[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
+        /**
+         * TextFields
+         */
+        if (input.getClass().equals(JTextField.class)) {
+            ((JTextField) input).addActionListener((ActionEvent e) -> {
+                if (!((JTextField) input).getText().isEmpty()) {
+                    levelCodeInputFocusLost(e, input, entity, keyParam, parametresGrid, filter, args, imputsResult);
+                }
+            });
 
-//        this.ejql = null;
-        Loading.show(btnValider, new Executable<List<HashMap>>() {
-            private Object key;
-            private Boolean find;
-            String filtre = getValueInputObject(input);
+        } /**
+         * ComboBox
+         */
+        else if (input.getClass().equals(JComboBox.class)) {
+            ((JComboBox) input).addActionListener((ActionEvent e) -> {
+                if (!((JComboBox) input).getSelectedItem().toString().isEmpty()) {
+                    levelCodeInputFocusLost(e, input, entity, keyParam, parametresGrid, filter, args, imputsResult);
+                }
+            });
+        } else {
+            System.out.println("Nothing");
+        }
+    }
 
-            @Override
-            public List<HashMap> execute() throws Exception {
+    private void levelCodeInputFocusLost(java.awt.event.ActionEvent evt, Object input, String entity, String keyParam, String[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
+        if (etatAction != CREATE || (etatAction == CREATE && !input.equals(getRef()))) {
+            Loading.show(btnValider, new Executable<List<HashMap>>() {
+                private Object key;
+                private Boolean find;
+                String filtre = getValueInputObject(input);
 
-//                HashMap filterArg = new HashMap();
-                ArrayList parameterArgs = new ArrayList();
+                @Override
+                public List<HashMap> execute() throws Exception {
 
-                if (args != null) {
+                    ArrayList parameterArgs = new ArrayList();
 
-                    for (HashMap arg : args) {
-                        if (arg.get(Type).equals(Entity)) {
-//                            if (arg.get(value).getClass().equals(JTextField.class)) {
-                            String entitie = arg.get(Entity).toString();
-                            HashMap data = (HashMap) GlobalParameters.getVar(arg.get(Entity).toString());
+                    if (args != null) {
 
-                            Object dataObject = cbManager.convertToObject(data, entitie);
-//                            filterArg.put(value, dataObject);//GlobalParameters.getVar(arg.get(Entity).toString()));
-                            parameterArgs.add(dataObject);
-//                            }
-                        } else {
-//                            filterArg.put(arg.get(clause), arg.get(value));
-                            parameterArgs.add(arg.get(Value));
+                        for (HashMap arg : args) {
+                            if (arg.get(Type).equals(Entity)) {
+                                String entitie = arg.get(Entity).toString();
+                                HashMap data = (HashMap) GlobalParameters.getVar(arg.get(Model).toString());
+
+                                Object dataObject = cbManager.convertToObject(data, entitie);
+                                parameterArgs.add(dataObject);
+                            } else {
+                                parameterArgs.add(arg.get(Value));
+                            }
                         }
                     }
-                }
-//                modelResult = cbManager.getList(entity, filterArg);
-                modelResult = cbManager.getListEntity(entity, filter, parameterArgs.toArray());
+                    modelResult = cbManager.getListEntity(entity, filter, parameterArgs.toArray());
 
-                List<HashMap> modelComplet = cbManager.convertToListObject(modelResult, HashMap.class);
+                    List<HashMap> modelComplet = cbManager.convertToListObject(modelResult, HashMap.class);
 
-                if (!filtre.equals("*")) {
-                    modelComplet = modelComplet.stream().map((mapper) -> {
-                        find = false;
-                        return mapper;
-                    }).filter(((model) -> {
-                        model.keySet().stream().map((ky) -> {
-                            this.key = ky;
-                            return ky;
-                        }
-                        ).forEachOrdered((Object val) -> {
-                            Boolean b = model.get(key).toString().contains(filtre);
-                            if (b) {
-                                find = true;
+                    if (!filtre.equals("*")) {
+                        modelComplet = modelComplet.stream().map((mapper) -> {
+                            find = false;
+                            return mapper;
+                        }).filter(((model) -> {
+                            model.keySet().stream().map((ky) -> {
+                                this.key = ky;
+                                return ky;
                             }
-                        });
-                        return find;
-                    })).collect(Collectors.toList());
+                            ).forEachOrdered((Object val) -> {
+                                Boolean b = model.get(key).toString().contains(filtre);
+                                if (b) {
+                                    find = true;
+                                }
+                            });
+                            return find;
+                        })).collect(Collectors.toList());
+                    }
+                    if (modelComplet.isEmpty()) {
+                        throw new Exception(Dictionnaire.get(EnumError.Business_Libelle_No_Result_Found.toString()));
+                    }
+                    serachForm = new InputSearchForm(entity, keyParam, modelComplet, parametresGrid, imputsResult);
+
+                    serachForm.setVisible(true);
+
+//                    try {
+//                        Robot robot = new Robot();
+//                        robot.keyPress(KeyEvent.VK_TAB);
+//                        robot.keyRelease(KeyEvent.VK_TAB);
+//                    } catch (AWTException e) {
+//                    }
+//                     if(input.getClass().equals(JTextField.class)){
+//                    ((JTextField) input).setFocusable(false);
+//                    ((JTextField) input).setFocusable(true);
+//                    }
+//                    else if(input.getClass().equals(JComboBox.class)){
+//                    ((JComboBox) input).setFocusable(false);
+//                    ((JComboBox) input).setFocusable(true);
+//                    }
+//                    HashMap component;
+//                    int index = 0;
+//                    for (int i = 0; i < allComponents.size(); i++) {
+//                        if (allComponents.get(i).get(Value).equals(input)) {
+//                            index = i + 1;
+//                            break;
+//                        }
+//                    }
+//                    component = allComponents.get(index);
+//
+//                    Object obj = component.get(Value);
+//
+//                    if (obj.getClass().equals(JTextField.class)) {
+//                        ((JTextField) obj).requestFocus();
+//                    } else if (obj.getClass().equals(JComboBox.class)) {
+//                        ((JComboBox) obj).requestFocus();
+//                    }
+                    if (etatAction != CREATE && input.equals(getRef())) {
+                        try {
+                            GlobalParameters.addVar(Model.toString(), serachForm.getResult());
+                            getModelData(serachForm.getResult());
+                        } catch (Exception e) {
+                        }
+                    }
+
+                    return modelComplet;
                 }
-                if (modelComplet.isEmpty()) {
-                    throw new Exception(Dictionnaire.get(EnumError.Business_Libelle_No_Result_Found.toString()));
+
+                @Override
+                public void error(Exception ex) {
+                    JOptionPane.showMessageDialog(rootPane, ex.getMessage());
                 }
-                serachForm = new InputSearchForm(entity, modelComplet, parametresGrid, imputsResult);
 
-                serachForm.setVisible(true);
-                return modelComplet;
-            }
-
-            @Override
-            public void error(Exception ex) {
-                //System.out.println(ex);
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(rootPane, ex.getMessage());
-            }
-
-        });
+            });
+        }
 
     }
 
@@ -315,7 +415,19 @@ public class ModelForm extends javax.swing.JDialog {
         return this.formDatas.get(key);
     }
 
+    public void fieldSearch(String key, Object value) {
+        this.fieldSearch.putIfAbsent(key, value);
+    }
+
+    public Object getFieldSearch(String key) {
+        return this.fieldSearch.get(key);
+    }
+
     public void showActionBar() {
+
+        setTitle(stateMenuLabel(title, hideActionMenuTitle));
+
+        setActionMenu();
         getContentPane().add(actionBar, java.awt.BorderLayout.EAST);
     }
 
@@ -324,7 +436,6 @@ public class ModelForm extends javax.swing.JDialog {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
     private void initComponents() {
 
         btnActionMenuGroup = new javax.swing.ButtonGroup();
@@ -470,28 +581,28 @@ public class ModelForm extends javax.swing.JDialog {
         setLocationRelativeTo(null);
     }// </editor-fold>                        
 
+    public void actionMenu(java.awt.event.ActionEvent evt) {
+        setActionMenu();
+    }
+
     public void actionBtnCreate(java.awt.event.ActionEvent evt) {
-//        JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnCreate), "Bonjour", JOptionPane.INFORMATION_MESSAGE);
-        setActionMenu(CREATE);
-        setDefaultActionRef();
+        etatAction = CREATE;
+        setActionMenu();
     }
 
     public void actionBtnModify(java.awt.event.ActionEvent evt) {
-//        JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnCreate), "Bonjour", JOptionPane.INFORMATION_MESSAGE);
-        setActionMenu(MODIF);
-        setActionRef();
+        etatAction = MODIF;
+        setActionMenu();
     }
 
     public void actionBtnDupplicate(java.awt.event.ActionEvent evt) {
-//        JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnCreate), "Bonjour", JOptionPane.INFORMATION_MESSAGE);
-        setActionMenu(DUPPLICATE);
-        setActionRef();
+        etatAction = DUPPLICATE;
+        setActionMenu();
     }
 
     public void actionBtnDelete(java.awt.event.ActionEvent evt) {
-//        JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnCreate), "Bonjour", JOptionPane.INFORMATION_MESSAGE);
-        setActionMenu(DELETE);
-        setActionRef();
+        etatAction = DELETE;
+        setActionMenu();
     }
 
     public void actionBtnValider(java.awt.event.ActionEvent evt) {
@@ -500,19 +611,69 @@ public class ModelForm extends javax.swing.JDialog {
 
             @Override
             public HashMap execute() throws Exception {
-                makeModelData();
-                if (etatAction == CREATE) {
 
-                    cbManager.createEntity(entity, modelFinal);
+                if (createList) {
 
+                    List<HashMap> modelDataFinal = tableModelObject.getModel();
+
+                    if (modelDataFinal != null) {
+                        for (HashMap model : modelDataFinal) {
+                            makeModelDatas(model);
+
+                            if (null != etatAction) switch (etatAction) {
+                                case CREATE:
+                                    cbManager.createEntity(entity, modelFinal);
+                                    break;
+                                case MODIF:
+                                    cbManager.updateEntity(entity, modelFinal);
+                                    break;
+                                case DUPPLICATE:
+                                    cbManager.dupplicateEntity(entity, modelFinal);
+                                    break;
+                                case DELETE:
+                                    cbManager.deleteEntity(entity, modelFinal);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+                    /**
+                     *
+                     * To Do
+                     *
+                     *
+                     */
                 } else {
-
-                    cbManager.updateEntity(entity, modelFinal);
-
+                    if(etatAction == CREATE)
+                        modelFinal = new HashMap<>();
+                    else
+                        modelFinal = (HashMap) GlobalParameters.getVar(Model.toString());
+                        
+                    makeModelData();
+                        
+                    if (null != etatAction) switch (etatAction) {
+                        case CREATE:
+                            cbManager.createEntity(entity, modelFinal);
+                            break;
+                        case MODIF:
+                            cbManager.updateEntity(entity, modelFinal);
+                            break;
+                        case DUPPLICATE:
+                            cbManager.dupplicateEntity(entity, modelFinal);
+                            break;
+                        case DELETE:
+                            cbManager.deleteEntity(entity, modelFinal);
+                            break;
+                        default:
+                            break;
+                    }
                 }
-                JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnValider), Dictionnaire.get(EnumLibelles.Business_Libelle_Message_Sucess.toString()), "Message", JOptionPane.INFORMATION_MESSAGE);
 
+                JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnValider), Dictionnaire.get(EnumLibelles.Business_Libelle_Message_Sucess.toString()), "Message", JOptionPane.INFORMATION_MESSAGE);
+                
                 reset();
+
                 return modelFinal;
             }
 
@@ -521,35 +682,90 @@ public class ModelForm extends javax.swing.JDialog {
                 System.out.println("Error : " + ex.getLocalizedMessage());
                 JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnValider), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
             }
-
         });
-
     }
 
     public void actionBtnReset(java.awt.event.ActionEvent evt) {
         reset();
     }
 
-    public void makeModelData() {
-
+    public void makeModelDatas(HashMap model) {
         modelFinal = new HashMap<>();
+        makeModelData();
 
-        modelFinal.put(entity.toLowerCase() + "Id", CodeBrainManager.generateUIDPrimaryKey());
-        modelFinal.put("stateDb", EnumLibelles.Business_Status_StateDb_Create.toString());
-        modelFinal.put("dtCreated", new Date());
-        modelFinal.put("dtModified", new Date());
-        modelFinal.put("userCreated", GlobalParameters.getVar("user"));
-        modelFinal.put("userModified", GlobalParameters.getVar("user"));
+        model.keySet().stream().map((ky) -> {
+            this.key = ky.toString();
+            return ky;
+        }).forEachOrdered((Object val) -> {
+            modelFinal.putIfAbsent(this.key.toString(), model.get(val));
+        });
+    }
+
+    public void makeModelData() {
+//        modelFinal = new HashMap<>();
+//        if(entity.toLowerCase() + "Id")
+//        modelFinal.put(entity.toLowerCase() + "Id", CodeBrainManager.generateUIDPrimaryKey());
+
 //        modelFinal.put("levelsId", ((Users) GlobalParameters.getVar("user")).getLevelsId());
 
+        if (!createList) {
+            /**
+             * JTextField.class
+             */
+            formDatas.keySet().stream().map((ky) -> {
+                this.key = ky;
+                return ky;
+            }).filter((ky) -> (formDatas.get(ky).getClass() == JTextField.class)).map((ky) -> (JTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+                modelFinal.put(this.key.toString(), ((JTextField) val).getText());
+            });
+            /**
+             * JPasswordField.class
+             */
+            formDatas.keySet().stream().map((ky) -> {
+                this.key = ky;
+                return ky;
+            }).filter((ky) -> (formDatas.get(ky).getClass() == JPasswordField.class)).map((ky) -> (JPasswordField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+                modelFinal.put(this.key.toString(), ((JPasswordField) val).getText());
+            });
+            /**
+             * JTextPane.class
+             */
+            formDatas.keySet().stream().map((ky) -> {
+                this.key = ky;
+                return ky;
+            }).filter((ky) -> (formDatas.get(ky).getClass() == JTextPane.class)).map((ky) -> (JTextPane) formDatas.get(ky)).forEachOrdered((Object val) -> {
+                modelFinal.put(this.key.toString(), ((JTextPane) val).getText());
+            });
+            /**
+             * JFormattedTextField.class
+             */
+            formDatas.keySet().stream().map((ky) -> {
+                this.key = ky;
+                return ky;
+            }).filter((ky) -> (formDatas.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+                modelFinal.put(this.key.toString(), ((JFormattedTextField) val).getText());
+            });
+
+            GlobalParameters.addVar(Model.toString(), modelFinal);
+        }
+    }
+
+    public void getModelData(HashMap model) {
         /**
          * JTextField.class
          */
-        formDatas.keySet().stream().map((ky) -> {
+//        formDatas.keySet().stream().map((ky) -> {
+//            this.key = ky;
+//            return ky;
+//        }).filter((ky) -> (formDatas.get(ky).getClass() == JTextField.class)).map((ky) -> (JTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+//            ((JTextField) val).setText(getValueModelFromKey(this.key.toString(), model).toString());//model.get(this.key.toString()).toString());
+//        });
+
+        fieldSearch.keySet().stream().map((ky) -> {
             this.key = ky;
             return ky;
-        }).filter((ky) -> (formDatas.get(ky).getClass() == JTextField.class)).map((ky) -> (JTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            modelFinal.put(this.key.toString(), ((JTextField) val).getText());
+        }).filter((ky) -> (fieldSearch.get(ky).getClass() == JTextField.class)).map((ky) -> (JTextField) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
+            ((JTextField) val).setText(getValueModelFromKey(this.key.toString(), model).toString());//model.get(this.key.toString()).toString());
         });
         /**
          * JPasswordField.class
@@ -558,7 +774,7 @@ public class ModelForm extends javax.swing.JDialog {
             this.key = ky;
             return ky;
         }).filter((ky) -> (formDatas.get(ky).getClass() == JPasswordField.class)).map((ky) -> (JPasswordField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            modelFinal.put(this.key.toString(), ((JPasswordField) val).getText());
+            ((JPasswordField) val).setText(model.get(this.key.toString()).toString());
         });
         /**
          * JTextPane.class
@@ -567,7 +783,7 @@ public class ModelForm extends javax.swing.JDialog {
             this.key = ky;
             return ky;
         }).filter((ky) -> (formDatas.get(ky).getClass() == JTextPane.class)).map((ky) -> (JTextPane) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            modelFinal.put(this.key.toString(), ((JTextPane) val).getText());
+            ((JTextPane) val).setText(model.get(this.key.toString()).toString());
         });
         /**
          * JFormattedTextField.class
@@ -576,10 +792,10 @@ public class ModelForm extends javax.swing.JDialog {
             this.key = ky;
             return ky;
         }).filter((ky) -> (formDatas.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            modelFinal.put(this.key.toString(), ((JFormattedTextField) val).getText());
+            ((JFormattedTextField) val).setText(model.get(this.key.toString()).toString());
         });
 
-        GlobalParameters.addVar("model", modelFinal);
+//            GlobalParameters.addVar("model", modelFinal);
     }
 
     private void actionBtnCancel(java.awt.event.ActionEvent evt) {
@@ -593,40 +809,37 @@ public class ModelForm extends javax.swing.JDialog {
         dispose();
     }
 
-    public void setActionMenu(Enums etatAction) {
-        if (null == etatAction) {
-            btnCreate.setSelected(true);
-            this.etatAction = CREATE;
-        } else//        this.etatAction = Enums.CREATE;
-        {
-            this.etatAction = etatAction;
-            switch (etatAction) {
-                case CREATE:
-                    btnCreate.setSelected(true);
-                    break;
-                case MODIF:
-                    btnModify.setSelected(true);
-                    break;
-                case DUPPLICATE:
-                    btnDupplicate.setSelected(true);
-                    break;
-                case DELETE:
-                    btnDelete.setSelected(true);
-                    break;
-                default:
-                    break;
-            }
+    public void setActionMenu() {
+        reset();
+        setTitle(stateMenuLabel(title, hideActionMenuTitle));
+        switch (etatAction) {
+            case CREATE:
+                btnCreate.setSelected(true);
+                setDefaultActionRef();
+                break;
+            case MODIF:
+                btnModify.setSelected(true);
+                setActionRef();
+                break;
+            case DUPPLICATE:
+                btnDupplicate.setSelected(true);
+                setActionRef();
+                break;
+            case DELETE:
+                btnDelete.setSelected(true);
+                setActionRef();
+                break;
+            default:
+                break;
         }
     }
 
     public void setActionRef() {
-//        this.inputRef = fieldActionRef;
         this.inputRef.setBackground(new Color(223, 246, 238));//68, 127, 255));
         this.inputRef.requestFocus();
     }
 
     public void setDefaultActionRef() {
-//        this.inputRef = fieldActionRef;
         this.inputRef.setBackground(new Color(255, 255, 255));
         this.inputRef.setFocusable(true);
     }
@@ -640,7 +853,6 @@ public class ModelForm extends javax.swing.JDialog {
     }
 
     public void addActionSupplementaire() {
-
     }
 
     public void setAllComponents(Object... components) {
@@ -650,7 +862,7 @@ public class ModelForm extends javax.swing.JDialog {
             component = new HashMap();
             component.put(Type, com.getClass());
             component.put(Value, com);
-            
+
             allComponents.add(component);
         }
     }
@@ -664,24 +876,24 @@ public class ModelForm extends javax.swing.JDialog {
                  * JTextField.class
                  */
                 if (component.get(Type) == JTextField.class) {
-                    ((JTextField) component.get(Value)).setText("");
+                    ((JTextField) component.get(Value)).setText(null);
                     ((JTextField) component.get(Value)).setFocusable(true);
-                    
+
                     /**
                      * JPasswordField.class
                      */
                 } else if (component.get(Type) == JPasswordField.class) {
-                    ((JPasswordField) component.get(Value)).setText("");
+                    ((JPasswordField) component.get(Value)).setText(null);
                     /**
                      * JTextPane.class
                      */
                 } else if (component.get(Type) == JTextPane.class) {
-                    ((JTextPane) component.get(Value)).setText("");
+                    ((JTextPane) component.get(Value)).setText(null);
                     /**
                      * JFormattedTextField.class
                      */
                 } else if (component.get(Type) == JFormattedTextField.class) {
-                    ((JFormattedTextField) component.get(Value)).setText("");
+                    ((JFormattedTextField) component.get(Value)).setText(null);
                 } else {
                     System.out.println(component.get(Type).toString() + " : Type non géré.");
                 }
@@ -690,27 +902,27 @@ public class ModelForm extends javax.swing.JDialog {
     }
 
     public void reset(Object... components) {
-        if (components != null || components.length>0) {
-            for(Object component : components){
+        if (components != null || components.length > 0) {
+            for (Object component : components) {
                 if (component.getClass() == JTextField.class) {
-                    ((JTextField) component).setText("");
+                    ((JTextField) component).setText(null);
                     ((JTextField) component).setFocusable(true);
 
                     /**
                      * JPasswordField.class
                      */
                 } else if (component.getClass() == JPasswordField.class) {
-                    ((JPasswordField) component).setText("");
+                    ((JPasswordField) component).setText(null);
                     /**
                      * JTextPane.class
                      */
                 } else if (component.getClass() == JTextPane.class) {
-                    ((JTextPane) component).setText("");
+                    ((JTextPane) component).setText(null);
                     /**
                      * JFormattedTextField.class
                      */
                 } else if (component.getClass() == JFormattedTextField.class) {
-                    ((JFormattedTextField) component).setText("");
+                    ((JFormattedTextField) component).setText(null);
                 } else {
                     System.out.println(component.toString() + " : Type non géré.");
                 }
@@ -727,7 +939,7 @@ public class ModelForm extends javax.swing.JDialog {
             this.key = ky;
             return ky;
         }).filter((ky) -> (formDatas.get(ky).getClass() == JTextField.class)).map((ky) -> (JTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            ((JTextField) formDatas.get(this.key.toString())).setText("");
+            ((JTextField) formDatas.get(this.key.toString())).setText(null);
         });
         /**
          * JPasswordField.class
@@ -736,7 +948,7 @@ public class ModelForm extends javax.swing.JDialog {
             this.key = ky;
             return ky;
         }).filter((ky) -> (formDatas.get(ky).getClass() == JPasswordField.class)).map((ky) -> (JPasswordField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            ((JPasswordField) formDatas.get(this.key.toString())).setText("");
+            ((JPasswordField) formDatas.get(this.key.toString())).setText(null);
         });
         /**
          * JTextPane.class
@@ -745,7 +957,7 @@ public class ModelForm extends javax.swing.JDialog {
             this.key = ky;
             return ky;
         }).filter((ky) -> (formDatas.get(ky).getClass() == JTextPane.class)).map((ky) -> (JTextPane) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            ((JTextPane) formDatas.get(this.key.toString())).setText("");
+            ((JTextPane) formDatas.get(this.key.toString())).setText(null);
         });
         /**
          * JFormattedTextField.class
@@ -754,25 +966,101 @@ public class ModelForm extends javax.swing.JDialog {
             this.key = ky;
             return ky;
         }).filter((ky) -> (formDatas.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            ((JFormattedTextField) formDatas.get(this.key.toString())).setText("");
+            ((JFormattedTextField) formDatas.get(this.key.toString())).setText(null);
         });
+    }
 
+    public void setRadiBottun(ButtonGroup group, JRadioButton... rdButtons) {
+        ActionListener action = (ActionEvent e) -> {
+            for (JRadioButton rdBtn : rdButtons) {
+                if (rdBtn.isSelected() && rdBtn == group.getSelection()) {
+                    group.setSelected(rdBtn.getModel(), true);
+                    break;
+                }
+            }
+        };
     }
     
-    public void setRadiBottun(ButtonGroup group, JRadioButton... rdButtons){
-       ActionListener action = (ActionEvent e) -> {
-           
-           for(JRadioButton rdBtn : rdButtons){
-               if(rdBtn.isSelected() && rdBtn == group.getSelection()){
-                   group.setSelected(rdBtn.getModel(), true);
-                   break;
-               }
-           }
-       };
-//            public void actionPerformed(java.awt.event.ActionEvent evt) {
-//                masculinRadioButtonActionPerformed(evt);
-//            }
-//        });
+//    protected void eventActionRef(){
+//    
+//    }
+
+    public void createList(boolean state) {
+        this.createList = state;
+
+        if (this.createList) {
+            tableModelObject = new TableModelObject(this.formDatas);
+        } else {
+            tableModelObject = null;
+        }
+    }
+
+    public void setTableModel(Object... inputs) {
+        tableModelObject.setModel(inputs);
+    }
+
+    private String stateMenuLabel(String title, boolean hideActionMenuTitle) {
+        if (null == etatAction || hideActionMenuTitle) {
+            return title;
+        } else {
+            switch (etatAction) {
+                case CREATE:
+                    return title.concat(" - ").concat(Dictionnaire.get(EnumLibelles.Business_Libelle_Creation));
+                case MODIF:
+                    return title.concat(" - ").concat(Dictionnaire.get(EnumLibelles.Business_Libelle_Modification));
+                case DUPPLICATE:
+                    return title.concat(" - ").concat(Dictionnaire.get(EnumLibelles.Business_Libelle_Dupplicate));
+                case DELETE:
+                    return title.concat(" - ").concat(Dictionnaire.get(EnumLibelles.Business_Libelle_Suppression));
+                default:
+                    return title;
+            }
+        }
+    }
+
+    public Object getValueModelFromKey(String key, HashMap model) {
+        Object value = null;
+        String[] indentKey = key.split("->");
+        HashMap modelTmp = model;
+
+        if (indentKey.length > 1) {
+            for (int i=0; i < indentKey.length; i++) {
+                Object object = modelTmp.get(indentKey[i]);
+                
+                if (object.getClass().equals(HashMap.class) || object.getClass().equals(LinkedHashMap.class)) {
+                    
+                    GlobalParameters.addVar(indentKey[i], object);
+
+                    modelTmp = (HashMap) object;
+//                } else if(object.getClass().equals(String.class)){
+                    
+//                    HashMap mapResult = null;
+//                    try{
+//                        Object dataObject = cbManager.getEntity(indentKey[i], object.toString());
+//                        mapResult = (HashMap) cbManager.convertToObject(dataObject, HashMap.class);
+//                        
+//                        GlobalParameters.addVar(indentKey[i+1], mapResult);
+//
+//                        modelTmp = (HashMap) mapResult;
+//                        value = modelTmp.get(indentKey[i]);
+//                    }catch(Exception e){
+//                    }
+                }else{
+                    
+//                    GlobalParameters.addVar(indentKey[i+1], modelTmp);
+
+                    value = modelTmp.get(indentKey[i]);
+                }
+            }
+        } else {
+            value = modelTmp.get(key);
+        }
+
+        return value;
+    }
+
+    protected void eventActionRef() {
+
     }
 
     // Variables declaration - do not modify                     

@@ -34,7 +34,7 @@ public class StudentForm extends ModelForm {
         super(title, 960, 520);
 
         this.showActionBar();
-        this.setActionMenu(CREATE);
+        etatAction = CREATE;
         this.showMenuBar();
 
 //        this.addFormData("userCode", title);

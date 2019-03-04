@@ -190,7 +190,7 @@
                     <Property name="name" type="java.lang.String" value="codeInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;code&quot;, codeInput);&#xd;&#xa;this.setRef(codeInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;code&quot;, codeInput);&#xd;&#xa;this.setRef(codeInput);&#xd;&#xa;fieldSearch.put(&quot;code&quot;, codeInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="intituleInput">
@@ -198,7 +198,7 @@
                     <Property name="name" type="java.lang.String" value="intituleInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;intitule&quot;, intituleInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;intitule&quot;, intituleInput);&#xd;&#xa;fieldSearch.put(&quot;intitule&quot;, intituleInput);"/>
                   </AuxValues>
                 </Component>
               </SubComponents>
@@ -268,13 +268,17 @@
                     <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;sectionsId&quot;, sectionsInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch.put(&quot;classeId-&gt;sectionsId-&gt;code&quot;, sectionsInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="sectionsIntituleInput">
                   <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch.put(&quot;classeId-&gt;sectionsId-&gt;intitule&quot;, sectionsIntituleInput);"/>
+                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -343,13 +347,17 @@
                     <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;classeId&quot;, classeInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;classeId&quot;, classeInput);&#xd;&#xa;fieldSearch.put(&quot;classeId-&gt;code&quot;, classeInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="classeIntituleInput">
                   <Properties>
+                    <Property name="editable" type="boolean" value="false"/>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch.put(&quot;classeId-&gt;intitule&quot;, classeIntituleInput);"/>
+                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>

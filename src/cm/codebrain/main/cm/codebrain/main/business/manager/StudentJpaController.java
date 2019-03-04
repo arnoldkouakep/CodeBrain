@@ -10,7 +10,6 @@ import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import cm.codebrain.main.business.entitie.Classe;
 import cm.codebrain.main.business.entitie.Salle;
 import cm.codebrain.main.business.entitie.Student;
 import cm.codebrain.main.business.entitie.Users;
@@ -40,11 +39,6 @@ public class StudentJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Classe classeId = student.getClasseId();
-            if (classeId != null) {
-                classeId = em.getReference(classeId.getClass(), classeId.getClasseId());
-                student.setClasseId(classeId);
-            }
             Salle salleId = student.getSalleId();
             if (salleId != null) {
                 salleId = em.getReference(salleId.getClass(), salleId.getSalleId());
@@ -61,10 +55,6 @@ public class StudentJpaController implements Serializable {
                 student.setUserCreated(userCreated);
             }
             em.persist(student);
-            if (classeId != null) {
-                classeId.getStudentCollection().add(student);
-                classeId = em.merge(classeId);
-            }
             if (salleId != null) {
                 salleId.getStudentCollection().add(student);
                 salleId = em.merge(salleId);
@@ -96,18 +86,12 @@ public class StudentJpaController implements Serializable {
             em = getEntityManager();
             em.getTransaction().begin();
             Student persistentStudent = em.find(Student.class, student.getStudentId());
-            Classe classeIdOld = persistentStudent.getClasseId();
-            Classe classeIdNew = student.getClasseId();
             Salle salleIdOld = persistentStudent.getSalleId();
             Salle salleIdNew = student.getSalleId();
             Users userModifiedOld = persistentStudent.getUserModified();
             Users userModifiedNew = student.getUserModified();
             Users userCreatedOld = persistentStudent.getUserCreated();
             Users userCreatedNew = student.getUserCreated();
-            if (classeIdNew != null) {
-                classeIdNew = em.getReference(classeIdNew.getClass(), classeIdNew.getClasseId());
-                student.setClasseId(classeIdNew);
-            }
             if (salleIdNew != null) {
                 salleIdNew = em.getReference(salleIdNew.getClass(), salleIdNew.getSalleId());
                 student.setSalleId(salleIdNew);
@@ -121,14 +105,6 @@ public class StudentJpaController implements Serializable {
                 student.setUserCreated(userCreatedNew);
             }
             student = em.merge(student);
-            if (classeIdOld != null && !classeIdOld.equals(classeIdNew)) {
-                classeIdOld.getStudentCollection().remove(student);
-                classeIdOld = em.merge(classeIdOld);
-            }
-            if (classeIdNew != null && !classeIdNew.equals(classeIdOld)) {
-                classeIdNew.getStudentCollection().add(student);
-                classeIdNew = em.merge(classeIdNew);
-            }
             if (salleIdOld != null && !salleIdOld.equals(salleIdNew)) {
                 salleIdOld.getStudentCollection().remove(student);
                 salleIdOld = em.merge(salleIdOld);
@@ -181,11 +157,6 @@ public class StudentJpaController implements Serializable {
                 student.getStudentId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The student with id " + id + " no longer exists.", enfe);
-            }
-            Classe classeId = student.getClasseId();
-            if (classeId != null) {
-                classeId.getStudentCollection().remove(student);
-                classeId = em.merge(classeId);
             }
             Salle salleId = student.getSalleId();
             if (salleId != null) {

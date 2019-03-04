@@ -29,11 +29,9 @@ public class ClasseForm extends ModelForm {
         super(title, 520, 320);
 
         this.showActionBar();
-        this.setActionMenu(CREATE);
+        etatAction = CREATE;
         this.showMenuBar();
 
-//        this.addFormData("userCode", title);
-//    addActionSupplementaire(
     }
 
     @Override
@@ -61,17 +59,24 @@ public class ClasseForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(sectionsInput, entitySections, parametresGrid, null, args, sectionsInput, sectionsIntituleInput);
+        addAction(sectionsInput, entitySections, entitySections.toLowerCase()+"Id", parametresGrid, null, args, sectionsInput, sectionsIntituleInput);
     }
+   
     @Override
-    public void actionBtnValider(java.awt.event.ActionEvent evt) {
-        super.actionBtnValider(evt);
+    protected void eventActionRef() {
+
+        String[][] parametresGrid = {
+            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)},
+            {"intitule",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
+
+        addAction(codeInput, entity, entity.toLowerCase()+"Id", parametresGrid, null, null, codeInput);
     }
 
     @Override
     public void makeModelData(){
         super.makeModelData();
-        modelFinal.put(entitySections.toLowerCase()+"Id", GlobalParameters.getVar(entitySections));
+        modelFinal.put(entitySections.toLowerCase()+"Id", GlobalParameters.getVar(entitySections.toLowerCase()+"Id"));
 
     }
 
@@ -112,9 +117,11 @@ public class ClasseForm extends ModelForm {
         codeInput.setName("codeInput"); // NOI18N
         this.addFormData("code", codeInput);
         this.setRef(codeInput);
+        fieldSearch.put("code", codeInput);
 
         intituleInput.setName("intituleInput"); // NOI18N
         this.addFormData("intitule", intituleInput);
+        fieldSearch.put("intitule", intituleInput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
         panelIdentifiant.setLayout(panelIdentifiantLayout);
@@ -153,8 +160,10 @@ public class ClasseForm extends ModelForm {
 
         sectionsInput.setName("code"); // NOI18N
         this.addFormData("sectionsId", sectionsInput);
+        fieldSearch.put("Sections->sectionsId->code", sectionsInput);
 
         sectionsIntituleInput.setName("intitule"); // NOI18N
+        fieldSearch.put("Sections->sectionsId->intitule", sectionsIntituleInput);
 
         javax.swing.GroupLayout panelCategorieLayout = new javax.swing.GroupLayout(panelCategorie);
         panelCategorie.setLayout(panelCategorieLayout);

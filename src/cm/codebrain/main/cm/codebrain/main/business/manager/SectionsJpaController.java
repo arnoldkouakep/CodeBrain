@@ -12,14 +12,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import cm.codebrain.main.business.entitie.Etablissement;
 import cm.codebrain.main.business.entitie.Users;
-import cm.codebrain.main.business.entitie.Salle;
-import java.util.ArrayList;
-import java.util.Collection;
 import cm.codebrain.main.business.entitie.Classe;
 import cm.codebrain.main.business.entitie.Sections;
 import cm.codebrain.main.business.manager.exceptions.IllegalOrphanException;
 import cm.codebrain.main.business.manager.exceptions.NonexistentEntityException;
 import cm.codebrain.main.business.manager.exceptions.PreexistingEntityException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -40,9 +39,6 @@ public class SectionsJpaController implements Serializable {
     }
 
     public void create(Sections sections) throws PreexistingEntityException, Exception {
-        if (sections.getSalleCollection() == null) {
-            sections.setSalleCollection(new ArrayList<Salle>());
-        }
         if (sections.getClasseCollection() == null) {
             sections.setClasseCollection(new ArrayList<Classe>());
         }
@@ -65,12 +61,6 @@ public class SectionsJpaController implements Serializable {
                 userCreated = em.getReference(userCreated.getClass(), userCreated.getUsersId());
                 sections.setUserCreated(userCreated);
             }
-            Collection<Salle> attachedSalleCollection = new ArrayList<Salle>();
-            for (Salle salleCollectionSalleToAttach : sections.getSalleCollection()) {
-                salleCollectionSalleToAttach = em.getReference(salleCollectionSalleToAttach.getClass(), salleCollectionSalleToAttach.getSalleId());
-                attachedSalleCollection.add(salleCollectionSalleToAttach);
-            }
-            sections.setSalleCollection(attachedSalleCollection);
             Collection<Classe> attachedClasseCollection = new ArrayList<Classe>();
             for (Classe classeCollectionClasseToAttach : sections.getClasseCollection()) {
                 classeCollectionClasseToAttach = em.getReference(classeCollectionClasseToAttach.getClass(), classeCollectionClasseToAttach.getClasseId());
@@ -89,15 +79,6 @@ public class SectionsJpaController implements Serializable {
             if (userCreated != null) {
                 userCreated.getSectionsCollection().add(sections);
                 userCreated = em.merge(userCreated);
-            }
-            for (Salle salleCollectionSalle : sections.getSalleCollection()) {
-                Sections oldSectionsIdOfSalleCollectionSalle = salleCollectionSalle.getSectionsId();
-                salleCollectionSalle.setSectionsId(sections);
-                salleCollectionSalle = em.merge(salleCollectionSalle);
-                if (oldSectionsIdOfSalleCollectionSalle != null) {
-                    oldSectionsIdOfSalleCollectionSalle.getSalleCollection().remove(salleCollectionSalle);
-                    oldSectionsIdOfSalleCollectionSalle = em.merge(oldSectionsIdOfSalleCollectionSalle);
-                }
             }
             for (Classe classeCollectionClasse : sections.getClasseCollection()) {
                 Sections oldSectionsIdOfClasseCollectionClasse = classeCollectionClasse.getSectionsId();
@@ -133,19 +114,9 @@ public class SectionsJpaController implements Serializable {
             Users userModifiedNew = sections.getUserModified();
             Users userCreatedOld = persistentSections.getUserCreated();
             Users userCreatedNew = sections.getUserCreated();
-            Collection<Salle> salleCollectionOld = persistentSections.getSalleCollection();
-            Collection<Salle> salleCollectionNew = sections.getSalleCollection();
             Collection<Classe> classeCollectionOld = persistentSections.getClasseCollection();
             Collection<Classe> classeCollectionNew = sections.getClasseCollection();
             List<String> illegalOrphanMessages = null;
-            for (Salle salleCollectionOldSalle : salleCollectionOld) {
-                if (!salleCollectionNew.contains(salleCollectionOldSalle)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain Salle " + salleCollectionOldSalle + " since its sectionsId field is not nullable.");
-                }
-            }
             for (Classe classeCollectionOldClasse : classeCollectionOld) {
                 if (!classeCollectionNew.contains(classeCollectionOldClasse)) {
                     if (illegalOrphanMessages == null) {
@@ -169,13 +140,6 @@ public class SectionsJpaController implements Serializable {
                 userCreatedNew = em.getReference(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 sections.setUserCreated(userCreatedNew);
             }
-            Collection<Salle> attachedSalleCollectionNew = new ArrayList<Salle>();
-            for (Salle salleCollectionNewSalleToAttach : salleCollectionNew) {
-                salleCollectionNewSalleToAttach = em.getReference(salleCollectionNewSalleToAttach.getClass(), salleCollectionNewSalleToAttach.getSalleId());
-                attachedSalleCollectionNew.add(salleCollectionNewSalleToAttach);
-            }
-            salleCollectionNew = attachedSalleCollectionNew;
-            sections.setSalleCollection(salleCollectionNew);
             Collection<Classe> attachedClasseCollectionNew = new ArrayList<Classe>();
             for (Classe classeCollectionNewClasseToAttach : classeCollectionNew) {
                 classeCollectionNewClasseToAttach = em.getReference(classeCollectionNewClasseToAttach.getClass(), classeCollectionNewClasseToAttach.getClasseId());
@@ -207,17 +171,6 @@ public class SectionsJpaController implements Serializable {
             if (userCreatedNew != null && !userCreatedNew.equals(userCreatedOld)) {
                 userCreatedNew.getSectionsCollection().add(sections);
                 userCreatedNew = em.merge(userCreatedNew);
-            }
-            for (Salle salleCollectionNewSalle : salleCollectionNew) {
-                if (!salleCollectionOld.contains(salleCollectionNewSalle)) {
-                    Sections oldSectionsIdOfSalleCollectionNewSalle = salleCollectionNewSalle.getSectionsId();
-                    salleCollectionNewSalle.setSectionsId(sections);
-                    salleCollectionNewSalle = em.merge(salleCollectionNewSalle);
-                    if (oldSectionsIdOfSalleCollectionNewSalle != null && !oldSectionsIdOfSalleCollectionNewSalle.equals(sections)) {
-                        oldSectionsIdOfSalleCollectionNewSalle.getSalleCollection().remove(salleCollectionNewSalle);
-                        oldSectionsIdOfSalleCollectionNewSalle = em.merge(oldSectionsIdOfSalleCollectionNewSalle);
-                    }
-                }
             }
             for (Classe classeCollectionNewClasse : classeCollectionNew) {
                 if (!classeCollectionOld.contains(classeCollectionNewClasse)) {
@@ -260,13 +213,6 @@ public class SectionsJpaController implements Serializable {
                 throw new NonexistentEntityException("The sections with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            Collection<Salle> salleCollectionOrphanCheck = sections.getSalleCollection();
-            for (Salle salleCollectionOrphanCheckSalle : salleCollectionOrphanCheck) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("This Sections (" + sections + ") cannot be destroyed since the Salle " + salleCollectionOrphanCheckSalle + " in its salleCollection field has a non-nullable sectionsId field.");
-            }
             Collection<Classe> classeCollectionOrphanCheck = sections.getClasseCollection();
             for (Classe classeCollectionOrphanCheckClasse : classeCollectionOrphanCheck) {
                 if (illegalOrphanMessages == null) {

@@ -12,6 +12,10 @@ package cm.codebrain.ui.application.enumerations;
 public enum EnumLibelles {
 
     Business_Libelle_Title,
+    Business_Libelle_Creation,
+    Business_Libelle_Modification,
+    Business_Libelle_Dupplicate,
+    Business_Libelle_Suppression,
     Business_Libelle_Username,
     Business_Libelle_Password,
     Business_Libelle_Annuler,
@@ -51,6 +55,7 @@ public enum EnumLibelles {
     Business_Libelle_level,
     Business_Libelle_identifiant,
     Business_Status_StateDb_Create,
+    Business_Status_StateDb_Update,
     Business_Libelle_Filtre,
     Business_Status_StateDb_Delete,
     Business_Libelle_Intitule,

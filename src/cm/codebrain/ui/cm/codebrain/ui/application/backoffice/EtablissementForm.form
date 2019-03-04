@@ -203,7 +203,7 @@
                     <Property name="name" type="java.lang.String" value="nomAbregeInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;nameAbrege&quot;, nomAbregeInput);&#xd;&#xa;this.setRef(nomAbregeInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;nameAbrege&quot;, nomAbregeInput);&#xd;&#xa;this.setRef(nomAbregeInput);&#xd;&#xa;fieldSearch.put(&quot;nameAbrege&quot;, nomAbregeInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelNomComplet">
@@ -230,7 +230,7 @@
                         <Property name="contentType" type="java.lang.String" value="text" noResource="true"/>
                       </Properties>
                       <AuxValues>
-                        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;fullName&quot;, nomCompletInput);"/>
+                        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;fullName&quot;, nomCompletInput);&#xd;&#xa;fieldSearch.put(&quot;fullName&quot;, nomCompletInput);"/>
                       </AuxValues>
                     </Component>
                   </SubComponents>
@@ -256,7 +256,7 @@
                   <SubComponents>
                     <Component class="javax.swing.JTextPane" name="adresseInput">
                       <AuxValues>
-                        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;adresse&quot;, adresseInput);"/>
+                        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;adresse&quot;, adresseInput);&#xd;&#xa;fieldSearch.put(&quot;adresse&quot;, adresseInput);"/>
                       </AuxValues>
                     </Component>
                   </SubComponents>
@@ -266,7 +266,7 @@
                     <Property name="name" type="java.lang.String" value="intituleInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;ville&quot;, villeInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;ville&quot;, villeInput);&#xd;&#xa;fieldSearch.put(&quot;ville&quot;, villeInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelVille">
@@ -298,7 +298,7 @@
                     <Property name="name" type="java.lang.String" value="intituleInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;telephone&quot;, telephoneInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;telephone&quot;, telephoneInput);&#xd;&#xa;fieldSearch.put(&quot;telephone&quot;, telephoneInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelEmail">
@@ -318,7 +318,7 @@
                     <Property name="name" type="java.lang.String" value="intituleInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;email&quot;, emailInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;email&quot;, emailInput);&#xd;&#xa;fieldSearch.put(&quot;email&quot;, emailInput);"/>
                   </AuxValues>
                 </Component>
               </SubComponents>

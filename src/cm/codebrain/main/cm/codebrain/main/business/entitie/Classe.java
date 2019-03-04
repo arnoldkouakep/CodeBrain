@@ -5,8 +5,8 @@
  */
 package cm.codebrain.main.business.entitie;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Classe.findByStateDb", query = "SELECT c FROM Classe c WHERE c.stateDb = :stateDb")
     , @NamedQuery(name = "Classe.findByDtCreated", query = "SELECT c FROM Classe c WHERE c.dtCreated = :dtCreated")
     , @NamedQuery(name = "Classe.findByDtModified", query = "SELECT c FROM Classe c WHERE c.dtModified = :dtModified")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Classe.class)
 public class Classe implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,26 +64,18 @@ public class Classe implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "classeId")
-    @JsonIgnore
-    private Collection<Student> studentCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "classeId")
-    @JsonIgnore
     private Collection<Salle> salleCollection;
     @JoinColumn(name = "GROUPE_ID", referencedColumnName = "GROUPE_ID")
     @ManyToOne
-    @JsonBackReference(value = "GROUPE_ID")
     private Groupe groupeId;
     @JoinColumn(name = "SECTIONS_ID", referencedColumnName = "SECTIONS_ID", nullable = false)
     @ManyToOne(optional = false)
-    @JsonBackReference(value = "SECTIONS_ID")
     private Sections sectionsId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
 
     public Classe() {
@@ -144,15 +137,6 @@ public class Classe implements Serializable {
 
     public void setDtModified(Date dtModified) {
         this.dtModified = dtModified;
-    }
-
-    @XmlTransient
-    public Collection<Student> getStudentCollection() {
-        return studentCollection;
-    }
-
-    public void setStudentCollection(Collection<Student> studentCollection) {
-        this.studentCollection = studentCollection;
     }
 
     @XmlTransient

@@ -13,7 +13,6 @@ import cm.codebrain.ui.application.implement.Executable;
 import cm.codebrain.ui.application.security.Loading;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import static java.awt.image.ImageObserver.WIDTH;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +44,7 @@ public class InputSearchForm extends javax.swing.JDialog {
      * A return status code - returned if OK button has been pressed
      */
     public static final int RET_OK = 1;
+    private static final long serialVersionUID = 1L;
     private List<String> columnValues = new ArrayList<>();
     private List columnIndex = new ArrayList();
     private List<String> columnNames;
@@ -53,8 +53,9 @@ public class InputSearchForm extends javax.swing.JDialog {
 //    private Vector<Object> result;
     private Object[] imputsResultFields;
     private List<HashMap> modelFinal;
-//    private List modelComplet;
+    private HashMap modelResult;
     private String entity;
+    private String keyParam;
     private Object filter;
     private TableRowSorter<TableModel> sorter;
 
@@ -81,13 +82,15 @@ public class InputSearchForm extends javax.swing.JDialog {
         });
     }
 
-    public InputSearchForm(String entityName, List<HashMap> modelFinal, String[][] parametresGrid, Object... imputsResultFields) {
+    public InputSearchForm(String entityName, String keyParam, List<HashMap> modelFinal, String[][] parametresGrid, Object... imputsResultFields) {
 
         super();
         
         this.modelFinal = modelFinal;
         this.imputsResultFields = imputsResultFields;
         this.entity = entityName;
+        
+        this.keyParam = keyParam;
 
         initComponents();
 
@@ -323,8 +326,14 @@ public class InputSearchForm extends javax.swing.JDialog {
                         System.out.println(e.getMessage());
                     }
                 }
+                
+                setResult(result);
 
-                GlobalParameters.addVar(entity, result);
+                if(keyParam == null)
+                    GlobalParameters.addVar(entity, result);
+                else
+                    GlobalParameters.addVar(keyParam, result);
+                
                 doClose(RET_OK);
                 return result;
             }
@@ -334,10 +343,19 @@ public class InputSearchForm extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(okButton), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
 
             }
+
         });
 
     }//GEN-LAST:event_okButtonActionPerformed
 
+    private void setResult(HashMap result) {
+        this.modelResult = result;
+    }
+    
+    public HashMap getResult(){
+        return this.modelResult;
+    }
+    
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         doClose(RET_CANCEL);
     }//GEN-LAST:event_cancelButtonActionPerformed

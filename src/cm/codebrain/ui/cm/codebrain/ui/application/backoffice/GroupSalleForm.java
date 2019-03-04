@@ -7,7 +7,6 @@ package cm.codebrain.ui.application.backoffice;
 
 import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
-import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
 import static cm.codebrain.ui.application.enumerations.Enums.Type;
@@ -31,6 +30,8 @@ public class GroupSalleForm extends ModelForm {
     private final String entityClasse = "Classe";
     private TableRowSorter<TableModel> sorter;
     private DefaultTableModel tableModel;
+    
+    private final String[] columnsId = {"","","",""};
 
     /**
      * Creates new form UserForm
@@ -42,7 +43,7 @@ public class GroupSalleForm extends ModelForm {
 
         this.showActionBar();
 
-        this.setActionMenu(CREATE);
+        etatAction = CREATE;
         this.showMenuBar();
 
 //        this.addFormData("userCode", title);
@@ -53,6 +54,7 @@ public class GroupSalleForm extends ModelForm {
     public void createForm() {
 
         this.entity = "Groupe";
+        createList(true);
 
         initComponents();
 
@@ -89,7 +91,7 @@ public class GroupSalleForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(salleInput, entitySalle, parametresGrid, filter, args, salleInput, salleIntituleInput);
+        addAction(salleInput, entitySalle, entitySalle.toLowerCase()+"Id", parametresGrid, filter, args, salleInput, salleIntituleInput);
     }
 
     private void eventClasse() {
@@ -101,20 +103,7 @@ public class GroupSalleForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(classeInput, entityClasse, parametresGrid, null, args, classeInput, classeIntituleInput);
-    }
-
-    @Override
-    public void actionBtnValider(java.awt.event.ActionEvent evt) {
-        super.actionBtnValider(evt);
-    }
-
-    @Override
-    public void makeModelData() {
-        super.makeModelData();
-//        modelFinal.put(entityCategorie.toLowerCase(), GlobalParameters.getVar(entityCategorie));
-//        modelFinal.put(entityClasse.toLowerCase(), GlobalParameters.getVar(entityClasse));
-
+        addAction(classeInput, entityClasse, entityClasse.toLowerCase()+"Id", parametresGrid, null, args, classeInput, classeIntituleInput);
     }
 
     private DefaultTableModel setModelDataTable(List<String> columnsName) {
@@ -191,7 +180,7 @@ public class GroupSalleForm extends ModelForm {
         grid = new javax.swing.JTable();
         javax.swing.JPanel jPanelButtons = new javax.swing.JPanel();
         addButton = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        subButton = new javax.swing.JButton();
         resetButton = new javax.swing.JButton();
         javax.swing.JPanel panelClasse = new javax.swing.JPanel();
         javax.swing.JLabel labelClasse = new javax.swing.JLabel();
@@ -254,7 +243,7 @@ public class GroupSalleForm extends ModelForm {
         labelSalle.setName("usernameLabel"); // NOI18N
 
         salleInput.setName("code"); // NOI18N
-        this.addFormData("salle", salleInput);
+        this.addFormData("salleId", salleInput);
 
         salleIntituleInput.setName("intitule"); // NOI18N
 
@@ -306,12 +295,22 @@ public class GroupSalleForm extends ModelForm {
         });
         jPanelButtons.add(addButton);
 
-        jButton2.setIcon(new ImageIcon(Dictionnaire.getResource(DEL).getScaledInstance(width, height, 0)));
-        jButton2.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Sub)); // NOI18N
-        jPanelButtons.add(jButton2);
+        subButton.setIcon(new ImageIcon(Dictionnaire.getResource(DEL).getScaledInstance(width, height, 0)));
+        subButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Sub)); // NOI18N
+        subButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                subButtonActionPerformed(evt);
+            }
+        });
+        jPanelButtons.add(subButton);
 
         resetButton.setIcon(new ImageIcon(Dictionnaire.getResource(RESET).getScaledInstance(width, height, 0)));
         resetButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Reset)); // NOI18N
+        resetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetButtonActionPerformed(evt);
+            }
+        });
         jPanelButtons.add(resetButton);
 
         panelClasse.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Classe))); // NOI18N
@@ -321,7 +320,7 @@ public class GroupSalleForm extends ModelForm {
         labelClasse.setName("usernameLabel"); // NOI18N
 
         classeInput.setName("code"); // NOI18N
-        this.addFormData("classe", classeInput);
+        this.addFormData("classeId", classeInput);
 
         classeIntituleInput.setName("intitule"); // NOI18N
 
@@ -409,12 +408,54 @@ public class GroupSalleForm extends ModelForm {
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         // TODO add your handling code here:
-//        Ab m grid.getModel();
         Object[] newRow = {classeInput.getText(), codeInput.getText(), intituleInput.getText(), salleInput.getText()};
+        
+        setTableModel(codeInput, intituleInput, salleInput);
         
         tableModel.addRow(newRow);
         reset(classeInput, classeIntituleInput, salleInput, salleIntituleInput);
     }//GEN-LAST:event_addButtonActionPerformed
+
+    private void subButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subButtonActionPerformed
+        // TODO add your handling code here:
+        
+        
+//                ListSelectionModel selectionModel = grid.getSelectionModel();
+//                TableModel model = grid.getModel();
+                
+                
+                int rowIndex = grid.convertRowIndexToModel(grid.getSelectedRow());
+                int columns = grid.getColumnCount();
+//                int x = grid.convertRowIndexToModel(grid.getSelectedRow());
+//                int y = grid.convertColumnIndexToModel(columnIndex);
+                
+                HashMap result = new HashMap();
+                
+                for(int columnIndex=0; columnIndex < columns; columnIndex++){
+                    Object obj = grid.getModel().getValueAt(rowIndex, columnIndex);
+                    result.put("", obj);
+                }
+
+                tableModel.removeRow(rowIndex);
+                
+                
+//                int columnIndex = grid.getSelectedRow();
+//                Object obj = model.getValueAt(x, columnIndex);
+//                System.out.println(String.valueOf(obj));
+//                HashMap result = modelFinal.get(rowIndex);// tableModel.getDataVector().elementAt(grid.getSelectedRow());
+
+//         tableModel.addRow(newRow);
+        reset(classeInput, classeIntituleInput, salleInput, salleIntituleInput);
+    }//GEN-LAST:event_subButtonActionPerformed
+
+    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
+        // TODO add your handling code here:
+        int rowNumber = tableModel.getRowCount();
+        
+        for(int i=0; i<rowNumber; i++){
+            tableModel.removeRow(i);
+        }
+    }//GEN-LAST:event_resetButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -424,11 +465,11 @@ public class GroupSalleForm extends ModelForm {
     private javax.swing.JTextField codeInput;
     private javax.swing.JTable grid;
     private javax.swing.JTextField intituleInput;
-    private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton resetButton;
     private javax.swing.JTextField salleInput;
     private javax.swing.JTextField salleIntituleInput;
+    private javax.swing.JButton subButton;
     // End of variables declaration//GEN-END:variables
 
 }

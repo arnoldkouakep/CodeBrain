@@ -10,6 +10,7 @@ package cm.codebrain.ui.application.enumerations;
  * @author KSA-INET
  */
 public enum Enums {
+    STATE_ACTION,
     CREATE,
     MODIF,
     DELETE,
@@ -19,4 +20,6 @@ public enum Enums {
     Value,
     Indice,
     Entity,
+    Model,
+    User,
 }

@@ -5,7 +5,8 @@
  */
 package cm.codebrain.main.business.entitie;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -44,6 +45,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Etablissement.findByStateDb", query = "SELECT e FROM Etablissement e WHERE e.stateDb = :stateDb")
     , @NamedQuery(name = "Etablissement.findByDtCreated", query = "SELECT e FROM Etablissement e WHERE e.dtCreated = :dtCreated")
     , @NamedQuery(name = "Etablissement.findByDtModified", query = "SELECT e FROM Etablissement e WHERE e.dtModified = :dtModified")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Etablissement.class)
 public class Etablissement implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -81,11 +83,9 @@ public class Etablissement implements Serializable {
     private Collection<Sections> sectionsCollection;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
 
     public Etablissement() {

@@ -282,7 +282,7 @@
                     <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;salle&quot;, salleInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;salleId&quot;, salleInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="salleIntituleInput">
@@ -345,7 +345,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addButtonActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="jButton2">
+                <Component class="javax.swing.JButton" name="subButton">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                       <Connection code="new ImageIcon(Dictionnaire.getResource(DEL).getScaledInstance(width, height, 0))" type="code"/>
@@ -354,6 +354,9 @@
                       <ResourceString bundle="fr_fr.properties" key="Business_Libelle_Sub" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="subButtonActionPerformed"/>
+                  </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="resetButton">
                   <Properties>
@@ -364,6 +367,9 @@
                       <ResourceString bundle="fr_fr.properties" key="Business_Libelle_Reset" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
                     </Property>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="resetButtonActionPerformed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>
@@ -432,7 +438,7 @@
                     <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;classe&quot;, classeInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;classeId&quot;, classeInput);  "/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="classeIntituleInput">

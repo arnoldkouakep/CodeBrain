@@ -5,8 +5,8 @@
  */
 package cm.codebrain.main.business.entitie;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -40,6 +40,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Groupe.findByStateDb", query = "SELECT g FROM Groupe g WHERE g.stateDb = :stateDb")
     , @NamedQuery(name = "Groupe.findByDtCreated", query = "SELECT g FROM Groupe g WHERE g.dtCreated = :dtCreated")
     , @NamedQuery(name = "Groupe.findByDtModified", query = "SELECT g FROM Groupe g WHERE g.dtModified = :dtModified")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Groupe.class)
 public class Groupe implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -66,14 +67,11 @@ public class Groupe implements Serializable {
     private Salle salleId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
     @OneToMany(mappedBy = "groupeId")
-    @JsonIgnore
     private Collection<Classe> classeCollection;
 
     public Groupe() {

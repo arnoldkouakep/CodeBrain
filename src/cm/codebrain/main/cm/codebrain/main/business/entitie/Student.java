@@ -5,7 +5,8 @@
  */
 package cm.codebrain.main.business.entitie;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -41,6 +42,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Student.findBySexe", query = "SELECT s FROM Student s WHERE s.sexe = :sexe")
     , @NamedQuery(name = "Student.findByDtCreated", query = "SELECT s FROM Student s WHERE s.dtCreated = :dtCreated")
     , @NamedQuery(name = "Student.findByDtModified", query = "SELECT s FROM Student s WHERE s.dtModified = :dtModified")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Student.class)
 public class Student implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -78,21 +80,14 @@ public class Student implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @JoinColumn(name = "CLASSE_ID", referencedColumnName = "CLASSE_ID", nullable = false)
-    @ManyToOne(optional = false)
-    @JsonBackReference(value = "CLASSE_ID")
-    private Classe classeId;
     @JoinColumn(name = "SALLE_ID", referencedColumnName = "SALLE_ID", nullable = false)
     @ManyToOne(optional = false)
-    @JsonBackReference(value = "SALLE_ID")
     private Salle salleId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_MODIFIED")
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
-    @JsonBackReference(value = "USER_CREATED")
     private Users userCreated;
 
     public Student() {
@@ -199,14 +194,6 @@ public class Student implements Serializable {
 
     public void setDtModified(Date dtModified) {
         this.dtModified = dtModified;
-    }
-
-    public Classe getClasseId() {
-        return classeId;
-    }
-
-    public void setClasseId(Classe classeId) {
-        this.classeId = classeId;
     }
 
     public Salle getSalleId() {

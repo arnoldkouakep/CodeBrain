@@ -11,6 +11,7 @@ import cm.codebrain.main.business.enumerations.EnumStatus;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.StringUtils;
 import static cm.codebrain.ui.application.enumerations.Enums.Entity;
+import static cm.codebrain.ui.application.enumerations.Enums.User;
 import cm.codebrain.ui.application.security.LoginForm;
 import cm.codebrain.ui.application.security.MainForm;
 import cm.codebrain.ui.application.security.ReLoginForm;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -74,7 +76,7 @@ public class CodeBrainManager {
             Query q = em.createQuery(cq);
             Users user = (Users) q.getSingleResult();
 
-            GlobalParameters.addVar("user", user);
+            GlobalParameters.addVar(User.toString(), user);
 
             getWidgetSecurity(user);
 
@@ -148,11 +150,11 @@ public class CodeBrainManager {
         mainForm = new MainForm(this);
 
         mainForm.setVisible(true);
-        if (GlobalParameters.getVar("user") == null) {
+        if (GlobalParameters.getVar(User.toString()) == null) {
             login = new LoginForm(this, mainForm, true);
             login.setVisible(true);
         } else {
-            reLogin = new ReLoginForm(this, mainForm, true, ((Users) GlobalParameters.getVar("user")).getLogin());
+            reLogin = new ReLoginForm(this, mainForm, true, ((Users) GlobalParameters.getVar(User.toString())).getLogin());
             reLogin.setVisible(true);
         }
     }
@@ -177,11 +179,11 @@ public class CodeBrainManager {
 
     public static String generateUIDPrimaryKey() {
         String id;
-        if (GlobalParameters.getVar("user") == null) {
+        if (GlobalParameters.getVar(User.toString()) == null) {
 
             id = "CB-" + Date.from(Instant.MIN).toString();
         } else {
-            id = ((Users) GlobalParameters.getVar("user")).getLogin();
+            id = ((Users) GlobalParameters.getVar(User.toString())).getLogin();
         }
 
         return id + new UID().toString();
@@ -189,13 +191,47 @@ public class CodeBrainManager {
 
     public void createEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
+        formDatas.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
+        
+        formDatas.put("userCreated", GlobalParameters.getVar(User.toString()));
+        formDatas.put("dtCreated", new Date());
+        formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Create.toString());
+        formDatas.put("dtModified", new Date());
+        formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
+            
+        executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formDatas);
+    }
 
+    public void dupplicateEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        this.entity = entity;
+        formDatas.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
+        
+        formDatas.put("userCreated", GlobalParameters.getVar(User.toString()));
+        formDatas.put("dtCreated", new Date());
+        formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Create.toString());
+        formDatas.put("dtModified", new Date());
+        formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
+            
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formDatas);
     }
 
     public void updateEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
+        
+        formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Update.toString());
+        formDatas.put("dtModified", new Date());
+        formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
+        
+        executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "edit", formDatas);
+    }
 
+    public void deleteEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        this.entity = entity;
+        
+        formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Delete.toString());
+        formDatas.put("dtModified", new Date());
+        formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
+        
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "edit", formDatas);
     }
 
@@ -238,7 +274,6 @@ public class CodeBrainManager {
             String paramClassName = p.getType().getTypeName();
 
             Class entityClass = Class.forName(paramClassName);
-
             Object entityObject = cbMapper.mapper(modelFinal, entityClass);
 
             params.add(entityObject);
@@ -355,6 +390,11 @@ public class CodeBrainManager {
         return entityManager.getList(entity, args);
     }
 
+    public Object getEntity(String entity, String entityId) throws Exception {
+        String criteria = "entity."+entity.toLowerCase()+"Id=:arg0";
+        return getListEntity(entity, criteria, entityId).get(0);
+    }
+    
     public Object convertToObject(Object obj, String entity) throws ClassNotFoundException {
 
         String className = "cm.codebrain.main.business.entitie." + entity;

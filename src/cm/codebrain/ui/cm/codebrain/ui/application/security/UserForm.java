@@ -29,7 +29,7 @@ public class UserForm extends ModelForm {
         super(title, 520, 580);
 
         this.showActionBar();
-        this.setActionMenu(CREATE);
+        etatAction = CREATE;
         this.showMenuBar();
 
 //        this.addFormData("userCode", title);

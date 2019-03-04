@@ -14,13 +14,12 @@ import javax.persistence.criteria.Root;
 import cm.codebrain.main.business.entitie.Groupe;
 import cm.codebrain.main.business.entitie.Sections;
 import cm.codebrain.main.business.entitie.Users;
-import cm.codebrain.main.business.entitie.Student;
-import java.util.ArrayList;
-import java.util.Collection;
 import cm.codebrain.main.business.entitie.Salle;
 import cm.codebrain.main.business.manager.exceptions.IllegalOrphanException;
 import cm.codebrain.main.business.manager.exceptions.NonexistentEntityException;
 import cm.codebrain.main.business.manager.exceptions.PreexistingEntityException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -41,9 +40,6 @@ public class ClasseJpaController implements Serializable {
     }
 
     public void create(Classe classe) throws PreexistingEntityException, Exception {
-        if (classe.getStudentCollection() == null) {
-            classe.setStudentCollection(new ArrayList<Student>());
-        }
         if (classe.getSalleCollection() == null) {
             classe.setSalleCollection(new ArrayList<Salle>());
         }
@@ -71,12 +67,6 @@ public class ClasseJpaController implements Serializable {
                 userCreated = em.getReference(userCreated.getClass(), userCreated.getUsersId());
                 classe.setUserCreated(userCreated);
             }
-            Collection<Student> attachedStudentCollection = new ArrayList<Student>();
-            for (Student studentCollectionStudentToAttach : classe.getStudentCollection()) {
-                studentCollectionStudentToAttach = em.getReference(studentCollectionStudentToAttach.getClass(), studentCollectionStudentToAttach.getStudentId());
-                attachedStudentCollection.add(studentCollectionStudentToAttach);
-            }
-            classe.setStudentCollection(attachedStudentCollection);
             Collection<Salle> attachedSalleCollection = new ArrayList<Salle>();
             for (Salle salleCollectionSalleToAttach : classe.getSalleCollection()) {
                 salleCollectionSalleToAttach = em.getReference(salleCollectionSalleToAttach.getClass(), salleCollectionSalleToAttach.getSalleId());
@@ -99,15 +89,6 @@ public class ClasseJpaController implements Serializable {
             if (userCreated != null) {
                 userCreated.getClasseCollection().add(classe);
                 userCreated = em.merge(userCreated);
-            }
-            for (Student studentCollectionStudent : classe.getStudentCollection()) {
-                Classe oldClasseIdOfStudentCollectionStudent = studentCollectionStudent.getClasseId();
-                studentCollectionStudent.setClasseId(classe);
-                studentCollectionStudent = em.merge(studentCollectionStudent);
-                if (oldClasseIdOfStudentCollectionStudent != null) {
-                    oldClasseIdOfStudentCollectionStudent.getStudentCollection().remove(studentCollectionStudent);
-                    oldClasseIdOfStudentCollectionStudent = em.merge(oldClasseIdOfStudentCollectionStudent);
-                }
             }
             for (Salle salleCollectionSalle : classe.getSalleCollection()) {
                 Classe oldClasseIdOfSalleCollectionSalle = salleCollectionSalle.getClasseId();
@@ -145,19 +126,9 @@ public class ClasseJpaController implements Serializable {
             Users userModifiedNew = classe.getUserModified();
             Users userCreatedOld = persistentClasse.getUserCreated();
             Users userCreatedNew = classe.getUserCreated();
-            Collection<Student> studentCollectionOld = persistentClasse.getStudentCollection();
-            Collection<Student> studentCollectionNew = classe.getStudentCollection();
             Collection<Salle> salleCollectionOld = persistentClasse.getSalleCollection();
             Collection<Salle> salleCollectionNew = classe.getSalleCollection();
             List<String> illegalOrphanMessages = null;
-            for (Student studentCollectionOldStudent : studentCollectionOld) {
-                if (!studentCollectionNew.contains(studentCollectionOldStudent)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain Student " + studentCollectionOldStudent + " since its classeId field is not nullable.");
-                }
-            }
             for (Salle salleCollectionOldSalle : salleCollectionOld) {
                 if (!salleCollectionNew.contains(salleCollectionOldSalle)) {
                     if (illegalOrphanMessages == null) {
@@ -185,13 +156,6 @@ public class ClasseJpaController implements Serializable {
                 userCreatedNew = em.getReference(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 classe.setUserCreated(userCreatedNew);
             }
-            Collection<Student> attachedStudentCollectionNew = new ArrayList<Student>();
-            for (Student studentCollectionNewStudentToAttach : studentCollectionNew) {
-                studentCollectionNewStudentToAttach = em.getReference(studentCollectionNewStudentToAttach.getClass(), studentCollectionNewStudentToAttach.getStudentId());
-                attachedStudentCollectionNew.add(studentCollectionNewStudentToAttach);
-            }
-            studentCollectionNew = attachedStudentCollectionNew;
-            classe.setStudentCollection(studentCollectionNew);
             Collection<Salle> attachedSalleCollectionNew = new ArrayList<Salle>();
             for (Salle salleCollectionNewSalleToAttach : salleCollectionNew) {
                 salleCollectionNewSalleToAttach = em.getReference(salleCollectionNewSalleToAttach.getClass(), salleCollectionNewSalleToAttach.getSalleId());
@@ -231,17 +195,6 @@ public class ClasseJpaController implements Serializable {
             if (userCreatedNew != null && !userCreatedNew.equals(userCreatedOld)) {
                 userCreatedNew.getClasseCollection().add(classe);
                 userCreatedNew = em.merge(userCreatedNew);
-            }
-            for (Student studentCollectionNewStudent : studentCollectionNew) {
-                if (!studentCollectionOld.contains(studentCollectionNewStudent)) {
-                    Classe oldClasseIdOfStudentCollectionNewStudent = studentCollectionNewStudent.getClasseId();
-                    studentCollectionNewStudent.setClasseId(classe);
-                    studentCollectionNewStudent = em.merge(studentCollectionNewStudent);
-                    if (oldClasseIdOfStudentCollectionNewStudent != null && !oldClasseIdOfStudentCollectionNewStudent.equals(classe)) {
-                        oldClasseIdOfStudentCollectionNewStudent.getStudentCollection().remove(studentCollectionNewStudent);
-                        oldClasseIdOfStudentCollectionNewStudent = em.merge(oldClasseIdOfStudentCollectionNewStudent);
-                    }
-                }
             }
             for (Salle salleCollectionNewSalle : salleCollectionNew) {
                 if (!salleCollectionOld.contains(salleCollectionNewSalle)) {
@@ -284,13 +237,6 @@ public class ClasseJpaController implements Serializable {
                 throw new NonexistentEntityException("The classe with id " + id + " no longer exists.", enfe);
             }
             List<String> illegalOrphanMessages = null;
-            Collection<Student> studentCollectionOrphanCheck = classe.getStudentCollection();
-            for (Student studentCollectionOrphanCheckStudent : studentCollectionOrphanCheck) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("This Classe (" + classe + ") cannot be destroyed since the Student " + studentCollectionOrphanCheckStudent + " in its studentCollection field has a non-nullable classeId field.");
-            }
             Collection<Salle> salleCollectionOrphanCheck = classe.getSalleCollection();
             for (Salle salleCollectionOrphanCheckSalle : salleCollectionOrphanCheck) {
                 if (illegalOrphanMessages == null) {
