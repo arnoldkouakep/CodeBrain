@@ -5,6 +5,7 @@
  */
 package cm.codebrain.ui.application.security;
 
+import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.Locale;
@@ -229,7 +230,7 @@ public class LoginForm extends javax.swing.JDialog {
             }
 
             @Override
-            public void error(Exception ex) {
+            public void error(CodeBrainExceptions ex) {
                 JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnOk), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
             }
 

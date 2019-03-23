@@ -17,6 +17,7 @@ import cm.codebrain.ui.application.security.MainForm;
 import cm.codebrain.ui.application.security.ReLoginForm;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.rmi.server.UID;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -25,6 +26,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -62,7 +65,6 @@ public class CodeBrainManager {
         try {
 
 //            UsersJpaController userCtrl = new UsersJpaController(emfManager);
-
 //        Users user = userCtrl.authentificate(login, MD5(password));
             CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -192,46 +194,46 @@ public class CodeBrainManager {
     public void createEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
         formDatas.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
-        
+
         formDatas.put("userCreated", GlobalParameters.getVar(User.toString()));
         formDatas.put("dtCreated", new Date());
         formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Create.toString());
         formDatas.put("dtModified", new Date());
         formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
-            
+
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formDatas);
     }
 
     public void dupplicateEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
         formDatas.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
-        
+
         formDatas.put("userCreated", GlobalParameters.getVar(User.toString()));
         formDatas.put("dtCreated", new Date());
         formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Create.toString());
         formDatas.put("dtModified", new Date());
         formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
-            
+
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formDatas);
     }
 
     public void updateEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
-        
+
         formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Update.toString());
         formDatas.put("dtModified", new Date());
         formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
-        
+
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "edit", formDatas);
     }
 
     public void deleteEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
-        
+
         formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Delete.toString());
         formDatas.put("dtModified", new Date());
         formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
-        
+
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "edit", formDatas);
     }
 
@@ -247,7 +249,7 @@ public class CodeBrainManager {
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formDatas);
     }
 
-    public void executeMethod(String className, String methodName, HashMap modelFinal) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+    public void executeMethod(String className, String methodName, Object modelFinal) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
 
         java.lang.reflect.Method entityMethod = null;
 
@@ -278,7 +280,6 @@ public class CodeBrainManager {
 
             params.add(entityObject);
 
-//            System.out.println("User Value Form : " + ((Users) entityObject).getFirstName());
         }
 
         Class[] paramsClass = new Class[params.size()];
@@ -289,96 +290,23 @@ public class CodeBrainManager {
         entityMethod.invoke(instance, params.toArray()); // pass args
 
     }
-//
-//    public List getList(String ejbql, Object... args) throws Exception {
-//
-//        Query query = null;
-//        int nbreArgs;
-//        HashMap<String, Object> arg;
-//        String sqlPlus;
-//        List<Map> lstMap = new ArrayList<>();
-//
-//        int j = 0;
-//        if (args != null) {
-//            for (Object arg1 : args) {
-//                if (arg1 == null) {
-//                    ejbql = ejbql.replaceFirst("<>:arg" + j, " is not null");
-//                    ejbql = ejbql.replaceFirst("=:arg" + j, " is null");
-//                    j++;
-//                } else {
-//                    if (arg1 instanceof Object[]) {
-//                        for (Object argt : (Object[]) arg1) {
-//                            arg = new HashMap();
-//                            arg.put("key", j);
-//                            arg.put("value", argt);
-//                            lstMap.add(arg);
-//                            j++;
-//                        }
-//                    } else {
-//                        arg = new HashMap();
-//                        arg.put("key", j);
-//                        arg.put("value", arg1);
-//                        lstMap.add(arg);
-//                        j++;
-//                    }
-//                }
-//            }
-//        }
-//        nbreArgs = j;
-//
-//        String stateDbString = "stateDb !=:arg" + nbreArgs;
-//
-//        if (ejbql.contains("entity")) {
-//            stateDbString = "entity." + stateDbString;
-//        }
-//
-//        if (!ejbql.contains("where")) {
-//            sqlPlus = " where " + stateDbString;
-//        } else {
-//            sqlPlus = " and " + stateDbString;
-//        }
-//        String finEjb = "";
-//
-//        if (ejbql.contains("group by")) {
-//            finEjb = "group by";
-//        } else {
-//            if (ejbql.contains("order by")) {
-//                finEjb = "order by";
-//            }
-//        }
-//
-//        //sqlPlus="";
-//        if (finEjb.length() > 0) {
-//            ejbql = ejbql.replace(finEjb, sqlPlus + " " + finEjb);
-//        } else {
-//            ejbql = ejbql + sqlPlus;
-//        }
-//
-//        try {
-//
-//            query = emfManager.createEntityManager().createQuery(ejbql);
-//
-//        } catch (Exception e) {
-//            System.out.println(e.getMessage());
-//        }
-//        List list;
-//        String argsEvent = "";
-//
-//        if (lstMap.size() > 0) {
-//            for (Map map : lstMap) {
-//                query.setParameter("arg" + map.get("key"), map.get("value"));
-//            }
-//        }
-//        query.setParameter("arg" + nbreArgs,
-//                EnumLibelles.Business_Status_StateDb_Delete.toString());
-//        try {
-//            list = query.getResultList();
-//            return list;
-//        } catch (Exception e) {
-//            return null;
-//        }
-//
-//    }
+
+    public Object getObjectByExecuteMethod(String className, String methodName, final Object objectEntity) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+
+        java.lang.reflect.Method entityMethod = null;
+
+        for (java.lang.reflect.Method m : objectEntity.getClass().getMethods()) {
+            if (m.getName().equals(methodName)) {
+                entityMethod = m;
+                break;
+            }
+        }
+
+        Object value = entityMethod.invoke(objectEntity);
+
+        return value;
+
+    }
 
     public List getList(String entity, HashMap args) throws Exception {
         args.put("stateDb=!", EnumStatus.Business_Status_StateDb_Delete);
@@ -391,10 +319,10 @@ public class CodeBrainManager {
     }
 
     public Object getEntity(String entity, String entityId) throws Exception {
-        String criteria = "entity."+entity.toLowerCase()+"Id=:arg0";
+        String criteria = "entity." + entity.toLowerCase() + "Id=:arg0";
         return getListEntity(entity, criteria, entityId).get(0);
     }
-    
+
     public Object convertToObject(Object obj, String entity) throws ClassNotFoundException {
 
         String className = "cm.codebrain.main.business.entitie." + entity;
@@ -448,7 +376,21 @@ public class CodeBrainManager {
 
             return lstObjects;
         } catch (Exception e) {
-            throw new Exception(e);
+            throw new CodeBrainExceptions(e);
         }
+    }
+
+    public Object getObjectInvoke(Object objectConverted, String entity, String methodName) {
+        Object value = null;
+        try {
+            if (!methodName.startsWith("get")) {
+                methodName = "get" + getUpperValue(methodName);
+            }
+            value = getObjectByExecuteMethod("cm.codebrain.main.business.entitie." + entity, methodName, objectConverted);
+        } catch (ClassNotFoundException | NullPointerException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | InstantiationException ex) {
+            Logger.getLogger(CodeBrainManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return value;
     }
 }

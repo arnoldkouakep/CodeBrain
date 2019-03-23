@@ -14,6 +14,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Classe.findByStateDb", query = "SELECT c FROM Classe c WHERE c.stateDb = :stateDb")
     , @NamedQuery(name = "Classe.findByDtCreated", query = "SELECT c FROM Classe c WHERE c.dtCreated = :dtCreated")
     , @NamedQuery(name = "Classe.findByDtModified", query = "SELECT c FROM Classe c WHERE c.dtModified = :dtModified")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Classe.class)
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Classe implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,7 +64,7 @@ public class Classe implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "classeId")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "classeId")
     private Collection<Salle> salleCollection;
     @JoinColumn(name = "GROUPE_ID", referencedColumnName = "GROUPE_ID")
     @ManyToOne
@@ -204,5 +205,5 @@ public class Classe implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Classe[ classeId=" + classeId + " ]";
     }
-    
+
 }

@@ -40,9 +40,10 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Student.findByBirthday", query = "SELECT s FROM Student s WHERE s.birthday = :birthday")
     , @NamedQuery(name = "Student.findByBornLocation", query = "SELECT s FROM Student s WHERE s.bornLocation = :bornLocation")
     , @NamedQuery(name = "Student.findBySexe", query = "SELECT s FROM Student s WHERE s.sexe = :sexe")
+    , @NamedQuery(name = "Student.findByStateDb", query = "SELECT s FROM Student s WHERE s.stateDb = :stateDb")
     , @NamedQuery(name = "Student.findByDtCreated", query = "SELECT s FROM Student s WHERE s.dtCreated = :dtCreated")
     , @NamedQuery(name = "Student.findByDtModified", query = "SELECT s FROM Student s WHERE s.dtModified = :dtModified")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Student.class)
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Student implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -74,6 +75,8 @@ public class Student implements Serializable {
     private String sexe;
     @Lob
     private Serializable profil;
+    @Column(name = "STATE_DB", length = 64)
+    private String stateDb;
     @Column(name = "DT_CREATED")
     @Temporal(TemporalType.DATE)
     private Date dtCreated;
@@ -178,6 +181,14 @@ public class Student implements Serializable {
 
     public void setProfil(Serializable profil) {
         this.profil = profil;
+    }
+
+    public String getStateDb() {
+        return stateDb;
+    }
+
+    public void setStateDb(String stateDb) {
+        this.stateDb = stateDb;
     }
 
     public Date getDtCreated() {

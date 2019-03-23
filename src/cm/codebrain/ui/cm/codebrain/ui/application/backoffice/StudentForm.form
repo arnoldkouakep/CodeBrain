@@ -4,7 +4,7 @@
   <NonVisualComponents>
     <Component class="javax.swing.ButtonGroup" name="sexeButtonGroup">
       <AuxValues>
-        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="setRadiBottun(sexeButtonGroup, masculinRadioButton, femininRadioButton);"/>
+        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="setRadiBottun(sexeButtonGroup, masculinRadioButton, femininRadioButton);&#xd;&#xa;fieldSearch(&quot;sexe&quot;, sexeButtonGroup);&#xd;&#xa;this.addFormData(&quot;sexe&quot;, sexeButtonGroup);"/>
       </AuxValues>
     </Component>
   </NonVisualComponents>
@@ -169,7 +169,7 @@
                                                   <Component id="femininRadioButton" min="-2" max="-2" attributes="0"/>
                                               </Group>
                                               <Group type="102" attributes="0">
-                                                  <Component id="dayInput" min="-2" pref="211" max="-2" attributes="0"/>
+                                                  <Component id="birthdayInput" min="-2" pref="211" max="-2" attributes="0"/>
                                                   <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                                   <Component id="labelbornLocation" min="-2" pref="40" max="-2" attributes="0"/>
                                                   <EmptySpace max="-2" attributes="0"/>
@@ -238,8 +238,8 @@
                                   <Component id="bornLocationInput" alignment="3" max="32767" attributes="0"/>
                               </Group>
                               <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="labelMatricule4" alignment="3" max="32767" attributes="0"/>
-                                  <Component id="dayInput" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="labelMatricule4" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="birthdayInput" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -290,7 +290,7 @@
                     <Property name="name" type="java.lang.String" value="codeInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;code&quot;, codeInput);&#xd;&#xa;this.setRef(codeInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;code&quot;, codeInput);&#xd;&#xa;this.setRef(codeInput);&#xd;&#xa;fieldSearch(&quot;code&quot;, codeInput);&#xd;&#xa;"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="matriculeInput">
@@ -298,7 +298,7 @@
                     <Property name="name" type="java.lang.String" value="matriculeInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;matricule&quot;, matriculeInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;matricule&quot;, matriculeInput);&#xd;&#xa;fieldSearch(&quot;matricule&quot;, matriculeInput);&#xd;&#xa;"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="nameInput">
@@ -306,7 +306,7 @@
                     <Property name="name" type="java.lang.String" value="matriculeInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;firstName&quot;, nameInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;firstName&quot;, nameInput);&#xd;&#xa;fieldSearch(&quot;firstName&quot;, nameInput);&#xd;&#xa;"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="lastNameInput">
@@ -314,16 +314,8 @@
                     <Property name="name" type="java.lang.String" value="matriculeInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;lastName&quot;, lastNameInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;lastName&quot;, lastNameInput);&#xd;&#xa;fieldSearch(&quot;lastName&quot;, lastNameInput);&#xd;&#xa;"/>
                   </AuxValues>
-                </Component>
-                <Component class="javax.swing.JFormattedTextField" name="dayInput">
-                  <Properties>
-                    <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
-                      <Format format="dd/MM/yyyy" subtype="-1" type="1"/>
-                    </Property>
-                    <Property name="toolTipText" type="java.lang.String" value=""/>
-                  </Properties>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelfirstName">
                   <Properties>
@@ -390,7 +382,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;bornLocation&quot;, bornLocationInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;bornLocation&quot;, bornLocationInput);&#xd;&#xa;fieldSearch(&quot;bornLocation&quot;, bornLocationInput);&#xd;&#xa;"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelSexe">
@@ -413,6 +405,9 @@
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="fr_fr.properties" key="Business_Libelle_Feminin" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
                     </Property>
+                    <Property name="actionCommand" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="fr_fr.properties" key="Business_Libelle_Feminin" replaceFormat="EnumLibelles.{key}.toString()"/>
+                    </Property>
                   </Properties>
                 </Component>
                 <Component class="javax.swing.JRadioButton" name="masculinRadioButton">
@@ -424,7 +419,21 @@
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="fr_fr.properties" key="Business_Libelle_Masculin" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
                     </Property>
+                    <Property name="actionCommand" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                      <ResourceString bundle="fr_fr.properties" key="Business_Libelle_Masculin" replaceFormat="EnumLibelles.{key}.toString()"/>
+                    </Property>
                   </Properties>
+                </Component>
+                <Component class="javax.swing.JFormattedTextField" name="birthdayInput">
+                  <Properties>
+                    <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
+                      <Format format="dd/MM/yyyy" subtype="-1" type="1"/>
+                    </Property>
+                    <Property name="name" type="java.lang.String" value="birthday" noResource="true"/>
+                  </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;birthday&quot;, birthdayInput);&#xd;&#xa;fieldSearch(&quot;birthday&quot;, birthdayInput);&#xd;&#xa;"/>
+                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -457,7 +466,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="labelSections" min="-2" pref="100" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="SectionsInput" min="-2" pref="73" max="-2" attributes="0"/>
+                          <Component id="sectionsInput" min="-2" pref="73" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="sectionsIntituleInput" pref="178" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -470,7 +479,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="labelSections" alignment="3" min="-2" pref="28" max="-2" attributes="0"/>
-                              <Component id="SectionsInput" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="sectionsInput" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="sectionsIntituleInput" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <EmptySpace max="32767" attributes="0"/>
@@ -482,7 +491,7 @@
                 <Component class="javax.swing.JLabel" name="labelSections">
                   <Properties>
                     <Property name="labelFor" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
-                      <ComponentRef name="SectionsInput"/>
+                      <ComponentRef name="sectionsInput"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="i18n.properties" key="Business_Libelle_level" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
@@ -494,18 +503,21 @@
                     <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="0"/>
                   </AuxValues>
                 </Component>
-                <Component class="javax.swing.JTextField" name="SectionsInput">
+                <Component class="javax.swing.JTextField" name="sectionsInput">
                   <Properties>
                     <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;sectionsId&quot;, SectionsInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;Student-&gt;salleId-&gt;code-&gt;Salle-&gt;classeId-&gt;code-&gt;Classe-&gt;sectionsId-&gt;code&quot;, sectionsInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="sectionsIntituleInput">
                   <Properties>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;Student-&gt;salleId-&gt;code-&gt;Salle-&gt;classeId-&gt;code-&gt;Classe-&gt;sectionsId-&gt;intitule&quot;, sectionsIntituleInput);"/>
+                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -694,13 +706,16 @@
                     <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;salleId&quot;, salleInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;salleId&quot;, salleInput);&#xd;&#xa;fieldSearch(&quot;Student-&gt;salleId-&gt;code&quot;, salleInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="salleIntituleInput">
                   <Properties>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;Student-&gt;salleId-&gt;intitule&quot;, salleIntituleInput);"/>
+                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>
@@ -772,13 +787,16 @@
                     <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;classeId&quot;, classeInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;Student-&gt;salleId-&gt;code-&gt;Salle-&gt;classeId-&gt;code&quot;, classeInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="classeIntituleInput">
                   <Properties>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
+                  <AuxValues>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;Student-&gt;salleId-&gt;code-&gt;Salle-&gt;classeId-&gt;intitule&quot;, classeIntituleInput);"/>
+                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>

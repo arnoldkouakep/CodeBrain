@@ -14,6 +14,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Widget.findByAvailable", query = "SELECT w FROM Widget w WHERE w.available = :available")
     , @NamedQuery(name = "Widget.findByDtCreated", query = "SELECT w FROM Widget w WHERE w.dtCreated = :dtCreated")
     , @NamedQuery(name = "Widget.findByDtModified", query = "SELECT w FROM Widget w WHERE w.dtModified = :dtModified")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Widget.class)
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Widget implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -71,7 +72,7 @@ public class Widget implements Serializable {
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "parent")
     private Collection<Widget> widgetCollection;
     @JoinColumn(name = "PARENT", referencedColumnName = "WIDGET_ID", nullable = false)
     @ManyToOne(optional = false)

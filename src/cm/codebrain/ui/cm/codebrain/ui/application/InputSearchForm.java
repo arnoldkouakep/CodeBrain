@@ -5,6 +5,7 @@
  */
 package cm.codebrain.ui.application;
 
+import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.enumerations.EnumError;
@@ -119,7 +120,7 @@ public class InputSearchForm extends javax.swing.JDialog {
             }
 
             @Override
-            public void error(Exception ex) {
+            public void error(CodeBrainExceptions ex) {
                 JOptionPane.showMessageDialog(rootPane, Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.OK_OPTION);
             }
 
@@ -339,7 +340,7 @@ public class InputSearchForm extends javax.swing.JDialog {
             }
 
             @Override
-            public void error(Exception ex) {
+            public void error(CodeBrainExceptions ex) {
                 JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(okButton), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
 
             }

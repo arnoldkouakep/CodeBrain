@@ -5,6 +5,7 @@
  */
 package cm.codebrain.ui.application.security;
 
+import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.Task;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
@@ -79,7 +80,7 @@ public class Loading extends javax.swing.JDialog implements
             dispose();
             
             if(task.getException() != null){
-                this.executable.error(task.getException());
+                this.executable.error(new CodeBrainExceptions(task.getException()));
             }
         }
     }

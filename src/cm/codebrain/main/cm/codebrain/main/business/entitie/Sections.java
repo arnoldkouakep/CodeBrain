@@ -14,6 +14,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Sections.findByStateDb", query = "SELECT s FROM Sections s WHERE s.stateDb = :stateDb")
     , @NamedQuery(name = "Sections.findByDtCreated", query = "SELECT s FROM Sections s WHERE s.dtCreated = :dtCreated")
     , @NamedQuery(name = "Sections.findByDtModified", query = "SELECT s FROM Sections s WHERE s.dtModified = :dtModified")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Sections.class)
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Sections implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -72,7 +73,7 @@ public class Sections implements Serializable {
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sectionsId")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "sectionsId")
     private Collection<Classe> classeCollection;
 
     public Sections() {
@@ -193,5 +194,5 @@ public class Sections implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Sections[ sectionsId=" + sectionsId + " ]";
     }
-    
+
 }

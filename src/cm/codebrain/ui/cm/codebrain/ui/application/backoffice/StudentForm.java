@@ -12,6 +12,7 @@ import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
 import static cm.codebrain.ui.application.enumerations.Enums.Type;
 import static cm.codebrain.ui.application.enumerations.Enums.Entity;
+import static cm.codebrain.ui.application.enumerations.Enums.Model;
 import java.util.HashMap;
 import static cm.codebrain.ui.application.enumerations.Enums.Value;
 
@@ -47,20 +48,20 @@ public class StudentForm extends ModelForm {
         this.entity = "Student";
         initComponents();
         
-        setAllComponents(bornLocationInput, SectionsInput, sectionsIntituleInput, chooseButton, classeInput, classeIntituleInput, codeInput, dayInput, femininRadioButton, imageLabel, lastNameInput, masculinRadioButton, matriculeInput, nameInput, salleInput, salleIntituleInput, sexeButtonGroup);
+        setAllComponents(bornLocationInput, sectionsInput, sectionsIntituleInput, chooseButton, classeInput, classeIntituleInput, codeInput, birthdayInput, femininRadioButton, imageLabel, lastNameInput, masculinRadioButton, matriculeInput, nameInput, salleInput, salleIntituleInput, sexeButtonGroup);
     }
 
     @Override
     public void addActionSupplementaire() {
         super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
 
-        eventCategorie();
+        eventSections();
         eventClasse();
         eventSalle();
         
     }
 
-    private void eventCategorie() {
+    private void eventSections() {
 
         HashMap[] args = null;
 
@@ -69,12 +70,12 @@ public class StudentForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(SectionsInput, entitySections, parametresGrid, null, args, SectionsInput, sectionsIntituleInput);
+        addAction(sectionsInput, entitySections, entitySections.toLowerCase()+"Id", parametresGrid, null, args, sectionsInput, sectionsIntituleInput);
     }
 
     private void eventClasse() {
 
-        String filter = "entity.categorieId=:arg0";
+        String filter = "entity.sectionsId=:arg0";
 
         HashMap[] args = new HashMap[1];
 
@@ -82,8 +83,8 @@ public class StudentForm extends ModelForm {
 
         arg.put(Type, Entity);
         arg.put(Entity, entitySections);
-//        arg.put(clause, "categorie==");
-        arg.put(Value, SectionsInput);
+        arg.put(Model, "sectionsId");
+        arg.put(Value, sectionsInput);
 
         args[0] = arg;
 
@@ -92,49 +93,65 @@ public class StudentForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(classeInput, entityClasse, parametresGrid, filter, args, classeInput, classeIntituleInput);
+        addAction(classeInput, entityClasse, entityClasse.toLowerCase()+"Id", parametresGrid, filter, args, classeInput, classeIntituleInput);
     }
 
     private void eventSalle() {
 
-        String filter = "entity.categorieId=:arg0 and entity.classeId=:arg1";
+        String filter = "entity.classeId=:arg0";
 
-        HashMap[] args = new HashMap[2];
+        HashMap[] args = new HashMap[1];
 
         HashMap arg = new HashMap();
-        arg.put(Type, Entity);
-        arg.put(Entity, entitySections);
-        arg.put(Value, SectionsInput);
+//        arg.put(Type, Entity);
+//        arg.put(Entity, entitySections);
+//        arg.put(Model, "sectionsId");
+//        arg.put(Value, sectionsInput);
 
-        args[0] = arg;
+//        args[0] = arg;
 
         arg = new HashMap();
         arg.put(Type, Entity);
         arg.put(Entity, entityClasse);
+        arg.put(Model, "classeId");
         arg.put(Value, classeInput);
 
-        args[1] = arg;
+        args[0] = arg;
 
         String[][] parametresGrid = {
             {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)},
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(salleInput, entitySalle, parametresGrid, filter, args, salleInput, salleIntituleInput);
+        addAction(salleInput, entitySalle, entitySalle.toLowerCase()+"Id", parametresGrid, filter, args, salleInput, salleIntituleInput);
     }
 
     @Override
-    public void actionBtnValider(java.awt.event.ActionEvent evt) {
-        super.actionBtnValider(evt);
+    protected void eventActionRef() {
+        
+        String[][] parametresGrid = {
+            {"matricule", Dictionnaire.get(EnumLibelles.Business_Libelle_Matricule)},
+            {"firstName",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_nom)},
+            {"lastName",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_prenom)}};
+
+        addAction(codeInput, entity, entity.toLowerCase()+"Id", parametresGrid, null, null, codeInput);
     }
+
+    
+    
 
     @Override
     public void makeModelData() {
 
         super.makeModelData();
-        modelFinal.put(entitySections.toLowerCase()+"Id", GlobalParameters.getVar(entitySections));
-        modelFinal.put(entityClasse.toLowerCase()+"Id", GlobalParameters.getVar(entityClasse));
-        modelFinal.put(entitySalle.toLowerCase()+"Id", GlobalParameters.getVar(entitySalle));
+//        modelFinal.put(entitySections.toLowerCase()+"Id", GlobalParameters.getVar(entitySections));
+//        modelFinal.put(entityClasse.toLowerCase()+"Id", GlobalParameters.getVar(entityClasse));
+        if(masculinRadioButton.isSelected())modelFinal.put("sexe", masculinRadioButton.getActionCommand());
+        else if(femininRadioButton.isSelected())modelFinal.put("sexe", femininRadioButton.getActionCommand());
+        
+        modelFinal.put(entitySalle.toLowerCase()+"Id", GlobalParameters.getVar(entitySalle.toLowerCase()+"Id"));
 
     }
 
@@ -157,7 +174,6 @@ public class StudentForm extends ModelForm {
         matriculeInput = new javax.swing.JTextField();
         nameInput = new javax.swing.JTextField();
         lastNameInput = new javax.swing.JTextField();
-        dayInput = new javax.swing.JFormattedTextField();
         javax.swing.JLabel labelfirstName = new javax.swing.JLabel();
         javax.swing.JLabel labelLastName = new javax.swing.JLabel();
         javax.swing.JLabel labelbornLocation = new javax.swing.JLabel();
@@ -166,9 +182,10 @@ public class StudentForm extends ModelForm {
         javax.swing.JLabel labelSexe = new javax.swing.JLabel();
         femininRadioButton = new javax.swing.JRadioButton();
         masculinRadioButton = new javax.swing.JRadioButton();
+        birthdayInput = new javax.swing.JFormattedTextField();
         javax.swing.JPanel panelSections = new javax.swing.JPanel();
         javax.swing.JLabel labelSections = new javax.swing.JLabel();
-        SectionsInput = new javax.swing.JTextField();
+        sectionsInput = new javax.swing.JTextField();
         sectionsIntituleInput = new javax.swing.JTextField();
         javax.swing.JPanel panelProfil = new javax.swing.JPanel();
         chooseButton = new javax.swing.JButton();
@@ -185,6 +202,8 @@ public class StudentForm extends ModelForm {
         classeIntituleInput = new javax.swing.JTextField();
 
         setRadiBottun(sexeButtonGroup, masculinRadioButton, femininRadioButton);
+        fieldSearch("sexe", sexeButtonGroup);
+        this.addFormData("sexe", sexeButtonGroup);
 
         mainPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
 
@@ -205,18 +224,19 @@ public class StudentForm extends ModelForm {
         codeInput.setName("codeInput"); // NOI18N
         this.addFormData("code", codeInput);
         this.setRef(codeInput);
+        fieldSearch("code", codeInput);
 
         matriculeInput.setName("matriculeInput"); // NOI18N
         this.addFormData("matricule", matriculeInput);
+        fieldSearch("matricule", matriculeInput);
 
         nameInput.setName("matriculeInput"); // NOI18N
         this.addFormData("firstName", nameInput);
+        fieldSearch("firstName", nameInput);
 
         lastNameInput.setName("matriculeInput"); // NOI18N
         this.addFormData("lastName", lastNameInput);
-
-        dayInput.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd/MM/yyyy"))));
-        dayInput.setToolTipText("");
+        fieldSearch("lastName", lastNameInput);
 
         labelfirstName.setLabelFor(nameInput);
         labelfirstName.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_nom)); // NOI18N
@@ -236,16 +256,24 @@ public class StudentForm extends ModelForm {
         bornLocationInput.setName("matriculeInput"); // NOI18N
         bornLocationInput.setPreferredSize(new java.awt.Dimension(199, 28));
         this.addFormData("bornLocation", bornLocationInput);
+        fieldSearch("bornLocation", bornLocationInput);
 
         labelSexe.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Sexe)); // NOI18N
         labelSexe.setName("usernameLabel"); // NOI18N
 
         sexeButtonGroup.add(femininRadioButton);
         femininRadioButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Feminin)); // NOI18N
+        femininRadioButton.setActionCommand(EnumLibelles.Business_Libelle_Feminin.toString()); // NOI18N
 
         sexeButtonGroup.add(masculinRadioButton);
         masculinRadioButton.setSelected(true);
         masculinRadioButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Masculin)); // NOI18N
+        masculinRadioButton.setActionCommand(EnumLibelles.Business_Libelle_Masculin.toString()); // NOI18N
+
+        birthdayInput.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd/MM/yyyy"))));
+        birthdayInput.setName("birthday"); // NOI18N
+        this.addFormData("birthday", birthdayInput);
+        fieldSearch("birthday", birthdayInput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
         panelIdentifiant.setLayout(panelIdentifiantLayout);
@@ -269,7 +297,7 @@ public class StudentForm extends ModelForm {
                                         .addGap(18, 18, 18)
                                         .addComponent(femininRadioButton))
                                     .addGroup(panelIdentifiantLayout.createSequentialGroup()
-                                        .addComponent(dayInput, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(birthdayInput, javax.swing.GroupLayout.PREFERRED_SIZE, 211, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(labelbornLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -319,8 +347,8 @@ public class StudentForm extends ModelForm {
                         .addComponent(labelbornLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(bornLocationInput, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(panelIdentifiantLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(labelMatricule4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(dayInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(labelMatricule4)
+                        .addComponent(birthdayInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelIdentifiantLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelSexe, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -333,14 +361,15 @@ public class StudentForm extends ModelForm {
         panelSections.setOpaque(false);
         panelSections.setPreferredSize(new java.awt.Dimension(399, 66));
 
-        labelSections.setLabelFor(SectionsInput);
+        labelSections.setLabelFor(sectionsInput);
         labelSections.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
         labelSections.setName("usernameLabel"); // NOI18N
 
-        SectionsInput.setName("code"); // NOI18N
-        this.addFormData("sectionsId", SectionsInput);
+        sectionsInput.setName("code"); // NOI18N
+        fieldSearch("Student->salleId->code->Salle->classeId->code->Classe->sectionsId->code", sectionsInput);
 
         sectionsIntituleInput.setName("intitule"); // NOI18N
+        fieldSearch("Student->salleId->code->Salle->classeId->code->Classe->sectionsId->intitule", sectionsIntituleInput);
 
         javax.swing.GroupLayout panelSectionsLayout = new javax.swing.GroupLayout(panelSections);
         panelSections.setLayout(panelSectionsLayout);
@@ -350,7 +379,7 @@ public class StudentForm extends ModelForm {
                 .addContainerGap()
                 .addComponent(labelSections, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(SectionsInput, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(sectionsInput, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(sectionsIntituleInput, javax.swing.GroupLayout.DEFAULT_SIZE, 178, Short.MAX_VALUE)
                 .addContainerGap())
@@ -361,7 +390,7 @@ public class StudentForm extends ModelForm {
                 .addContainerGap()
                 .addGroup(panelSectionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelSections, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(SectionsInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sectionsInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(sectionsIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -399,8 +428,10 @@ public class StudentForm extends ModelForm {
 
         salleInput.setName("code"); // NOI18N
         this.addFormData("salleId", salleInput);
+        fieldSearch("Student->salleId->code", salleInput);
 
         salleIntituleInput.setName("intitule"); // NOI18N
+        fieldSearch("Student->salleId->intitule", salleIntituleInput);
 
         javax.swing.GroupLayout panelSalleLayout = new javax.swing.GroupLayout(panelSalle);
         panelSalle.setLayout(panelSalleLayout);
@@ -434,9 +465,10 @@ public class StudentForm extends ModelForm {
         labelClasse.setName("usernameLabel"); // NOI18N
 
         classeInput.setName("code"); // NOI18N
-        this.addFormData("classeId", classeInput);
+        fieldSearch("Student->salleId->code->Salle->classeId->code", classeInput);
 
         classeIntituleInput.setName("intitule"); // NOI18N
+        fieldSearch("Student->salleId->code->Salle->classeId->intitule", classeIntituleInput);
 
         javax.swing.GroupLayout panelClasseLayout = new javax.swing.GroupLayout(panelClasse);
         panelClasse.setLayout(panelClasseLayout);
@@ -522,13 +554,12 @@ public class StudentForm extends ModelForm {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField SectionsInput;
+    private javax.swing.JFormattedTextField birthdayInput;
     private javax.swing.JTextField bornLocationInput;
     private javax.swing.JButton chooseButton;
     private javax.swing.JTextField classeInput;
     private javax.swing.JTextField classeIntituleInput;
     private javax.swing.JTextField codeInput;
-    private javax.swing.JFormattedTextField dayInput;
     private javax.swing.JRadioButton femininRadioButton;
     private javax.swing.JLabel imageLabel;
     private javax.swing.JTextField lastNameInput;
@@ -537,6 +568,7 @@ public class StudentForm extends ModelForm {
     private javax.swing.JTextField nameInput;
     private javax.swing.JTextField salleInput;
     private javax.swing.JTextField salleIntituleInput;
+    private javax.swing.JTextField sectionsInput;
     private javax.swing.JTextField sectionsIntituleInput;
     private javax.swing.ButtonGroup sexeButtonGroup;
     // End of variables declaration//GEN-END:variables

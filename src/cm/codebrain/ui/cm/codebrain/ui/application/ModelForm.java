@@ -5,6 +5,7 @@
  */
 package cm.codebrain.ui.application;
 
+import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
@@ -26,12 +27,17 @@ import cm.codebrain.ui.application.security.Loading;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -42,6 +48,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.text.DefaultFormatterFactory;
 
 /**
  *
@@ -160,7 +167,7 @@ public class ModelForm extends javax.swing.JDialog {
         createForm();
 
         addActionSupplementaire();
-        
+
         eventActionRef();
     }
 
@@ -190,7 +197,7 @@ public class ModelForm extends javax.swing.JDialog {
         createForm();
 
         addActionSupplementaire();
-        
+
         eventActionRef();
     }
 
@@ -379,7 +386,7 @@ public class ModelForm extends javax.swing.JDialog {
                 }
 
                 @Override
-                public void error(Exception ex) {
+                public void error(CodeBrainExceptions ex) {
                     JOptionPane.showMessageDialog(rootPane, ex.getMessage());
                 }
 
@@ -620,21 +627,23 @@ public class ModelForm extends javax.swing.JDialog {
                         for (HashMap model : modelDataFinal) {
                             makeModelDatas(model);
 
-                            if (null != etatAction) switch (etatAction) {
-                                case CREATE:
-                                    cbManager.createEntity(entity, modelFinal);
-                                    break;
-                                case MODIF:
-                                    cbManager.updateEntity(entity, modelFinal);
-                                    break;
-                                case DUPPLICATE:
-                                    cbManager.dupplicateEntity(entity, modelFinal);
-                                    break;
-                                case DELETE:
-                                    cbManager.deleteEntity(entity, modelFinal);
-                                    break;
-                                default:
-                                    break;
+                            if (null != etatAction) {
+                                switch (etatAction) {
+                                    case CREATE:
+                                        cbManager.createEntity(entity, modelFinal);
+                                        break;
+                                    case MODIF:
+                                        cbManager.updateEntity(entity, modelFinal);
+                                        break;
+                                    case DUPPLICATE:
+                                        cbManager.dupplicateEntity(entity, modelFinal);
+                                        break;
+                                    case DELETE:
+                                        cbManager.deleteEntity(entity, modelFinal);
+                                        break;
+                                    default:
+                                        break;
+                                }
                             }
                         }
                     }
@@ -645,40 +654,43 @@ public class ModelForm extends javax.swing.JDialog {
                      *
                      */
                 } else {
-                    if(etatAction == CREATE)
+                    if (etatAction == CREATE) {
                         modelFinal = new HashMap<>();
-                    else
+                    } else {
                         modelFinal = (HashMap) GlobalParameters.getVar(Model.toString());
-                        
+                    }
+
                     makeModelData();
-                        
-                    if (null != etatAction) switch (etatAction) {
-                        case CREATE:
-                            cbManager.createEntity(entity, modelFinal);
-                            break;
-                        case MODIF:
-                            cbManager.updateEntity(entity, modelFinal);
-                            break;
-                        case DUPPLICATE:
-                            cbManager.dupplicateEntity(entity, modelFinal);
-                            break;
-                        case DELETE:
-                            cbManager.deleteEntity(entity, modelFinal);
-                            break;
-                        default:
-                            break;
+
+                    if (null != etatAction) {
+                        switch (etatAction) {
+                            case CREATE:
+                                cbManager.createEntity(entity, modelFinal);
+                                break;
+                            case MODIF:
+                                cbManager.updateEntity(entity, modelFinal);
+                                break;
+                            case DUPPLICATE:
+                                cbManager.dupplicateEntity(entity, modelFinal);
+                                break;
+                            case DELETE:
+                                cbManager.deleteEntity(entity, modelFinal);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
 
                 JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnValider), Dictionnaire.get(EnumLibelles.Business_Libelle_Message_Sucess.toString()), "Message", JOptionPane.INFORMATION_MESSAGE);
-                
+
                 reset();
 
                 return modelFinal;
             }
 
             @Override
-            public void error(Exception ex) {
+            public void error(CodeBrainExceptions ex) {
                 System.out.println("Error : " + ex.getLocalizedMessage());
                 JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnValider), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
             }
@@ -707,7 +719,6 @@ public class ModelForm extends javax.swing.JDialog {
 //        modelFinal.put(entity.toLowerCase() + "Id", CodeBrainManager.generateUIDPrimaryKey());
 
 //        modelFinal.put("levelsId", ((Users) GlobalParameters.getVar("user")).getLevelsId());
-
         if (!createList) {
             /**
              * JTextField.class
@@ -743,7 +754,7 @@ public class ModelForm extends javax.swing.JDialog {
                 this.key = ky;
                 return ky;
             }).filter((ky) -> (formDatas.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-                modelFinal.put(this.key.toString(), ((JFormattedTextField) val).getText());
+                modelFinal.put(this.key.toString(), ((JFormattedTextField) val).getValue());
             });
 
             GlobalParameters.addVar(Model.toString(), modelFinal);
@@ -786,16 +797,31 @@ public class ModelForm extends javax.swing.JDialog {
             ((JTextPane) val).setText(model.get(this.key.toString()).toString());
         });
         /**
+         * ButtonGroup.class
+         */
+        formDatas.keySet().stream().map((ky) -> {
+            this.key = ky;
+            return ky;
+        }).filter((ky) -> (formDatas.get(ky).getClass() == ButtonGroup.class)).map((ky) -> (ButtonGroup) formDatas.get(ky)).forEachOrdered((Object val) -> {
+            Enumeration<AbstractButton> buttons = ((ButtonGroup) val).getElements();
+            while (buttons.hasMoreElements()) {
+                JRadioButton rdButton = (JRadioButton) buttons.nextElement();
+                if (((JRadioButton) rdButton).getActionCommand() == null ? model.get(this.key.toString()).toString() == null : ((JRadioButton) rdButton).getActionCommand().equals(model.get(this.key.toString()).toString())) {
+                    ((JRadioButton) rdButton).setSelected(true);
+                }
+            }
+
+        });
+        /**
          * JFormattedTextField.class
          */
         formDatas.keySet().stream().map((ky) -> {
             this.key = ky;
             return ky;
         }).filter((ky) -> (formDatas.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
-            ((JFormattedTextField) val).setText(model.get(this.key.toString()).toString());
+            String strTime = new SimpleDateFormat("").format(model.get(this.key.toString()));
+            ((JFormattedTextField) val).setValue(model.get(this.key.toString()));
         });
-
-//            GlobalParameters.addVar("model", modelFinal);
     }
 
     private void actionBtnCancel(java.awt.event.ActionEvent evt) {
@@ -895,7 +921,7 @@ public class ModelForm extends javax.swing.JDialog {
                 } else if (component.get(Type) == JFormattedTextField.class) {
                     ((JFormattedTextField) component.get(Value)).setText(null);
                 } else {
-                    System.out.println(component.get(Type).toString() + " : Type non géré.");
+//                    System.out.println(component.get(Type).toString() + " : Type non géré.");
                 }
             });
         }
@@ -980,11 +1006,25 @@ public class ModelForm extends javax.swing.JDialog {
             }
         };
     }
-    
+
+    /*
+    public void setRadiBottun(ButtonGroup group) {
+        ActionListener action = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                for (AbstractButton rdBtn : group.getElements().nextElement()) {
+                    if (rdBtn.isSelected() && rdBtn == group.getSelection()) {
+                        group.setSelected(rdBtn.getModel(), true);
+                        break;
+                    }
+                }
+            }
+        };
+    }
+     */
 //    protected void eventActionRef(){
 //    
 //    }
-
     public void createList(boolean state) {
         this.createList = state;
 
@@ -1024,31 +1064,40 @@ public class ModelForm extends javax.swing.JDialog {
         HashMap modelTmp = model;
 
         if (indentKey.length > 1) {
-            for (int i=0; i < indentKey.length; i++) {
+            for (int i = 1; i <= indentKey.length; i = i + 3) {
                 Object object = modelTmp.get(indentKey[i]);
-                
+
                 if (object.getClass().equals(HashMap.class) || object.getClass().equals(LinkedHashMap.class)) {
-                    
+
                     GlobalParameters.addVar(indentKey[i], object);
 
                     modelTmp = (HashMap) object;
-//                } else if(object.getClass().equals(String.class)){
-                    
-//                    HashMap mapResult = null;
-//                    try{
-//                        Object dataObject = cbManager.getEntity(indentKey[i], object.toString());
-//                        mapResult = (HashMap) cbManager.convertToObject(dataObject, HashMap.class);
-//                        
-//                        GlobalParameters.addVar(indentKey[i+1], mapResult);
-//
-//                        modelTmp = (HashMap) mapResult;
-//                        value = modelTmp.get(indentKey[i]);
-//                    }catch(Exception e){
-//                    }
-                }else{
-                    
-//                    GlobalParameters.addVar(indentKey[i+1], modelTmp);
+                    value = modelTmp.get(indentKey[i + 1]);
+                } else if (object.getClass().equals(String.class)) {
+                    Object objectConverted = null;
+                    try {
+                        objectConverted = cbManager.convertToObject(modelTmp, indentKey[i - 1]);
+                    } catch (ClassNotFoundException ex) {
+                    }
 
+                    if (objectConverted != null) {
+                        Object objectReslut = cbManager.getObjectInvoke(objectConverted, indentKey[i - 1], indentKey[i]);
+
+                        if (objectReslut != null) {
+
+                            object = cbManager.convertToObject(objectReslut, HashMap.class);
+
+                            GlobalParameters.addVar(indentKey[i], object);
+
+                            modelTmp = (HashMap) object;
+
+                            value = modelTmp.get(indentKey[i + 1]);
+//                            }
+                        }
+                    } else {
+                        value = null;
+                    }
+                } else {
                     value = modelTmp.get(indentKey[i]);
                 }
             }

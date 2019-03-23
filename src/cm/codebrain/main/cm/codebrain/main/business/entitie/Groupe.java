@@ -13,6 +13,7 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -40,7 +41,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Groupe.findByStateDb", query = "SELECT g FROM Groupe g WHERE g.stateDb = :stateDb")
     , @NamedQuery(name = "Groupe.findByDtCreated", query = "SELECT g FROM Groupe g WHERE g.dtCreated = :dtCreated")
     , @NamedQuery(name = "Groupe.findByDtModified", query = "SELECT g FROM Groupe g WHERE g.dtModified = :dtModified")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Groupe.class)
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Groupe implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -71,7 +72,7 @@ public class Groupe implements Serializable {
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
     private Users userCreated;
-    @OneToMany(mappedBy = "groupeId")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "groupeId")
     private Collection<Classe> classeCollection;
 
     public Groupe() {
@@ -192,5 +193,5 @@ public class Groupe implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Groupe[ groupeId=" + groupeId + " ]";
     }
-    
+
 }

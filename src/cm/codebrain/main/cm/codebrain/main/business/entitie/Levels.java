@@ -14,6 +14,7 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -41,7 +42,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Levels.findByStateDb", query = "SELECT l FROM Levels l WHERE l.stateDb = :stateDb")
     , @NamedQuery(name = "Levels.findByDtCreated", query = "SELECT l FROM Levels l WHERE l.dtCreated = :dtCreated")
     , @NamedQuery(name = "Levels.findByDtModified", query = "SELECT l FROM Levels l WHERE l.dtModified = :dtModified")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Levels.class)
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Levels implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -68,9 +69,9 @@ public class Levels implements Serializable {
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "levelsId")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "levelsId")
     private Collection<Users> usersCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "levelsId")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "levelsId")
     private Collection<Widget> widgetCollection;
 
     public Levels() {
@@ -191,5 +192,5 @@ public class Levels implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Levels[ levelsId=" + levelsId + " ]";
     }
-    
+
 }

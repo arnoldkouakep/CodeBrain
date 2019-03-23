@@ -13,6 +13,7 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -46,7 +47,7 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Users.findByStateDb", query = "SELECT u FROM Users u WHERE u.stateDb = :stateDb")
     , @NamedQuery(name = "Users.findByDtCreated", query = "SELECT u FROM Users u WHERE u.dtCreated = :dtCreated")
     , @NamedQuery(name = "Users.findByDtModified", query = "SELECT u FROM Users u WHERE u.dtModified = :dtModified")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb", scope = Users.class)
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -81,50 +82,50 @@ public class Users implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @OneToMany(mappedBy = "userModified")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
     private Collection<Student> studentCollection;
-    @OneToMany(mappedBy = "userCreated")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
     private Collection<Student> studentCollection1;
-    @OneToMany(mappedBy = "userModified")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
     private Collection<Groupe> groupeCollection;
-    @OneToMany(mappedBy = "userCreated")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
     private Collection<Groupe> groupeCollection1;
-    @OneToMany(mappedBy = "userModified")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
     private Collection<Salle> salleCollection;
-    @OneToMany(mappedBy = "userCreated")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
     private Collection<Salle> salleCollection1;
-    @OneToMany(mappedBy = "userModified")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
     private Collection<Sections> sectionsCollection;
-    @OneToMany(mappedBy = "userCreated")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
     private Collection<Sections> sectionsCollection1;
-    @OneToMany(mappedBy = "userModified")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
     private Collection<Levels> levelsCollection;
-    @OneToMany(mappedBy = "userCreated")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
     private Collection<Levels> levelsCollection1;
-    @OneToMany(mappedBy = "userModified")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
     private Collection<Etablissement> etablissementCollection;
-    @OneToMany(mappedBy = "userCreated")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
     private Collection<Etablissement> etablissementCollection1;
     @JoinColumn(name = "LEVELS_ID", referencedColumnName = "LEVELS_ID", nullable = false)
     @ManyToOne(optional = false)
     private Levels levelsId;
-    @OneToMany(mappedBy = "userModified")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
     private Collection<Users> usersCollection;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne
     private Users userModified;
-    @OneToMany(mappedBy = "userCreated")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
     private Collection<Users> usersCollection1;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
     @ManyToOne
     private Users userCreated;
-    @OneToMany(mappedBy = "userModified")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
     private Collection<Widget> widgetCollection;
-    @OneToMany(mappedBy = "userCreated")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
     private Collection<Widget> widgetCollection1;
-    @OneToMany(mappedBy = "userModified")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
     private Collection<Classe> classeCollection;
-    @OneToMany(mappedBy = "userCreated")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
     private Collection<Classe> classeCollection1;
 
     public Users() {
@@ -447,5 +448,5 @@ public class Users implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Users[ usersId=" + usersId + " ]";
     }
-    
+
 }

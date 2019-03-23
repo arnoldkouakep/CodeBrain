@@ -1,4 +1,4 @@
-package cm.codebrain.ui.application.controller;
+package cm.codebrain.ui.application.implement;
 
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;

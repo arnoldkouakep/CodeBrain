@@ -6,6 +6,7 @@
 package cm.codebrain.ui.application.security;
 
 import ch.randelshofer.quaqua.JSheet;
+import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.Locale;
@@ -246,7 +247,7 @@ public class ReLoginForm extends javax.swing.JDialog {
             }
 
             @Override
-            public void error(Exception ex) {
+            public void error(CodeBrainExceptions ex) {
 //                    System.out.println("Error : "+ex.getCause());
                 JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
             }
@@ -287,7 +288,7 @@ public class ReLoginForm extends javax.swing.JDialog {
             }
 
             @Override
-            public void error(Exception ex) {
+            public void error(CodeBrainExceptions ex) {
 //                    System.out.println("Error : "+ex.getCause());
 //                JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
                 JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnOk), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
