@@ -13,13 +13,14 @@ import java.util.HashMap;
  */
 public class GlobalParameters {
 
-    private static HashMap<String, Object> variableGlobale = new HashMap<>();
+    private static HashMap<Object, Object> variableGlobale = new HashMap<Object, Object>();
 
-//    public GlobalParameters(GlobalParameters globalParameters) {
-//        super(globalParameters);
-//    }
     public GlobalParameters() {
-        this.variableGlobale= new HashMap<>();
+        GlobalParameters.variableGlobale= new HashMap<>();
+    }
+    
+    public static void init() {
+        GlobalParameters.variableGlobale= new HashMap<>();
     }
 
     /**
@@ -27,11 +28,11 @@ public class GlobalParameters {
      * @param key
      * @param value
      */
-    public static void addVar(String key, Object value) {
+    public static void add(Object key, Object value) {
         variableGlobale.put(key, value);
     }
 
-    public static Object getVar(String key) {
+    public static Object get(Object key) {
         return variableGlobale.get(key);
     }
 

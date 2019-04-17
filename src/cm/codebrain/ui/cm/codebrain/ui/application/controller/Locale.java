@@ -25,4 +25,7 @@ public class Locale {
         }
     }
 
+    public static java.util.Locale getLocale(){
+        return (LANGUAGE == 1) ? java.util.Locale.ENGLISH : java.util.Locale.FRANCE;
+    }
 }

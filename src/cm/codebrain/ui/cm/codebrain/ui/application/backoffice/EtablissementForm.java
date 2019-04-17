@@ -8,7 +8,7 @@ package cm.codebrain.ui.application.backoffice;
 import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
-import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.CREATE;
 
 /**
  *
@@ -90,49 +90,55 @@ public class EtablissementForm extends ModelForm {
         panelIdentifiant.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Identifiant))); // NOI18N
         panelIdentifiant.setOpaque(false);
 
-        labelNomAbrege.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Nom_Abrege)); // NOI18N
+        labelNomAbrege.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Nom_Abrege, true)); // NOI18N
         labelNomAbrege.setName("usernameLabel"); // NOI18N
 
         nomAbregeInput.setName("nomAbregeInput"); // NOI18N
         this.addFormData("nameAbrege", nomAbregeInput);
         this.setRef(nomAbregeInput);
         fieldSearch.put("nameAbrege", nomAbregeInput);
+        fieldsRequired.add(nomAbregeInput);
 
-        labelNomComplet.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Nom_Complet)); // NOI18N
+        labelNomComplet.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Nom_Complet, true)); // NOI18N
         labelNomComplet.setName("usernameLabel"); // NOI18N
 
         nomCompletInput.setContentType("text"); // NOI18N
         this.addFormData("fullName", nomCompletInput);
         fieldSearch.put("fullName", nomCompletInput);
+        fieldsRequired.add(nomCompletInput);
         jScrollPane1.setViewportView(nomCompletInput);
 
-        labelAdresse.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Adresse)); // NOI18N
+        labelAdresse.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Adresse, true)); // NOI18N
         labelAdresse.setName("usernameLabel"); // NOI18N
 
         this.addFormData("adresse", adresseInput);
         fieldSearch.put("adresse", adresseInput);
+        fieldsRequired.add(adresseInput);
         jScrollPane2.setViewportView(adresseInput);
 
         villeInput.setName("intituleInput"); // NOI18N
         this.addFormData("ville", villeInput);
         fieldSearch.put("ville", villeInput);
+        fieldsRequired.add(villeInput);
 
-        labelVille.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Ville)); // NOI18N
+        labelVille.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Ville, true)); // NOI18N
         labelVille.setName("usernameLabel"); // NOI18N
 
-        labelTelephone.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Telephone)); // NOI18N
+        labelTelephone.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Telephone, true)); // NOI18N
         labelTelephone.setName("usernameLabel"); // NOI18N
 
         telephoneInput.setName("intituleInput"); // NOI18N
         this.addFormData("telephone", telephoneInput);
         fieldSearch.put("telephone", telephoneInput);
+        fieldsRequired.add(telephoneInput);
 
-        labelEmail.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Email)); // NOI18N
+        labelEmail.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Email, true)); // NOI18N
         labelEmail.setName("usernameLabel"); // NOI18N
 
         emailInput.setName("intituleInput"); // NOI18N
         this.addFormData("email", emailInput);
         fieldSearch.put("email", emailInput);
+        fieldsRequired.add(emailInput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
         panelIdentifiant.setLayout(panelIdentifiantLayout);

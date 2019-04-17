@@ -10,26 +10,32 @@ import javax.swing.JToolBar;
 
 public class MenuClasse extends JButton {
 
+    private final JPanel mainPanel;
     private ClasseForm form;
 
     public MenuClasse(JPanel mainPanel, JToolBar menu) {
-
-        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Classe));
+        this.mainPanel = mainPanel;
+        
+        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Classe.toString(), true));
         putClientProperty("JButton.buttonType", "bevel");
-        addActionListener((ActionEvent e) -> {
-            addComponentPanel(mainPanel, menu);
-        });
 
         setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
         setMaximumSize(new java.awt.Dimension(250, 80));
         setMinimumSize(new java.awt.Dimension(250, 80));
         setPreferredSize(new java.awt.Dimension(250, 80));
 
-        mainPanel.add(this);
+        addActionListener((ActionEvent e) -> {
+            addComponentPanel();
+        });
+        this.mainPanel.add(this);
     }
 
-    public void addComponentPanel(JPanel mainPanel, JToolBar menu) {
+    public void addComponentPanel() {
         form = new ClasseForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Classe));
         form.setVisible(true);
+    }
+
+    public JButton getButton(){
+        return this;
     }
 }

@@ -189,7 +189,7 @@
                 <Component class="javax.swing.JLabel" name="labelNomAbrege">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Nom_Abrege" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
+                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Nom_Abrege" replaceFormat="Dictionnaire.get(EnumLibelles.{key}, true)"/>
                     </Property>
                     <Property name="name" type="java.lang.String" value="usernameLabel" noResource="true"/>
                   </Properties>
@@ -203,13 +203,13 @@
                     <Property name="name" type="java.lang.String" value="nomAbregeInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;nameAbrege&quot;, nomAbregeInput);&#xd;&#xa;this.setRef(nomAbregeInput);&#xd;&#xa;fieldSearch.put(&quot;nameAbrege&quot;, nomAbregeInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;nameAbrege&quot;, nomAbregeInput);&#xd;&#xa;this.setRef(nomAbregeInput);&#xd;&#xa;fieldSearch.put(&quot;nameAbrege&quot;, nomAbregeInput);&#xd;&#xa;fieldsRequired.add(nomAbregeInput);&#xd;&#xa;"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelNomComplet">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Nom_Complet" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
+                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Nom_Complet" replaceFormat="Dictionnaire.get(EnumLibelles.{key}, true)"/>
                     </Property>
                     <Property name="name" type="java.lang.String" value="usernameLabel" noResource="true"/>
                   </Properties>
@@ -230,7 +230,7 @@
                         <Property name="contentType" type="java.lang.String" value="text" noResource="true"/>
                       </Properties>
                       <AuxValues>
-                        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;fullName&quot;, nomCompletInput);&#xd;&#xa;fieldSearch.put(&quot;fullName&quot;, nomCompletInput);"/>
+                        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;fullName&quot;, nomCompletInput);&#xd;&#xa;fieldSearch.put(&quot;fullName&quot;, nomCompletInput);&#xd;&#xa;fieldsRequired.add(nomCompletInput);"/>
                       </AuxValues>
                     </Component>
                   </SubComponents>
@@ -238,7 +238,7 @@
                 <Component class="javax.swing.JLabel" name="labelAdresse">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Adresse" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
+                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Adresse" replaceFormat="Dictionnaire.get(EnumLibelles.{key}, true)"/>
                     </Property>
                     <Property name="name" type="java.lang.String" value="usernameLabel" noResource="true"/>
                   </Properties>
@@ -256,7 +256,7 @@
                   <SubComponents>
                     <Component class="javax.swing.JTextPane" name="adresseInput">
                       <AuxValues>
-                        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;adresse&quot;, adresseInput);&#xd;&#xa;fieldSearch.put(&quot;adresse&quot;, adresseInput);"/>
+                        <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;adresse&quot;, adresseInput);&#xd;&#xa;fieldSearch.put(&quot;adresse&quot;, adresseInput);&#xd;&#xa;fieldsRequired.add(adresseInput);"/>
                       </AuxValues>
                     </Component>
                   </SubComponents>
@@ -266,13 +266,13 @@
                     <Property name="name" type="java.lang.String" value="intituleInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;ville&quot;, villeInput);&#xd;&#xa;fieldSearch.put(&quot;ville&quot;, villeInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;ville&quot;, villeInput);&#xd;&#xa;fieldSearch.put(&quot;ville&quot;, villeInput);&#xd;&#xa;fieldsRequired.add(villeInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelVille">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Ville" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
+                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Ville" replaceFormat="Dictionnaire.get(EnumLibelles.{key}, true)"/>
                     </Property>
                     <Property name="name" type="java.lang.String" value="usernameLabel" noResource="true"/>
                   </Properties>
@@ -284,7 +284,7 @@
                 <Component class="javax.swing.JLabel" name="labelTelephone">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Telephone" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
+                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Telephone" replaceFormat="Dictionnaire.get(EnumLibelles.{key}, true)"/>
                     </Property>
                     <Property name="name" type="java.lang.String" value="usernameLabel" noResource="true"/>
                   </Properties>
@@ -298,13 +298,13 @@
                     <Property name="name" type="java.lang.String" value="intituleInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;telephone&quot;, telephoneInput);&#xd;&#xa;fieldSearch.put(&quot;telephone&quot;, telephoneInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;telephone&quot;, telephoneInput);&#xd;&#xa;fieldSearch.put(&quot;telephone&quot;, telephoneInput);&#xd;&#xa;fieldsRequired.add(telephoneInput);"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelEmail">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Email" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
+                      <ResourceString bundle="i18n.properties" key="Business_Libelle_Email" replaceFormat="Dictionnaire.get(EnumLibelles.{key}, true)"/>
                     </Property>
                     <Property name="name" type="java.lang.String" value="usernameLabel" noResource="true"/>
                   </Properties>
@@ -318,7 +318,7 @@
                     <Property name="name" type="java.lang.String" value="intituleInput" noResource="true"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;email&quot;, emailInput);&#xd;&#xa;fieldSearch.put(&quot;email&quot;, emailInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;email&quot;, emailInput);&#xd;&#xa;fieldSearch.put(&quot;email&quot;, emailInput);&#xd;&#xa;fieldsRequired.add(emailInput);"/>
                   </AuxValues>
                 </Component>
               </SubComponents>

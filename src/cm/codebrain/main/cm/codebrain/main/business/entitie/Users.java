@@ -8,8 +8,8 @@ package cm.codebrain.main.business.entitie;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,19 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u")
-    , @NamedQuery(name = "Users.findByUsersId", query = "SELECT u FROM Users u WHERE u.usersId = :usersId")
-    , @NamedQuery(name = "Users.findByUserCode", query = "SELECT u FROM Users u WHERE u.userCode = :userCode")
-    , @NamedQuery(name = "Users.findByLogin", query = "SELECT u FROM Users u WHERE u.login = :login")
-    , @NamedQuery(name = "Users.findByPassword", query = "SELECT u FROM Users u WHERE u.password = :password")
-    , @NamedQuery(name = "Users.findByFirstName", query = "SELECT u FROM Users u WHERE u.firstName = :firstName")
-    , @NamedQuery(name = "Users.findByLastName", query = "SELECT u FROM Users u WHERE u.lastName = :lastName")
-    , @NamedQuery(name = "Users.findByTel", query = "SELECT u FROM Users u WHERE u.tel = :tel")
-    , @NamedQuery(name = "Users.findByEmail", query = "SELECT u FROM Users u WHERE u.email = :email")
-    , @NamedQuery(name = "Users.findByCni", query = "SELECT u FROM Users u WHERE u.cni = :cni")
-    , @NamedQuery(name = "Users.findByStateDb", query = "SELECT u FROM Users u WHERE u.stateDb = :stateDb")
-    , @NamedQuery(name = "Users.findByDtCreated", query = "SELECT u FROM Users u WHERE u.dtCreated = :dtCreated")
-    , @NamedQuery(name = "Users.findByDtModified", query = "SELECT u FROM Users u WHERE u.dtModified = :dtModified")})
+    @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Users implements Serializable {
 
@@ -82,51 +70,55 @@ public class Users implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
-    private Collection<Student> studentCollection;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
-    private Collection<Student> studentCollection1;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
-    private Collection<Groupe> groupeCollection;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
-    private Collection<Groupe> groupeCollection1;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
-    private Collection<Salle> salleCollection;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
-    private Collection<Salle> salleCollection1;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
-    private Collection<Sections> sectionsCollection;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
-    private Collection<Sections> sectionsCollection1;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
-    private Collection<Levels> levelsCollection;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
-    private Collection<Levels> levelsCollection1;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
-    private Collection<Etablissement> etablissementCollection;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
-    private Collection<Etablissement> etablissementCollection1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Student> studentSet;
+    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Student> studentSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Groupe> groupeSet;
+    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Groupe> groupeSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Salle> salleSet;
+    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Salle> salleSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Levels> levelsSet;
+    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Levels> levelsSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<AnneeAcademic> anneeAcademicSet;
+    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<AnneeAcademic> anneeAcademicSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Etablissement> etablissementSet;
+    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Etablissement> etablissementSet1;
     @JoinColumn(name = "LEVELS_ID", referencedColumnName = "LEVELS_ID", nullable = false)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Levels levelsId;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
-    private Collection<Users> usersCollection;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Users> usersSet;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
-    private Collection<Users> usersCollection1;
+    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Users> usersSet1;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userCreated;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
-    private Collection<Widget> widgetCollection;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
-    private Collection<Widget> widgetCollection1;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userModified")
-    private Collection<Classe> classeCollection;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "userCreated")
-    private Collection<Classe> classeCollection1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Section> sectionSet;
+    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Section> sectionSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Widget> widgetSet;
+    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Widget> widgetSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Classe> classeSet;
+    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Classe> classeSet1;
 
     public Users() {
     }
@@ -239,111 +231,111 @@ public class Users implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Student> getStudentCollection() {
-        return studentCollection;
+    public Set<Student> getStudentSet() {
+        return studentSet;
     }
 
-    public void setStudentCollection(Collection<Student> studentCollection) {
-        this.studentCollection = studentCollection;
-    }
-
-    @XmlTransient
-    public Collection<Student> getStudentCollection1() {
-        return studentCollection1;
-    }
-
-    public void setStudentCollection1(Collection<Student> studentCollection1) {
-        this.studentCollection1 = studentCollection1;
+    public void setStudentSet(Set<Student> studentSet) {
+        this.studentSet = studentSet;
     }
 
     @XmlTransient
-    public Collection<Groupe> getGroupeCollection() {
-        return groupeCollection;
+    public Set<Student> getStudentSet1() {
+        return studentSet1;
     }
 
-    public void setGroupeCollection(Collection<Groupe> groupeCollection) {
-        this.groupeCollection = groupeCollection;
-    }
-
-    @XmlTransient
-    public Collection<Groupe> getGroupeCollection1() {
-        return groupeCollection1;
-    }
-
-    public void setGroupeCollection1(Collection<Groupe> groupeCollection1) {
-        this.groupeCollection1 = groupeCollection1;
+    public void setStudentSet1(Set<Student> studentSet1) {
+        this.studentSet1 = studentSet1;
     }
 
     @XmlTransient
-    public Collection<Salle> getSalleCollection() {
-        return salleCollection;
+    public Set<Groupe> getGroupeSet() {
+        return groupeSet;
     }
 
-    public void setSalleCollection(Collection<Salle> salleCollection) {
-        this.salleCollection = salleCollection;
-    }
-
-    @XmlTransient
-    public Collection<Salle> getSalleCollection1() {
-        return salleCollection1;
-    }
-
-    public void setSalleCollection1(Collection<Salle> salleCollection1) {
-        this.salleCollection1 = salleCollection1;
+    public void setGroupeSet(Set<Groupe> groupeSet) {
+        this.groupeSet = groupeSet;
     }
 
     @XmlTransient
-    public Collection<Sections> getSectionsCollection() {
-        return sectionsCollection;
+    public Set<Groupe> getGroupeSet1() {
+        return groupeSet1;
     }
 
-    public void setSectionsCollection(Collection<Sections> sectionsCollection) {
-        this.sectionsCollection = sectionsCollection;
-    }
-
-    @XmlTransient
-    public Collection<Sections> getSectionsCollection1() {
-        return sectionsCollection1;
-    }
-
-    public void setSectionsCollection1(Collection<Sections> sectionsCollection1) {
-        this.sectionsCollection1 = sectionsCollection1;
+    public void setGroupeSet1(Set<Groupe> groupeSet1) {
+        this.groupeSet1 = groupeSet1;
     }
 
     @XmlTransient
-    public Collection<Levels> getLevelsCollection() {
-        return levelsCollection;
+    public Set<Salle> getSalleSet() {
+        return salleSet;
     }
 
-    public void setLevelsCollection(Collection<Levels> levelsCollection) {
-        this.levelsCollection = levelsCollection;
-    }
-
-    @XmlTransient
-    public Collection<Levels> getLevelsCollection1() {
-        return levelsCollection1;
-    }
-
-    public void setLevelsCollection1(Collection<Levels> levelsCollection1) {
-        this.levelsCollection1 = levelsCollection1;
+    public void setSalleSet(Set<Salle> salleSet) {
+        this.salleSet = salleSet;
     }
 
     @XmlTransient
-    public Collection<Etablissement> getEtablissementCollection() {
-        return etablissementCollection;
+    public Set<Salle> getSalleSet1() {
+        return salleSet1;
     }
 
-    public void setEtablissementCollection(Collection<Etablissement> etablissementCollection) {
-        this.etablissementCollection = etablissementCollection;
+    public void setSalleSet1(Set<Salle> salleSet1) {
+        this.salleSet1 = salleSet1;
     }
 
     @XmlTransient
-    public Collection<Etablissement> getEtablissementCollection1() {
-        return etablissementCollection1;
+    public Set<Levels> getLevelsSet() {
+        return levelsSet;
     }
 
-    public void setEtablissementCollection1(Collection<Etablissement> etablissementCollection1) {
-        this.etablissementCollection1 = etablissementCollection1;
+    public void setLevelsSet(Set<Levels> levelsSet) {
+        this.levelsSet = levelsSet;
+    }
+
+    @XmlTransient
+    public Set<Levels> getLevelsSet1() {
+        return levelsSet1;
+    }
+
+    public void setLevelsSet1(Set<Levels> levelsSet1) {
+        this.levelsSet1 = levelsSet1;
+    }
+
+    @XmlTransient
+    public Set<AnneeAcademic> getAnneeAcademicSet() {
+        return anneeAcademicSet;
+    }
+
+    public void setAnneeAcademicSet(Set<AnneeAcademic> anneeAcademicSet) {
+        this.anneeAcademicSet = anneeAcademicSet;
+    }
+
+    @XmlTransient
+    public Set<AnneeAcademic> getAnneeAcademicSet1() {
+        return anneeAcademicSet1;
+    }
+
+    public void setAnneeAcademicSet1(Set<AnneeAcademic> anneeAcademicSet1) {
+        this.anneeAcademicSet1 = anneeAcademicSet1;
+    }
+
+    @XmlTransient
+    public Set<Etablissement> getEtablissementSet() {
+        return etablissementSet;
+    }
+
+    public void setEtablissementSet(Set<Etablissement> etablissementSet) {
+        this.etablissementSet = etablissementSet;
+    }
+
+    @XmlTransient
+    public Set<Etablissement> getEtablissementSet1() {
+        return etablissementSet1;
+    }
+
+    public void setEtablissementSet1(Set<Etablissement> etablissementSet1) {
+        this.etablissementSet1 = etablissementSet1;
     }
 
     public Levels getLevelsId() {
@@ -355,12 +347,12 @@ public class Users implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Users> getUsersCollection() {
-        return usersCollection;
+    public Set<Users> getUsersSet() {
+        return usersSet;
     }
 
-    public void setUsersCollection(Collection<Users> usersCollection) {
-        this.usersCollection = usersCollection;
+    public void setUsersSet(Set<Users> usersSet) {
+        this.usersSet = usersSet;
     }
 
     public Users getUserModified() {
@@ -372,12 +364,12 @@ public class Users implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Users> getUsersCollection1() {
-        return usersCollection1;
+    public Set<Users> getUsersSet1() {
+        return usersSet1;
     }
 
-    public void setUsersCollection1(Collection<Users> usersCollection1) {
-        this.usersCollection1 = usersCollection1;
+    public void setUsersSet1(Set<Users> usersSet1) {
+        this.usersSet1 = usersSet1;
     }
 
     public Users getUserCreated() {
@@ -389,39 +381,57 @@ public class Users implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Widget> getWidgetCollection() {
-        return widgetCollection;
+    public Set<Section> getSectionSet() {
+        return sectionSet;
     }
 
-    public void setWidgetCollection(Collection<Widget> widgetCollection) {
-        this.widgetCollection = widgetCollection;
-    }
-
-    @XmlTransient
-    public Collection<Widget> getWidgetCollection1() {
-        return widgetCollection1;
-    }
-
-    public void setWidgetCollection1(Collection<Widget> widgetCollection1) {
-        this.widgetCollection1 = widgetCollection1;
+    public void setSectionSet(Set<Section> sectionSet) {
+        this.sectionSet = sectionSet;
     }
 
     @XmlTransient
-    public Collection<Classe> getClasseCollection() {
-        return classeCollection;
+    public Set<Section> getSectionSet1() {
+        return sectionSet1;
     }
 
-    public void setClasseCollection(Collection<Classe> classeCollection) {
-        this.classeCollection = classeCollection;
+    public void setSectionSet1(Set<Section> sectionSet1) {
+        this.sectionSet1 = sectionSet1;
     }
 
     @XmlTransient
-    public Collection<Classe> getClasseCollection1() {
-        return classeCollection1;
+    public Set<Widget> getWidgetSet() {
+        return widgetSet;
     }
 
-    public void setClasseCollection1(Collection<Classe> classeCollection1) {
-        this.classeCollection1 = classeCollection1;
+    public void setWidgetSet(Set<Widget> widgetSet) {
+        this.widgetSet = widgetSet;
+    }
+
+    @XmlTransient
+    public Set<Widget> getWidgetSet1() {
+        return widgetSet1;
+    }
+
+    public void setWidgetSet1(Set<Widget> widgetSet1) {
+        this.widgetSet1 = widgetSet1;
+    }
+
+    @XmlTransient
+    public Set<Classe> getClasseSet() {
+        return classeSet;
+    }
+
+    public void setClasseSet(Set<Classe> classeSet) {
+        this.classeSet = classeSet;
+    }
+
+    @XmlTransient
+    public Set<Classe> getClasseSet1() {
+        return classeSet1;
+    }
+
+    public void setClasseSet1(Set<Classe> classeSet1) {
+        this.classeSet1 = classeSet1;
     }
 
     @Override

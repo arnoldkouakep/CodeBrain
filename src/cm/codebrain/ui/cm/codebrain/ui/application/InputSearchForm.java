@@ -7,7 +7,7 @@ package cm.codebrain.ui.application;
 
 import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.ui.application.controller.Dictionnaire;
-import cm.codebrain.ui.application.controller.GlobalParameters;
+import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumError;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.implement.Executable;
@@ -331,9 +331,9 @@ public class InputSearchForm extends javax.swing.JDialog {
                 setResult(result);
 
                 if(keyParam == null)
-                    GlobalParameters.addVar(entity, result);
+                    FormParameters.add(entity, result);
                 else
-                    GlobalParameters.addVar(keyParam, result);
+                    FormParameters.add(keyParam, result);
                 
                 doClose(RET_OK);
                 return result;
@@ -369,11 +369,11 @@ public class InputSearchForm extends javax.swing.JDialog {
     }//GEN-LAST:event_closeDialog
 
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
-        System.out.println("2: " + searchImput.getText());
+//        System.out.println("2: " + searchImput.getText());
         RowFilter<TableModel, Object> rf = null;
         //If current expression doesn't parse, don't update.
         try {
-            rf = RowFilter.regexFilter(searchImput.getText(), 0);
+            rf = RowFilter.regexFilter(searchImput.getText(), getIndices(grid.getColumnCount()));
         } catch (java.util.regex.PatternSyntaxException e) {
             return;
         }
@@ -386,6 +386,16 @@ public class InputSearchForm extends javax.swing.JDialog {
         dispose();
     }
 
+    private int[] getIndices(int count) {
+        int[] result = new int[count];
+        
+        for(int i = 0; i < count; i++){
+            result[i] = i;
+        }
+        
+        return result;
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSearch;
     private javax.swing.JButton cancelButton;
@@ -398,4 +408,5 @@ public class InputSearchForm extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
     private int returnStatus = RET_CANCEL;
+
 }

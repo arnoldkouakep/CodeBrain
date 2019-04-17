@@ -7,8 +7,6 @@ package cm.codebrain.ui.application;
 
 import ch.randelshofer.quaqua.QuaquaManager;
 import cm.codebrain.main.business.controller.CodeBrainManager;
-import cm.codebrain.ui.application.security.LoginForm;
-import cm.codebrain.ui.application.security.MainForm;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -53,8 +51,8 @@ public class CodeBrain {
 
         // Launch the Main program
         SwingUtilities.invokeLater(new Runnable() {
-            private MainForm mainForm;
-            private LoginForm login;
+//            private MainForm mainForm;
+//            private LoginForm login;
             private CodeBrainManager codeBrainManager;
 
             public void run() {

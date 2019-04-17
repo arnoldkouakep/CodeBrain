@@ -6,6 +6,7 @@
 package cm.codebrain.main.business.controller;
 
 import cm.codebrain.main.business.enumerations.EnumStatus;
+import cm.codebrain.ui.application.controller.GlobalParameters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
-import static cm.codebrain.ui.application.enumerations.Enums.Value;
-import static cm.codebrain.ui.application.enumerations.Enums.Indice;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Value;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Indice;
+import javax.persistence.EntityTransaction;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 
 /**
  *
@@ -38,21 +43,143 @@ public class CodeBrainEntityManager {
     private final String isNull = "--";
     private final String like = "%";
     private final String btwn = "[]";
+    private EntityManager em;
+    private EntityManagerFactory emf;
 
-    public CodeBrainEntityManager(EntityManagerFactory emf) {
+    public CodeBrainEntityManager() {
+    }
+
+    public CodeBrainEntityManager(EntityManager em) {
+        this.em = em;
+    }
+    
+    public EntityTransaction getTransaction(){
+        return this.em.getTransaction();
+    }
+    
+    public void setEntityManagerFactory(EntityManagerFactory emf) {
         this.emf = emf;
     }
-    private EntityManagerFactory emf = null;
+
+    public EntityManagerFactory getEntityManagerFactory() {
+        return this.emf;
+    }
 
     public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+//        if(this.emf==null){
+//            this.emf = (EntityManagerFactory) GlobalParameters.get("emf");
+//        }
+        
+        return this.em;
     }
-/*
+
+    public void setEntityManager(EntityManager em) {
+        this.em = em;
+    }
+
+    public void persist(Object entityObject) {
+//        EntityManager em = null;
+
+        try {
+//            em = getEntityManager();
+            
+//            EntityTransaction tx = getTransaction();
+            if(!getTransaction().isActive())
+                getTransaction().begin();
+
+            getEntityManager().persist(entityObject);
+
+            getEntityManager().flush();
+//          tx.commit();
+        } catch (Exception ex) {
+            throw ex;
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
+        }
+    }
+
+    public Object merge(Object entityObject) {
+
+        try {
+//            em = getEntityManager();
+            
+//            EntityTransaction tx = getEntityManager().getTransaction();
+            if(!getTransaction().isActive())
+                getTransaction().begin();
+
+            entityObject = getEntityManager().merge(entityObject);
+
+            getEntityManager().flush();
+//            tx.commit();
+        } catch (Exception ex) {
+            throw ex;
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
+        }
+
+        return entityObject;
+    }
+
+    public void remove(Class classValue, String id) {
+//        EntityManager em = null;
+
+        try {
+//            em = getEntityManager();
+            
+//            EntityTransaction tx = em.getTransaction();
+            if(!getTransaction().isActive())
+                getTransaction().begin();
+
+            Object entityObject;
+//            try {
+            entityObject = getEntityManager().getReference(classValue, id);
+//                anneeAcademic.getAnneeAcademicId();
+//            } catch (EntityNotFoundException enfe) {
+//                throw new NonexistentEntityException("The anneeAcademic with id " + id + " no longer exists.", enfe);
+//            }
+            getEntityManager().remove(entityObject);
+
+            getEntityManager().flush();
+//            tx.commit();
+        } catch (Exception ex) {
+            throw ex;
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
+        }
+
+    }
+
+    public Object refreshEntity(Class classValue, String id) {
+//        EntityManager em = null;
+        Object entityObject;
+        try {
+//            em = getEntityManager();
+            
+            if(!getTransaction().isActive())
+                getTransaction().begin();
+            
+            entityObject = getEntityManager().getReference(classValue, id);
+        } catch (Exception ex) {
+            throw ex;
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
+        }
+        return entityObject;
+    }
+
     public List getList(String entity, HashMap args) throws Exception {
 
         Class<?> classe = Class.forName(entityPackage.concat(entity));
 
-        EntityManager em = getEntityManager();
+//        EntityManager em = getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -107,7 +234,27 @@ public class CodeBrainEntityManager {
             em.close();
         }
     }
-*//*
+
+    public Object find(Class classValue, String id) {
+//        EntityManager em = null;
+        Object entityObject;
+        try {
+//            em = getEntityManager();
+            
+            if(!getTransaction().isActive())
+                getTransaction().begin();
+            
+            entityObject = getEntityManager().find(classValue, id);
+        } catch (Exception ex) {
+            throw ex;
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
+        }
+        return entityObject;
+    }
+
     public List getList(String entity, String filter, Object... paramsArgs) throws Exception {
 
         Class<?> classe = Class.forName(entityPackage.concat(entity));
@@ -128,9 +275,9 @@ public class CodeBrainEntityManager {
             em.close();
         }
     }
-*/
+
     public List getList(String ejbql, Object... args) throws Exception {
-        EntityManager em = getEntityManager();
+        EntityManager em = getEntityManagerFactory().createEntityManager();
 
         Query query = null;
         int nbreArgs;
@@ -147,10 +294,10 @@ public class CodeBrainEntityManager {
                     j++;
                 } else {
                     if (args[i] instanceof HashMap) {
-                            arg = (HashMap) args[i];
-                            arg.put(Indice, j);
-                            lstMap.add(arg);
-                            j++;
+                        arg = (HashMap) args[i];
+                        arg.put(Indice, j);
+                        lstMap.add(arg);
+                        j++;
                     } else {
                         arg = new HashMap();
                         arg.put(Indice, j);
@@ -193,7 +340,6 @@ public class CodeBrainEntityManager {
             query = em.createQuery(ejbql);
 
         } catch (Exception e) {
-            e.printStackTrace();
         }
         List list = null;
         //ejbql=ejbql;
@@ -212,8 +358,6 @@ public class CodeBrainEntityManager {
             return list;
 
         } catch (Exception e) {
-            e.printStackTrace();
-
             return null;
         }
 

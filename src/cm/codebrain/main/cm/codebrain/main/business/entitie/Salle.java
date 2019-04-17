@@ -8,8 +8,8 @@ package cm.codebrain.main.business.entitie;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,13 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Salle.findAll", query = "SELECT s FROM Salle s")
-    , @NamedQuery(name = "Salle.findBySalleId", query = "SELECT s FROM Salle s WHERE s.salleId = :salleId")
-    , @NamedQuery(name = "Salle.findByCode", query = "SELECT s FROM Salle s WHERE s.code = :code")
-    , @NamedQuery(name = "Salle.findByIntitule", query = "SELECT s FROM Salle s WHERE s.intitule = :intitule")
-    , @NamedQuery(name = "Salle.findByStateDb", query = "SELECT s FROM Salle s WHERE s.stateDb = :stateDb")
-    , @NamedQuery(name = "Salle.findByDtCreated", query = "SELECT s FROM Salle s WHERE s.dtCreated = :dtCreated")
-    , @NamedQuery(name = "Salle.findByDtModified", query = "SELECT s FROM Salle s WHERE s.dtModified = :dtModified")})
+    @NamedQuery(name = "Salle.findAll", query = "SELECT s FROM Salle s")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Salle implements Serializable {
 
@@ -64,18 +58,19 @@ public class Salle implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "salleId")
-    private Collection<Student> studentCollection;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "salleId")
-    private Collection<Groupe> groupeCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "salleId", fetch = FetchType.LAZY)
+    private Set<Student> studentSet;
     @JoinColumn(name = "CLASSE_ID", referencedColumnName = "CLASSE_ID", nullable = false)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Classe classeId;
+    @JoinColumn(name = "GROUPE_ID", referencedColumnName = "GROUPE_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Groupe groupeId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userCreated;
 
     public Salle() {
@@ -140,21 +135,12 @@ public class Salle implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Student> getStudentCollection() {
-        return studentCollection;
+    public Set<Student> getStudentSet() {
+        return studentSet;
     }
 
-    public void setStudentCollection(Collection<Student> studentCollection) {
-        this.studentCollection = studentCollection;
-    }
-
-    @XmlTransient
-    public Collection<Groupe> getGroupeCollection() {
-        return groupeCollection;
-    }
-
-    public void setGroupeCollection(Collection<Groupe> groupeCollection) {
-        this.groupeCollection = groupeCollection;
+    public void setStudentSet(Set<Student> studentSet) {
+        this.studentSet = studentSet;
     }
 
     public Classe getClasseId() {
@@ -163,6 +149,14 @@ public class Salle implements Serializable {
 
     public void setClasseId(Classe classeId) {
         this.classeId = classeId;
+    }
+
+    public Groupe getGroupeId() {
+        return groupeId;
+    }
+
+    public void setGroupeId(Groupe groupeId) {
+        this.groupeId = groupeId;
     }
 
     public Users getUserModified() {
@@ -205,5 +199,5 @@ public class Salle implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Salle[ salleId=" + salleId + " ]";
     }
-
+    
 }

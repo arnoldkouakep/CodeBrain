@@ -8,8 +8,8 @@ package cm.codebrain.main.business.entitie;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,17 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Etablissement.findAll", query = "SELECT e FROM Etablissement e")
-    , @NamedQuery(name = "Etablissement.findByEtablissementId", query = "SELECT e FROM Etablissement e WHERE e.etablissementId = :etablissementId")
-    , @NamedQuery(name = "Etablissement.findByNameAbrege", query = "SELECT e FROM Etablissement e WHERE e.nameAbrege = :nameAbrege")
-    , @NamedQuery(name = "Etablissement.findByFullName", query = "SELECT e FROM Etablissement e WHERE e.fullName = :fullName")
-    , @NamedQuery(name = "Etablissement.findByAdresse", query = "SELECT e FROM Etablissement e WHERE e.adresse = :adresse")
-    , @NamedQuery(name = "Etablissement.findByVille", query = "SELECT e FROM Etablissement e WHERE e.ville = :ville")
-    , @NamedQuery(name = "Etablissement.findByTelephone", query = "SELECT e FROM Etablissement e WHERE e.telephone = :telephone")
-    , @NamedQuery(name = "Etablissement.findByEmail", query = "SELECT e FROM Etablissement e WHERE e.email = :email")
-    , @NamedQuery(name = "Etablissement.findByStateDb", query = "SELECT e FROM Etablissement e WHERE e.stateDb = :stateDb")
-    , @NamedQuery(name = "Etablissement.findByDtCreated", query = "SELECT e FROM Etablissement e WHERE e.dtCreated = :dtCreated")
-    , @NamedQuery(name = "Etablissement.findByDtModified", query = "SELECT e FROM Etablissement e WHERE e.dtModified = :dtModified")})
+    @NamedQuery(name = "Etablissement.findAll", query = "SELECT e FROM Etablissement e")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Etablissement implements Serializable {
 
@@ -80,14 +70,14 @@ public class Etablissement implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "etablissementId")
-    private Collection<Sections> sectionsCollection;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userCreated;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "etablissementId", fetch = FetchType.LAZY)
+    private Set<Section> sectionSet;
 
     public Etablissement() {
     }
@@ -186,15 +176,6 @@ public class Etablissement implements Serializable {
         this.dtModified = dtModified;
     }
 
-    @XmlTransient
-    public Collection<Sections> getSectionsCollection() {
-        return sectionsCollection;
-    }
-
-    public void setSectionsCollection(Collection<Sections> sectionsCollection) {
-        this.sectionsCollection = sectionsCollection;
-    }
-
     public Users getUserModified() {
         return userModified;
     }
@@ -209,6 +190,15 @@ public class Etablissement implements Serializable {
 
     public void setUserCreated(Users userCreated) {
         this.userCreated = userCreated;
+    }
+
+    @XmlTransient
+    public Set<Section> getSectionSet() {
+        return sectionSet;
+    }
+
+    public void setSectionSet(Set<Section> sectionSet) {
+        this.sectionSet = sectionSet;
     }
 
     @Override
@@ -235,5 +225,5 @@ public class Etablissement implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Etablissement[ etablissementId=" + etablissementId + " ]";
     }
-
+    
 }

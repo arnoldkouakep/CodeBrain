@@ -11,10 +11,10 @@ import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import java.io.IOException;
 
@@ -35,7 +35,6 @@ public class CodeBrainMapper<E, R> {
 
         ObjectMapper oMapper = new ObjectMapper();
         R r = (R) oMapper.convertValue(entry, typeRef);
-//        R r = (R) oMapper.convertValue(entry, c);
 
         return r;
     }
@@ -43,20 +42,10 @@ public class CodeBrainMapper<E, R> {
     public R mapper(E entry, Class c) {
 
         ObjectMapper oMapper = new ObjectMapper();
-//        oMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
-        
-//        String s = null;
-//        try {
-//            s = oMapper.writeValueAsString(entry);
-//        }
-//        catch (JsonProcessingException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-
-//        System.out.println(s);
-        
-//        oMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        oMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        oMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+        oMapper.configure(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE, true);
+        oMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
         
         R r = (R) oMapper.convertValue(entry, c);
 
@@ -85,39 +74,12 @@ public class CodeBrainMapper<E, R> {
             }
 
         });
-//            @Override
-//            public TestEntity deserialize(JsonParser jp, DeserializationContext dc)
-//                    throws IOException, JsonProcessingException {
-//
-//                ObjectCodec codec = jp.getCodec();
-//                JsonNode node = codec.readTree(jp);
-//                boolean isFullImpl = node.has("message");
-//                Class<? extends TestEntity> cls = isFullImpl ? TestEntityImpl.class
-//                        : TestEntityRef.class;
-//                return codec.treeToValue(node, cls);
-//            }
-//        });
-
+        
         mapper.registerModule(idAsRefModule);
 
-//        return mapper;
-//        TypeReference<R> typeRef = new TypeReference<R>() {
-//        };
         ObjectMapper oMapper = new ObjectMapper();
         R r = (R) oMapper.convertValue(entry, c);
-//        R r = (R) oMapper.convertValue(entry, c);
 
         return r;
     }
-    /*
-    public R deserialize(E entry, Class c){
-        
-        TypeReference<R> typeRef = new TypeReference<R>(){};
-        
-        ObjectMapper oMapper = new ObjectMapper();
-        
-        R r = (R) oMapper.readValue(entry, typeRef);
-        return null;
-    }
-     */
 }

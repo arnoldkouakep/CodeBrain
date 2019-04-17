@@ -5,209 +5,227 @@
  */
 package cm.codebrain.main.business.manager;
 
+import cm.codebrain.main.business.controller.CodeBrainEntityManager;
 import cm.codebrain.main.business.entitie.Classe;
 import java.io.Serializable;
 import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import cm.codebrain.main.business.entitie.Groupe;
-import cm.codebrain.main.business.entitie.Sections;
+import cm.codebrain.main.business.entitie.Section;
 import cm.codebrain.main.business.entitie.Users;
+import cm.codebrain.main.business.entitie.Groupe;
+import java.util.HashSet;
+import java.util.Set;
 import cm.codebrain.main.business.entitie.Salle;
 import cm.codebrain.main.business.manager.exceptions.IllegalOrphanException;
 import cm.codebrain.main.business.manager.exceptions.NonexistentEntityException;
 import cm.codebrain.main.business.manager.exceptions.PreexistingEntityException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  *
  * @author KSA-INET
  */
-public class ClasseJpaController implements Serializable {
+public class ClasseJpaController extends CodeBrainEntityManager implements Serializable {
 
-    public ClasseJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-    private EntityManagerFactory emf = null;
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+    public ClasseJpaController(EntityManager em) {
+        setEntityManager(em);
     }
 
     public void create(Classe classe) throws PreexistingEntityException, Exception {
-        if (classe.getSalleCollection() == null) {
-            classe.setSalleCollection(new ArrayList<Salle>());
+        if (classe.getGroupeSet() == null) {
+            classe.setGroupeSet(new HashSet<Groupe>());
         }
-        EntityManager em = null;
+        if (classe.getSalleSet() == null) {
+            classe.setSalleSet(new HashSet<Salle>());
+        }
+//        EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Groupe groupeId = classe.getGroupeId();
-            if (groupeId != null) {
-                groupeId = em.getReference(groupeId.getClass(), groupeId.getGroupeId());
-                classe.setGroupeId(groupeId);
-            }
-            Sections sectionsId = classe.getSectionsId();
-            if (sectionsId != null) {
-                sectionsId = em.getReference(sectionsId.getClass(), sectionsId.getSectionsId());
-                classe.setSectionsId(sectionsId);
+//            em = getEntityManager();
+//            em.getTransaction().begin();
+            Section sectionId = classe.getSectionId();
+            if (sectionId != null) {
+                sectionId = (Section) refreshEntity(sectionId.getClass(), sectionId.getSectionId());
+                classe.setSectionId(sectionId);
             }
             Users userModified = classe.getUserModified();
             if (userModified != null) {
-                userModified = em.getReference(userModified.getClass(), userModified.getUsersId());
+                userModified = (Users) refreshEntity(userModified.getClass(), userModified.getUsersId());
                 classe.setUserModified(userModified);
             }
             Users userCreated = classe.getUserCreated();
             if (userCreated != null) {
-                userCreated = em.getReference(userCreated.getClass(), userCreated.getUsersId());
+                userCreated = (Users) refreshEntity(userCreated.getClass(), userCreated.getUsersId());
                 classe.setUserCreated(userCreated);
             }
-            Collection<Salle> attachedSalleCollection = new ArrayList<Salle>();
-            for (Salle salleCollectionSalleToAttach : classe.getSalleCollection()) {
-                salleCollectionSalleToAttach = em.getReference(salleCollectionSalleToAttach.getClass(), salleCollectionSalleToAttach.getSalleId());
-                attachedSalleCollection.add(salleCollectionSalleToAttach);
+            Set<Groupe> attachedGroupeSet = new HashSet<Groupe>();
+            for (Groupe groupeSetGroupeToAttach : classe.getGroupeSet()) {
+                groupeSetGroupeToAttach = (Groupe) refreshEntity(groupeSetGroupeToAttach.getClass(), groupeSetGroupeToAttach.getGroupeId());
+                attachedGroupeSet.add(groupeSetGroupeToAttach);
             }
-            classe.setSalleCollection(attachedSalleCollection);
-            em.persist(classe);
-            if (groupeId != null) {
-                groupeId.getClasseCollection().add(classe);
-                groupeId = em.merge(groupeId);
+            classe.setGroupeSet(attachedGroupeSet);
+            Set<Salle> attachedSalleSet = new HashSet<Salle>();
+            for (Salle salleSetSalleToAttach : classe.getSalleSet()) {
+                salleSetSalleToAttach = (Salle) refreshEntity(salleSetSalleToAttach.getClass(), salleSetSalleToAttach.getSalleId());
+                attachedSalleSet.add(salleSetSalleToAttach);
             }
-            if (sectionsId != null) {
-                sectionsId.getClasseCollection().add(classe);
-                sectionsId = em.merge(sectionsId);
-            }
-            if (userModified != null) {
-                userModified.getClasseCollection().add(classe);
-                userModified = em.merge(userModified);
-            }
-            if (userCreated != null) {
-                userCreated.getClasseCollection().add(classe);
-                userCreated = em.merge(userCreated);
-            }
-            for (Salle salleCollectionSalle : classe.getSalleCollection()) {
-                Classe oldClasseIdOfSalleCollectionSalle = salleCollectionSalle.getClasseId();
-                salleCollectionSalle.setClasseId(classe);
-                salleCollectionSalle = em.merge(salleCollectionSalle);
-                if (oldClasseIdOfSalleCollectionSalle != null) {
-                    oldClasseIdOfSalleCollectionSalle.getSalleCollection().remove(salleCollectionSalle);
-                    oldClasseIdOfSalleCollectionSalle = em.merge(oldClasseIdOfSalleCollectionSalle);
-                }
-            }
-            em.getTransaction().commit();
+            classe.setSalleSet(attachedSalleSet);
+            persist(classe);
+//            if (sectionId != null) {
+//                sectionId.getClasseSet().add(classe);
+//                sectionId = em.merge(sectionId);
+//            }
+//            if (userModified != null) {
+//                userModified.getClasseSet().add(classe);
+//                userModified = em.merge(userModified);
+//            }
+//            if (userCreated != null) {
+//                userCreated.getClasseSet().add(classe);
+//                userCreated = em.merge(userCreated);
+//            }
+//            for (Groupe groupeSetGroupe : classe.getGroupeSet()) {
+//                Classe oldClasseIdOfGroupeSetGroupe = groupeSetGroupe.getClasseId();
+//                groupeSetGroupe.setClasseId(classe);
+//                groupeSetGroupe = em.merge(groupeSetGroupe);
+//                if (oldClasseIdOfGroupeSetGroupe != null) {
+//                    oldClasseIdOfGroupeSetGroupe.getGroupeSet().remove(groupeSetGroupe);
+//                    oldClasseIdOfGroupeSetGroupe = em.merge(oldClasseIdOfGroupeSetGroupe);
+//                }
+//            }
+//            for (Salle salleSetSalle : classe.getSalleSet()) {
+//                Classe oldClasseIdOfSalleSetSalle = salleSetSalle.getClasseId();
+//                salleSetSalle.setClasseId(classe);
+//                salleSetSalle = em.merge(salleSetSalle);
+//                if (oldClasseIdOfSalleSetSalle != null) {
+//                    oldClasseIdOfSalleSetSalle.getSalleSet().remove(salleSetSalle);
+//                    oldClasseIdOfSalleSetSalle = em.merge(oldClasseIdOfSalleSetSalle);
+//                }
+//            }
+//            em.getTransaction().commit();
         } catch (Exception ex) {
             if (findClasse(classe.getClasseId()) != null) {
                 throw new PreexistingEntityException("Classe " + classe + " already exists.", ex);
             }
             throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
         }
     }
 
     public void edit(Classe classe) throws IllegalOrphanException, NonexistentEntityException, Exception {
-        EntityManager em = null;
+//        EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Classe persistentClasse = em.find(Classe.class, classe.getClasseId());
-            Groupe groupeIdOld = persistentClasse.getGroupeId();
-            Groupe groupeIdNew = classe.getGroupeId();
-            Sections sectionsIdOld = persistentClasse.getSectionsId();
-            Sections sectionsIdNew = classe.getSectionsId();
+//            em = getEntityManager();
+//            em.getTransaction().begin();
+            Classe persistentClasse = (Classe) find(Classe.class, classe.getClasseId());
+            Section sectionIdOld = persistentClasse.getSectionId();
+            Section sectionIdNew = classe.getSectionId();
             Users userModifiedOld = persistentClasse.getUserModified();
             Users userModifiedNew = classe.getUserModified();
             Users userCreatedOld = persistentClasse.getUserCreated();
             Users userCreatedNew = classe.getUserCreated();
-            Collection<Salle> salleCollectionOld = persistentClasse.getSalleCollection();
-            Collection<Salle> salleCollectionNew = classe.getSalleCollection();
+            Set<Groupe> groupeSetOld = persistentClasse.getGroupeSet();
+            Set<Groupe> groupeSetNew = classe.getGroupeSet();
+            Set<Salle> salleSetOld = persistentClasse.getSalleSet();
+            Set<Salle> salleSetNew = classe.getSalleSet();
             List<String> illegalOrphanMessages = null;
-            for (Salle salleCollectionOldSalle : salleCollectionOld) {
-                if (!salleCollectionNew.contains(salleCollectionOldSalle)) {
+            for (Groupe groupeSetOldGroupe : groupeSetOld) {
+                if (!groupeSetNew.contains(groupeSetOldGroupe)) {
                     if (illegalOrphanMessages == null) {
                         illegalOrphanMessages = new ArrayList<String>();
                     }
-                    illegalOrphanMessages.add("You must retain Salle " + salleCollectionOldSalle + " since its classeId field is not nullable.");
+                    illegalOrphanMessages.add("You must retain Groupe " + groupeSetOldGroupe + " since its classeId field is not nullable.");
+                }
+            }
+            for (Salle salleSetOldSalle : salleSetOld) {
+                if (!salleSetNew.contains(salleSetOldSalle)) {
+                    if (illegalOrphanMessages == null) {
+                        illegalOrphanMessages = new ArrayList<String>();
+                    }
+                    illegalOrphanMessages.add("You must retain Salle " + salleSetOldSalle + " since its classeId field is not nullable.");
                 }
             }
             if (illegalOrphanMessages != null) {
                 throw new IllegalOrphanException(illegalOrphanMessages);
             }
-            if (groupeIdNew != null) {
-                groupeIdNew = em.getReference(groupeIdNew.getClass(), groupeIdNew.getGroupeId());
-                classe.setGroupeId(groupeIdNew);
-            }
-            if (sectionsIdNew != null) {
-                sectionsIdNew = em.getReference(sectionsIdNew.getClass(), sectionsIdNew.getSectionsId());
-                classe.setSectionsId(sectionsIdNew);
+            if (sectionIdNew != null) {
+                sectionIdNew = (Section) refreshEntity(sectionIdNew.getClass(), sectionIdNew.getSectionId());
+                classe.setSectionId(sectionIdNew);
             }
             if (userModifiedNew != null) {
-                userModifiedNew = em.getReference(userModifiedNew.getClass(), userModifiedNew.getUsersId());
+                userModifiedNew = (Users) refreshEntity(userModifiedNew.getClass(), userModifiedNew.getUsersId());
                 classe.setUserModified(userModifiedNew);
             }
             if (userCreatedNew != null) {
-                userCreatedNew = em.getReference(userCreatedNew.getClass(), userCreatedNew.getUsersId());
+                userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 classe.setUserCreated(userCreatedNew);
             }
-            Collection<Salle> attachedSalleCollectionNew = new ArrayList<Salle>();
-            for (Salle salleCollectionNewSalleToAttach : salleCollectionNew) {
-                salleCollectionNewSalleToAttach = em.getReference(salleCollectionNewSalleToAttach.getClass(), salleCollectionNewSalleToAttach.getSalleId());
-                attachedSalleCollectionNew.add(salleCollectionNewSalleToAttach);
+            Set<Groupe> attachedGroupeSetNew = new HashSet<Groupe>();
+            for (Groupe groupeSetNewGroupeToAttach : groupeSetNew) {
+                groupeSetNewGroupeToAttach = (Groupe) refreshEntity(groupeSetNewGroupeToAttach.getClass(), groupeSetNewGroupeToAttach.getGroupeId());
+                attachedGroupeSetNew.add(groupeSetNewGroupeToAttach);
             }
-            salleCollectionNew = attachedSalleCollectionNew;
-            classe.setSalleCollection(salleCollectionNew);
-            classe = em.merge(classe);
-            if (groupeIdOld != null && !groupeIdOld.equals(groupeIdNew)) {
-                groupeIdOld.getClasseCollection().remove(classe);
-                groupeIdOld = em.merge(groupeIdOld);
+            groupeSetNew = attachedGroupeSetNew;
+            classe.setGroupeSet(groupeSetNew);
+            Set<Salle> attachedSalleSetNew = new HashSet<Salle>();
+            for (Salle salleSetNewSalleToAttach : salleSetNew) {
+                salleSetNewSalleToAttach = (Salle) refreshEntity(salleSetNewSalleToAttach.getClass(), salleSetNewSalleToAttach.getSalleId());
+                attachedSalleSetNew.add(salleSetNewSalleToAttach);
             }
-            if (groupeIdNew != null && !groupeIdNew.equals(groupeIdOld)) {
-                groupeIdNew.getClasseCollection().add(classe);
-                groupeIdNew = em.merge(groupeIdNew);
-            }
-            if (sectionsIdOld != null && !sectionsIdOld.equals(sectionsIdNew)) {
-                sectionsIdOld.getClasseCollection().remove(classe);
-                sectionsIdOld = em.merge(sectionsIdOld);
-            }
-            if (sectionsIdNew != null && !sectionsIdNew.equals(sectionsIdOld)) {
-                sectionsIdNew.getClasseCollection().add(classe);
-                sectionsIdNew = em.merge(sectionsIdNew);
-            }
-            if (userModifiedOld != null && !userModifiedOld.equals(userModifiedNew)) {
-                userModifiedOld.getClasseCollection().remove(classe);
-                userModifiedOld = em.merge(userModifiedOld);
-            }
-            if (userModifiedNew != null && !userModifiedNew.equals(userModifiedOld)) {
-                userModifiedNew.getClasseCollection().add(classe);
-                userModifiedNew = em.merge(userModifiedNew);
-            }
-            if (userCreatedOld != null && !userCreatedOld.equals(userCreatedNew)) {
-                userCreatedOld.getClasseCollection().remove(classe);
-                userCreatedOld = em.merge(userCreatedOld);
-            }
-            if (userCreatedNew != null && !userCreatedNew.equals(userCreatedOld)) {
-                userCreatedNew.getClasseCollection().add(classe);
-                userCreatedNew = em.merge(userCreatedNew);
-            }
-            for (Salle salleCollectionNewSalle : salleCollectionNew) {
-                if (!salleCollectionOld.contains(salleCollectionNewSalle)) {
-                    Classe oldClasseIdOfSalleCollectionNewSalle = salleCollectionNewSalle.getClasseId();
-                    salleCollectionNewSalle.setClasseId(classe);
-                    salleCollectionNewSalle = em.merge(salleCollectionNewSalle);
-                    if (oldClasseIdOfSalleCollectionNewSalle != null && !oldClasseIdOfSalleCollectionNewSalle.equals(classe)) {
-                        oldClasseIdOfSalleCollectionNewSalle.getSalleCollection().remove(salleCollectionNewSalle);
-                        oldClasseIdOfSalleCollectionNewSalle = em.merge(oldClasseIdOfSalleCollectionNewSalle);
-                    }
-                }
-            }
-            em.getTransaction().commit();
+            salleSetNew = attachedSalleSetNew;
+            classe.setSalleSet(salleSetNew);
+            classe = (Classe) merge(classe);
+//            if (sectionIdOld != null && !sectionIdOld.equals(sectionIdNew)) {
+//                sectionIdOld.getClasseSet().remove(classe);
+//                sectionIdOld = (Section) merge(sectionIdOld);
+//            }
+//            if (sectionIdNew != null && !sectionIdNew.equals(sectionIdOld)) {
+//                sectionIdNew.getClasseSet().add(classe);
+//                sectionIdNew = (Section) merge(sectionIdNew);
+//            }
+//            if (userModifiedOld != null && !userModifiedOld.equals(userModifiedNew)) {
+//                userModifiedOld.getClasseSet().remove(classe);
+//                userModifiedOld = (Users) merge(userModifiedOld);
+//            }
+//            if (userModifiedNew != null && !userModifiedNew.equals(userModifiedOld)) {
+//                userModifiedNew.getClasseSet().add(classe);
+//                userModifiedNew = (Users) merge(userModifiedNew);
+//            }
+//            if (userCreatedOld != null && !userCreatedOld.equals(userCreatedNew)) {
+//                userCreatedOld.getClasseSet().remove(classe);
+//                userCreatedOld = (Users) merge(userCreatedOld);
+//            }
+//            if (userCreatedNew != null && !userCreatedNew.equals(userCreatedOld)) {
+//                userCreatedNew.getClasseSet().add(classe);
+//                userCreatedNew = (Users) merge(userCreatedNew);
+//            }
+//            for (Groupe groupeSetNewGroupe : groupeSetNew) {
+//                if (!groupeSetOld.contains(groupeSetNewGroupe)) {
+//                    Classe oldClasseIdOfGroupeSetNewGroupe = groupeSetNewGroupe.getClasseId();
+//                    groupeSetNewGroupe.setClasseId(classe);
+//                    groupeSetNewGroupe = (Groupe) merge(groupeSetNewGroupe);
+//                    if (oldClasseIdOfGroupeSetNewGroupe != null && !oldClasseIdOfGroupeSetNewGroupe.equals(classe)) {
+//                        oldClasseIdOfGroupeSetNewGroupe.getGroupeSet().remove(groupeSetNewGroupe);
+//                        oldClasseIdOfGroupeSetNewGroupe = (Classe) merge(oldClasseIdOfGroupeSetNewGroupe);
+//                    }
+//                }
+//            }
+//            for (Salle salleSetNewSalle : salleSetNew) {
+//                if (!salleSetOld.contains(salleSetNewSalle)) {
+//                    Classe oldClasseIdOfSalleSetNewSalle = salleSetNewSalle.getClasseId();
+//                    salleSetNewSalle.setClasseId(classe);
+//                    salleSetNewSalle = (Salle) merge(salleSetNewSalle);
+//                    if (oldClasseIdOfSalleSetNewSalle != null && !oldClasseIdOfSalleSetNewSalle.equals(classe)) {
+//                        oldClasseIdOfSalleSetNewSalle.getSalleSet().remove(salleSetNewSalle);
+//                        oldClasseIdOfSalleSetNewSalle = (Classe) merge(oldClasseIdOfSalleSetNewSalle);
+//                    }
+//                }
+//            }
+//            em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
@@ -217,63 +235,65 @@ public class ClasseJpaController implements Serializable {
                 }
             }
             throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
         }
     }
 
     public void destroy(String id) throws IllegalOrphanException, NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Classe classe;
-            try {
-                classe = em.getReference(Classe.class, id);
-                classe.getClasseId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The classe with id " + id + " no longer exists.", enfe);
-            }
-            List<String> illegalOrphanMessages = null;
-            Collection<Salle> salleCollectionOrphanCheck = classe.getSalleCollection();
-            for (Salle salleCollectionOrphanCheckSalle : salleCollectionOrphanCheck) {
-                if (illegalOrphanMessages == null) {
-                    illegalOrphanMessages = new ArrayList<String>();
-                }
-                illegalOrphanMessages.add("This Classe (" + classe + ") cannot be destroyed since the Salle " + salleCollectionOrphanCheckSalle + " in its salleCollection field has a non-nullable classeId field.");
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
-            Groupe groupeId = classe.getGroupeId();
-            if (groupeId != null) {
-                groupeId.getClasseCollection().remove(classe);
-                groupeId = em.merge(groupeId);
-            }
-            Sections sectionsId = classe.getSectionsId();
-            if (sectionsId != null) {
-                sectionsId.getClasseCollection().remove(classe);
-                sectionsId = em.merge(sectionsId);
-            }
-            Users userModified = classe.getUserModified();
-            if (userModified != null) {
-                userModified.getClasseCollection().remove(classe);
-                userModified = em.merge(userModified);
-            }
-            Users userCreated = classe.getUserCreated();
-            if (userCreated != null) {
-                userCreated.getClasseCollection().remove(classe);
-                userCreated = em.merge(userCreated);
-            }
-            em.remove(classe);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
+//        EntityManager em = null;
+//        try {
+//            em = getEntityManager();
+//            em.getTransaction().begin();
+//            Classe classe;
+//            try {
+//                classe = (Classe) refreshEntity(Classe.class, id);
+//                classe.getClasseId();
+//            } catch (EntityNotFoundException enfe) {
+//                throw new NonexistentEntityException("The classe with id " + id + " no longer exists.", enfe);
+//            }
+//            List<String> illegalOrphanMessages = null;
+//            Set<Groupe> groupeSetOrphanCheck = classe.getGroupeSet();
+//            for (Groupe groupeSetOrphanCheckGroupe : groupeSetOrphanCheck) {
+//                if (illegalOrphanMessages == null) {
+//                    illegalOrphanMessages = new ArrayList<String>();
+//                }
+//                illegalOrphanMessages.add("This Classe (" + classe + ") cannot be destroyed since the Groupe " + groupeSetOrphanCheckGroupe + " in its groupeSet field has a non-nullable classeId field.");
+//            }
+//            Set<Salle> salleSetOrphanCheck = classe.getSalleSet();
+//            for (Salle salleSetOrphanCheckSalle : salleSetOrphanCheck) {
+//                if (illegalOrphanMessages == null) {
+//                    illegalOrphanMessages = new ArrayList<String>();
+//                }
+//                illegalOrphanMessages.add("This Classe (" + classe + ") cannot be destroyed since the Salle " + salleSetOrphanCheckSalle + " in its salleSet field has a non-nullable classeId field.");
+//            }
+//            if (illegalOrphanMessages != null) {
+//                throw new IllegalOrphanException(illegalOrphanMessages);
+//            }
+//            Section sectionId = classe.getSectionId();
+//            if (sectionId != null) {
+//                sectionId.getClasseSet().remove(classe);
+//                sectionId = (Section) merge(sectionId);
+//            }
+//            Users userModified = classe.getUserModified();
+//            if (userModified != null) {
+//                userModified.getClasseSet().remove(classe);
+//                userModified = (Users) merge(userModified);
+//            }
+//            Users userCreated = classe.getUserCreated();
+//            if (userCreated != null) {
+//                userCreated.getClasseSet().remove(classe);
+//                userCreated = (Users) merge(userCreated);
+//            }
+            remove(Classe.class, id);
+//            getTransaction().commit();
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
+//        }
     }
 
     public List<Classe> findClasseEntities() {
@@ -321,5 +341,5 @@ public class ClasseJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }

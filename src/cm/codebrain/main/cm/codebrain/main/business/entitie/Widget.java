@@ -8,8 +8,8 @@ package cm.codebrain.main.business.entitie;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,13 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Widget.findAll", query = "SELECT w FROM Widget w")
-    , @NamedQuery(name = "Widget.findByWidgetId", query = "SELECT w FROM Widget w WHERE w.widgetId = :widgetId")
-    , @NamedQuery(name = "Widget.findByName", query = "SELECT w FROM Widget w WHERE w.name = :name")
-    , @NamedQuery(name = "Widget.findByLabel", query = "SELECT w FROM Widget w WHERE w.label = :label")
-    , @NamedQuery(name = "Widget.findByAvailable", query = "SELECT w FROM Widget w WHERE w.available = :available")
-    , @NamedQuery(name = "Widget.findByDtCreated", query = "SELECT w FROM Widget w WHERE w.dtCreated = :dtCreated")
-    , @NamedQuery(name = "Widget.findByDtModified", query = "SELECT w FROM Widget w WHERE w.dtModified = :dtModified")})
+    @NamedQuery(name = "Widget.findAll", query = "SELECT w FROM Widget w")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Widget implements Serializable {
 
@@ -64,18 +58,18 @@ public class Widget implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
     @JoinColumn(name = "LEVELS_ID", referencedColumnName = "LEVELS_ID", nullable = false)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Levels levelsId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "parent")
-    private Collection<Widget> widgetCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent", fetch = FetchType.LAZY)
+    private Set<Widget> widgetSet;
     @JoinColumn(name = "PARENT", referencedColumnName = "WIDGET_ID", nullable = false)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Widget parent;
 
     public Widget() {
@@ -164,12 +158,12 @@ public class Widget implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Widget> getWidgetCollection() {
-        return widgetCollection;
+    public Set<Widget> getWidgetSet() {
+        return widgetSet;
     }
 
-    public void setWidgetCollection(Collection<Widget> widgetCollection) {
-        this.widgetCollection = widgetCollection;
+    public void setWidgetSet(Set<Widget> widgetSet) {
+        this.widgetSet = widgetSet;
     }
 
     public Widget getParent() {

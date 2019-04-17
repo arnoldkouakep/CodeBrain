@@ -5,6 +5,7 @@
  */
 package cm.codebrain.main.business.manager;
 
+import cm.codebrain.main.business.controller.CodeBrainEntityManager;
 import java.io.Serializable;
 import javax.persistence.Query;
 import javax.persistence.EntityNotFoundException;
@@ -23,113 +24,108 @@ import javax.persistence.EntityManagerFactory;
  *
  * @author KSA-INET
  */
-public class StudentJpaController implements Serializable {
+public class StudentJpaController extends CodeBrainEntityManager implements Serializable {
 
-    public StudentJpaController(EntityManagerFactory emf) {
-        this.emf = emf;
-    }
-    private EntityManagerFactory emf = null;
-
-    public EntityManager getEntityManager() {
-        return emf.createEntityManager();
+    public StudentJpaController(EntityManager em) {
+        setEntityManager(em);
     }
 
     public void create(Student student) throws PreexistingEntityException, Exception {
-        EntityManager em = null;
+//        EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
+//            em = getEntityManager();
+//            em.getTransaction().begin();
             Salle salleId = student.getSalleId();
             if (salleId != null) {
-                salleId = em.getReference(salleId.getClass(), salleId.getSalleId());
+                salleId = (Salle) refreshEntity(salleId.getClass(), salleId.getSalleId());
                 student.setSalleId(salleId);
             }
             Users userModified = student.getUserModified();
             if (userModified != null) {
-                userModified = em.getReference(userModified.getClass(), userModified.getUsersId());
+                userModified = (Users) refreshEntity(userModified.getClass(), userModified.getUsersId());
                 student.setUserModified(userModified);
             }
             Users userCreated = student.getUserCreated();
             if (userCreated != null) {
-                userCreated = em.getReference(userCreated.getClass(), userCreated.getUsersId());
+                userCreated = (Users) refreshEntity(userCreated.getClass(), userCreated.getUsersId());
                 student.setUserCreated(userCreated);
             }
-            em.persist(student);
-            if (salleId != null) {
-                salleId.getStudentCollection().add(student);
-                salleId = em.merge(salleId);
-            }
-            if (userModified != null) {
-                userModified.getStudentCollection().add(student);
-                userModified = em.merge(userModified);
-            }
-            if (userCreated != null) {
-                userCreated.getStudentCollection().add(student);
-                userCreated = em.merge(userCreated);
-            }
-            em.getTransaction().commit();
+            persist(student);
+//            if (salleId != null) {
+//                salleId.getStudentSet().add(student);
+//                salleId = em.merge(salleId);
+//            }
+//            if (userModified != null) {
+//                userModified.getStudentSet().add(student);
+//                userModified = em.merge(userModified);
+//            }
+//            if (userCreated != null) {
+//                userCreated.getStudentSet().add(student);
+//                userCreated = em.merge(userCreated);
+//            }
+//            em.getTransaction().commit();
         } catch (Exception ex) {
             if (findStudent(student.getStudentId()) != null) {
                 throw new PreexistingEntityException("Student " + student + " already exists.", ex);
             }
             throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
         }
     }
 
     public void edit(Student student) throws NonexistentEntityException, Exception {
-        EntityManager em = null;
+//        EntityManager em = null;
         try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Student persistentStudent = em.find(Student.class, student.getStudentId());
+//            em = getEntityManager();
+//            em.getTransaction().begin();
+            Student persistentStudent = (Student) find(Student.class, student.getStudentId());
             Salle salleIdOld = persistentStudent.getSalleId();
             Salle salleIdNew = student.getSalleId();
             Users userModifiedOld = persistentStudent.getUserModified();
             Users userModifiedNew = student.getUserModified();
             Users userCreatedOld = persistentStudent.getUserCreated();
             Users userCreatedNew = student.getUserCreated();
-            if (salleIdNew != null) {
-                salleIdNew = em.getReference(salleIdNew.getClass(), salleIdNew.getSalleId());
-                student.setSalleId(salleIdNew);
-            }
-            if (userModifiedNew != null) {
-                userModifiedNew = em.getReference(userModifiedNew.getClass(), userModifiedNew.getUsersId());
-                student.setUserModified(userModifiedNew);
-            }
-            if (userCreatedNew != null) {
-                userCreatedNew = em.getReference(userCreatedNew.getClass(), userCreatedNew.getUsersId());
-                student.setUserCreated(userCreatedNew);
-            }
-            student = em.merge(student);
-            if (salleIdOld != null && !salleIdOld.equals(salleIdNew)) {
-                salleIdOld.getStudentCollection().remove(student);
-                salleIdOld = em.merge(salleIdOld);
-            }
-            if (salleIdNew != null && !salleIdNew.equals(salleIdOld)) {
-                salleIdNew.getStudentCollection().add(student);
-                salleIdNew = em.merge(salleIdNew);
-            }
-            if (userModifiedOld != null && !userModifiedOld.equals(userModifiedNew)) {
-                userModifiedOld.getStudentCollection().remove(student);
-                userModifiedOld = em.merge(userModifiedOld);
-            }
-            if (userModifiedNew != null && !userModifiedNew.equals(userModifiedOld)) {
-                userModifiedNew.getStudentCollection().add(student);
-                userModifiedNew = em.merge(userModifiedNew);
-            }
-            if (userCreatedOld != null && !userCreatedOld.equals(userCreatedNew)) {
-                userCreatedOld.getStudentCollection().remove(student);
-                userCreatedOld = em.merge(userCreatedOld);
-            }
-            if (userCreatedNew != null && !userCreatedNew.equals(userCreatedOld)) {
-                userCreatedNew.getStudentCollection().add(student);
-                userCreatedNew = em.merge(userCreatedNew);
-            }
-            em.getTransaction().commit();
+//            if (salleIdNew != null) {
+//                salleIdNew = () refreshEntity(salleIdNew.getClass(), salleIdNew.getSalleId());
+//                student.setSalleId(salleIdNew);
+//            }
+//            if (userModifiedNew != null) {
+//                userModifiedNew = () refreshEntity(userModifiedNew.getClass(), userModifiedNew.getUsersId());
+//                student.setUserModified(userModifiedNew);
+//            }
+//            if (userCreatedNew != null) {
+//                userCreatedNew = () refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
+//                student.setUserCreated(userCreatedNew);
+//            }
+            student = (Student) merge(student);
+//            if (salleIdOld != null && !salleIdOld.equals(salleIdNew)) {
+//                salleIdOld.getStudentSet().remove(student);
+//                salleIdOld = em.merge(salleIdOld);
+//            }
+//            if (salleIdNew != null && !salleIdNew.equals(salleIdOld)) {
+//                salleIdNew.getStudentSet().add(student);
+//                salleIdNew = em.merge(salleIdNew);
+//            }
+//            if (userModifiedOld != null && !userModifiedOld.equals(userModifiedNew)) {
+//                userModifiedOld.getStudentSet().remove(student);
+//                userModifiedOld = em.merge(userModifiedOld);
+//            }
+//            if (userModifiedNew != null && !userModifiedNew.equals(userModifiedOld)) {
+//                userModifiedNew.getStudentSet().add(student);
+//                userModifiedNew = em.merge(userModifiedNew);
+//            }
+//            if (userCreatedOld != null && !userCreatedOld.equals(userCreatedNew)) {
+//                userCreatedOld.getStudentSet().remove(student);
+//                userCreatedOld = em.merge(userCreatedOld);
+//            }
+//            if (userCreatedNew != null && !userCreatedNew.equals(userCreatedOld)) {
+//                userCreatedNew.getStudentSet().add(student);
+//                userCreatedNew = em.merge(userCreatedNew);
+//            }
+//            em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
@@ -139,47 +135,47 @@ public class StudentJpaController implements Serializable {
                 }
             }
             throw ex;
-        } finally {
-            if (em != null) {
-                em.close();
-            }
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
         }
     }
 
     public void destroy(String id) throws NonexistentEntityException {
-        EntityManager em = null;
-        try {
-            em = getEntityManager();
-            em.getTransaction().begin();
-            Student student;
-            try {
-                student = em.getReference(Student.class, id);
-                student.getStudentId();
-            } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The student with id " + id + " no longer exists.", enfe);
-            }
-            Salle salleId = student.getSalleId();
-            if (salleId != null) {
-                salleId.getStudentCollection().remove(student);
-                salleId = em.merge(salleId);
-            }
-            Users userModified = student.getUserModified();
-            if (userModified != null) {
-                userModified.getStudentCollection().remove(student);
-                userModified = em.merge(userModified);
-            }
-            Users userCreated = student.getUserCreated();
-            if (userCreated != null) {
-                userCreated.getStudentCollection().remove(student);
-                userCreated = em.merge(userCreated);
-            }
-            em.remove(student);
-            em.getTransaction().commit();
-        } finally {
-            if (em != null) {
-                em.close();
-            }
-        }
+//        EntityManager em = null;
+//        try {
+//            em = getEntityManager();
+//            em.getTransaction().begin();
+//            Student student;
+//            try {
+//                student = () refreshEntity(Student.class, id);
+//                student.getStudentId();
+//            } catch (EntityNotFoundException enfe) {
+//                throw new NonexistentEntityException("The student with id " + id + " no longer exists.", enfe);
+//            }
+//            Salle salleId = student.getSalleId();
+//            if (salleId != null) {
+//                salleId.getStudentSet().remove(student);
+//                salleId = em.merge(salleId);
+//            }
+//            Users userModified = student.getUserModified();
+//            if (userModified != null) {
+//                userModified.getStudentSet().remove(student);
+//                userModified = em.merge(userModified);
+//            }
+//            Users userCreated = student.getUserCreated();
+//            if (userCreated != null) {
+//                userCreated.getStudentSet().remove(student);
+//                userCreated = em.merge(userCreated);
+//            }
+            remove(Student.class, id);
+//            em.getTransaction().commit();
+//        } finally {
+//            if (em != null) {
+//                em.close();
+//            }
+//        }
     }
 
     public List<Student> findStudentEntities() {

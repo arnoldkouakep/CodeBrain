@@ -10,5 +10,5 @@ package cm.codebrain.main.business.enumerations;
  * @author KSA-INET
  */
 public enum EnumError {
-    WorkFlowException
+    WorkFlowException, NullValueException
 }

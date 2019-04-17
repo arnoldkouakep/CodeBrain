@@ -14,17 +14,15 @@ import cm.codebrain.ui.application.controller.Dictionnaire;
  */
 public class CodeBrainExceptions extends Exception{
     
-    private static final long serialVersionUID = -8642262827833529009L;
-        
     public CodeBrainExceptions() {
     }
 
     public CodeBrainExceptions(String message) {
-        super(Dictionnaire.get(EnumError.WorkFlowException.toString()));
+        super(Dictionnaire.get(message));
     }
 
     public CodeBrainExceptions(String message, Throwable cause) {
-        super(Dictionnaire.get(EnumError.WorkFlowException.toString()), cause);
+        super(Dictionnaire.get(message), cause);
     }
 
     public CodeBrainExceptions(Throwable cause) {
@@ -34,7 +32,31 @@ public class CodeBrainExceptions extends Exception{
     public CodeBrainExceptions(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(Dictionnaire.get(EnumError.WorkFlowException.toString()), cause, enableSuppression, writableStackTrace);
     }
-    
-    
+
+    @Override
+    public String toString() {
+        return super.toString(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getLocalizedMessage() {
+        return super.getLocalizedMessage(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getMessage() {
+        return manageError(super.getCause()); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    private String manageError(Throwable cause) {
+        if(cause instanceof NullPointerException){
+            return Dictionnaire.get(EnumError.NullValueException);
+        }else if(cause instanceof ArrayIndexOutOfBoundsException){
+            return Dictionnaire.get(EnumError.WorkFlowException);
+        } else{
+            return cause.getMessage();
+        }
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

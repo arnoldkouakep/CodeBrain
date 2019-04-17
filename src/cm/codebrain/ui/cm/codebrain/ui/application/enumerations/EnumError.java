@@ -13,4 +13,5 @@ public enum EnumError {
     BusinessLibelleError,
     WorkFlowException,
     Business_Libelle_No_Result_Found,
+    Business_Error_find_required,
 }

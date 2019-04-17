@@ -44,7 +44,7 @@ public class TableModelObject {
                     }).filter((ky) -> (formDatas.get(ky).equals(obj))).map((ky) -> (JTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
                         if(this.key.toString().endsWith("Id")){
                             String entity = this.key.toString().substring(0, (this.key.toString().length() - 2));
-                            modelMap.put(this.key, GlobalParameters.getVar(getUpperValue(entity)));
+                            modelMap.put(this.key, FormParameters.get(getUpperValue(entity)));
                         }else{
                             modelMap.put(this.key, ((JTextField) val).getText());
                         }

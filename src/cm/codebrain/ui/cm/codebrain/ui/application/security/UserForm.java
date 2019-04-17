@@ -7,9 +7,9 @@ package cm.codebrain.ui.application.security;
 
 import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
-import cm.codebrain.ui.application.controller.GlobalParameters;
+import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
-import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.CREATE;
 import java.util.HashMap;
 
 /**
@@ -41,7 +41,8 @@ public class UserForm extends ModelForm {
 
         this.entity = "Users";
         initComponents();
-
+        
+        setAllComponents(codeInput, nomInput, prenomInput, telephoneInput, emailInput, cniImput, levelCodeInput, levelIntituleInput, userNameInput, passwordInput);
     }
 
     @Override
@@ -65,13 +66,26 @@ public class UserForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(levelCodeInput, entityLevel, parametresGrid, null, args, levelCodeInput, levelIntituleInput);
+        addAction(levelCodeInput, entityLevel, entityLevel.toLowerCase()+"Id", parametresGrid, null, args, levelCodeInput, levelIntituleInput);
+    }
+
+    @Override
+    protected void eventActionRef() {
+        
+        String[][] parametresGrid = {
+            {"login", Dictionnaire.get(EnumLibelles.Business_Libelle_Username)},
+            {"firstName",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_nom)},
+            {"lastName",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_prenom)}};
+
+        addAction(userNameInput, entity, entity.toLowerCase()+"Id", parametresGrid, null, null, codeInput);
     }
     
     @Override
     public void makeModelData(){
         super.makeModelData();
-        modelFinal.put(entityLevel.toLowerCase()+"Id", GlobalParameters.getVar(entityLevel));
+        modelFinal.put(entityLevel.toLowerCase()+"Id", FormParameters.get(entityLevel.toLowerCase()+"Id"));
     }
 
     /**
@@ -114,8 +128,8 @@ public class UserForm extends ModelForm {
 
         codeInput.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         codeInput.setName("codeInput"); // NOI18N
-        this.addFormData("userCode", codeInput);  
-        this.setRef(codeInput);
+        this.addFormData("userCode", codeInput);
+        fieldSearch("userCode", codeInput);
 
         labelCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code)); // NOI18N
         labelCode.setName("passwordLabel"); // NOI18N
@@ -133,10 +147,12 @@ public class UserForm extends ModelForm {
         passwordInput.setToolTipText(Dictionnaire.get(EnumLibelles.Business_Libelle_Enter_Password)); // NOI18N
         passwordInput.setName("passwordInput"); // NOI18N
         this.addFormData("password", passwordInput);
+        fieldSearch("password", passwordInput);
 
         userNameInput.setName("userNameInput"); // NOI18N
         this.addFormData("login", userNameInput);
         this.setRef(userNameInput);
+        fieldSearch("login", userNameInput);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -187,19 +203,24 @@ public class UserForm extends ModelForm {
         labelCni.setName("usernameLabel"); // NOI18N
 
         nomInput.setName("nomInput"); // NOI18N
-        this.addFormData("firstName", userNameInput);
+        this.addFormData("firstName", nomInput);
+        fieldSearch("firstName", nomInput);
 
         prenomInput.setName("prenomInput"); // NOI18N
         this.addFormData("lastName", prenomInput);
+        fieldSearch("lastName", prenomInput);
 
         telephoneInput.setName("telephoneInput"); // NOI18N
         this.addFormData("tel", telephoneInput);
+        fieldSearch("tel", telephoneInput);
 
         emailInput.setName("emailInput"); // NOI18N
         this.addFormData("email", emailInput);
+        fieldSearch("email", emailInput);
 
         cniImput.setName("cniInput"); // NOI18N
         this.addFormData("cni", cniImput);
+        fieldSearch("cni", cniImput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
         panelIdentifiant.setLayout(panelIdentifiantLayout);
@@ -256,8 +277,10 @@ public class UserForm extends ModelForm {
 
         levelCodeInput.setName("code"); // NOI18N
         this.addFormData("levelsId", levelCodeInput);
+        fieldSearch("Users->levelsId->code", levelCodeInput);
 
         levelIntituleInput.setName("intitule"); // NOI18N
+        fieldSearch("Users->levelsId->intitule", levelIntituleInput);
 
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);

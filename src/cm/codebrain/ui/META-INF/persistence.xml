@@ -2,32 +2,18 @@
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="Brain" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>cm.codebrain.main.business.entitie.UserStatistique</class>
-    <class>cm.codebrain.main.business.entitie.Levels</class>
-    <class>cm.codebrain.main.business.entitie.Widget</class>
-    <class>cm.codebrain.main.business.entitie.Users</class>
+    <class>cm.codebrain.main.business.entitie.Student</class>
+    <class>cm.codebrain.main.business.entitie.Groupe</class>
     <class>cm.codebrain.main.business.entitie.Etablissement</class>
-    <class>cm.codebrain.main.business.entitie.Categorie</class>
+    <class>cm.codebrain.main.business.entitie.Section</class>
     <class>cm.codebrain.main.business.entitie.Classe</class>
     <class>cm.codebrain.main.business.entitie.Salle</class>
-    <class>cm.codebrain.main.business.entitie.Student</class>
-    <class>cm.codebrain.main.business.entitie.Student_1</class>
-    <class>cm.codebrain.main.business.entitie.Groupe</class>
-    <class>cm.codebrain.main.business.manager.Salle</class>
-    <class>cm.codebrain.main.business.manager.Classe</class>
-    <class>cm.codebrain.main.business.manager.Groupe</class>
-    <class>cm.codebrain.main.business.manager.Categorie</class>
-    <class>cm.codebrain.main.business.manager.Student</class>
-    <class>cm.codebrain.main.business.manager.Etablissement</class>
-    <class>cm.codebrain.main.business.manager.Widget</class>
-    <class>cm.codebrain.main.business.entitie.Groupe_1</class>
-    <class>cm.codebrain.main.business.entitie.Salle_1</class>
-    <class>cm.codebrain.main.business.entitie.Widget_1</class>
-    <class>cm.codebrain.main.business.entitie.Etablissement_1</class>
-    <class>cm.codebrain.main.business.entitie.Classe_1</class>
-    <class>cm.codebrain.main.business.entitie.Sections</class>
+    <class>cm.codebrain.main.business.entitie.Levels</class>
+    <class>cm.codebrain.main.business.entitie.AnneeAcademic</class>
+    <class>cm.codebrain.main.business.entitie.Users</class>
+    <class>cm.codebrain.main.business.entitie.Widget</class>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/brain"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/BRAIN"/>
       <property name="javax.persistence.jdbc.user" value="brain"/>
       <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.ClientDriver"/>
       <property name="javax.persistence.jdbc.password" value="brain"/>

@@ -12,7 +12,7 @@ import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.Locale;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
-import static cm.codebrain.ui.application.enumerations.Enums.User;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.User;
 import cm.codebrain.ui.application.menu.MenuHome;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -71,7 +71,7 @@ public class MainForm extends JFrame{
 
         this.codeBrainManager = codeBrainManager;
 
-        userConnected = (GlobalParameters.getVar(User.toString()) == null ? null : ((Users) GlobalParameters.getVar(User.toString())));
+        userConnected = (GlobalParameters.get(User) == null ? null : ((Users) GlobalParameters.get(User)));
 
         levelGroup = (userConnected == null) ? null : userConnected.getLevelsId();
 
@@ -347,7 +347,7 @@ public class MainForm extends JFrame{
     }
 
     private void updateStatusLabel() {
-        DateFormat tf = new SimpleDateFormat("HH:mm:ss - dd MMM yyyy");
+        DateFormat tf = new SimpleDateFormat("HH:mm:ss - dd MMM yyyy", Locale.getLocale());
         hourStatusLabel.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Hour) + ": " + tf.format(new Date()));
     }
 
@@ -370,7 +370,7 @@ public class MainForm extends JFrame{
 
     public void refresh() {
 
-        userConnected = (GlobalParameters.getVar(User.toString()) == null ? null : ((Users) GlobalParameters.getVar(User.toString())));
+        userConnected = (GlobalParameters.get(User) == null ? null : ((Users) GlobalParameters.get(User)));
 
         levelGroup = (userConnected == null) ? null : userConnected.getLevelsId();
 

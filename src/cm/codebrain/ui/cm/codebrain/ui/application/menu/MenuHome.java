@@ -8,47 +8,62 @@ import javax.swing.JToolBar;
 
 public class MenuHome extends JButton {
 
+    private final int menuIndex;
+    private final JPanel mainPanel;
     private final JToolBar menu;
+    private JButton menuButton;
 
     public MenuHome(JPanel mainPanel, JToolBar menu) {
-       
         this.menu = menu;
+        this.mainPanel = mainPanel;
+        this.menuIndex = menu.getComponents().length;
         
-        /*
-        *
-        *Button Home
-        *
+        addComponentPanel();
+    }
+
+    public void addComponentPanel() {
+        this.mainPanel.removeAll();
+        this.mainPanel.revalidate();
+        this.mainPanel.repaint();
+        /**
+         * Menu Bouton
          */
-        setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/home.png")).getImage().getScaledInstance(18, 18, 0)));
-        putClientProperty("JButton.buttonType", "bevel");
-        addActionListener((ActionEvent e) -> {
-            goToHere(mainPanel);
+        this.menuButton = new JButton();
+        this.menuButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/home.png")).getImage().getScaledInstance(18, 18, 0)));
+        this.menuButton.putClientProperty("JButton.buttonType", "bevel");
+        this.menuButton.addActionListener((ActionEvent e) -> {
+            goToHere();
         });
-        
-        menu.add(this);
-        
-        addComponentPanel(mainPanel);
+        this.menu.add(this.menuButton);
+        /**
+         * Panel Home
+         */
+        addPanel(mainPanel,
+                new MenuAdministration(mainPanel, menu).getButton(),
+                new MenuBackOffice(mainPanel, menu).getButton(),
+                new MenuFrontOffice(mainPanel, menu).getButton(),
+                new MenuEdition(mainPanel, menu).getButton()
+        );
     }
-    
-    public void addComponentPanel(JPanel mainPanel){
-        mainPanel.removeAll();
-        mainPanel.revalidate();
-        mainPanel.repaint();
-        
-        mainPanel.add(new MenuAdministration(mainPanel, menu));
-        mainPanel.add(new MenuParametres(mainPanel, menu));
+
+    private void goToHere() {
+        int tabs = this.menu.getComponents().length;
+
+        for (int i = tabs - 1; i >= this.menuIndex; i--) {
+            this.menu.remove(i);
+        }
+        this.menu.revalidate();
+        this.menu.repaint();
+
+        addComponentPanel();
     }
-    
-    private void goToHere(JPanel mainPanel){
-        mainPanel.removeAll();
-        mainPanel.revalidate();
-        mainPanel.repaint();
-        
-        menu.removeAll();
-        menu.revalidate();
-        menu.repaint();
-        
-        new MenuHome(mainPanel, menu);
-        
+
+    private void addPanel(JPanel mainPanel, JButton... buttons) {
+        for (JButton btn : buttons) {
+            mainPanel.add(btn);
+        }
+    }
+    public JButton getButton(){
+        return this;
     }
 }

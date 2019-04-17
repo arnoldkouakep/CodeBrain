@@ -63,8 +63,8 @@ public class Loading extends javax.swing.JDialog implements
         setVisible(true);
     }
     
-    public static void show(Component parent, Executable exe){
-        new Loading(parent, exe);
+    public static void show(Component parent, Executable executable){
+        new Loading(parent, executable);
     }
 
     /**
@@ -104,7 +104,7 @@ public class Loading extends javax.swing.JDialog implements
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setLocationByPlatform(true);
-        setModalityType(java.awt.Dialog.ModalityType.MODELESS);
+        setModal(true);
         setUndecorated(true);
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {

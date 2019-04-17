@@ -7,13 +7,13 @@ package cm.codebrain.ui.application.backoffice;
 
 import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
-import cm.codebrain.ui.application.controller.GlobalParameters;
+import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
-import static cm.codebrain.ui.application.enumerations.Enums.Type;
-import static cm.codebrain.ui.application.enumerations.Enums.Entity;
-import static cm.codebrain.ui.application.enumerations.Enums.Model;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Type;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Entity;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Model;
 import java.util.HashMap;
-import static cm.codebrain.ui.application.enumerations.Enums.Value;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Value;
 
 /**
  *
@@ -21,7 +21,7 @@ import static cm.codebrain.ui.application.enumerations.Enums.Value;
  */
 public class SalleForm extends ModelForm {
 
-    private final String entitySections = "Sections";
+    private final String entitySection = "Section";
     private final String entityClasse = "Classe";
 
     /**
@@ -42,7 +42,7 @@ public class SalleForm extends ModelForm {
 
         this.entity = "Salle";
         initComponents();
-        setAllComponents(sectionsInput, sectionsIntituleInput, classeInput, classeIntituleInput, codeInput, intituleInput);
+        setAllComponents(sectionInput, sectionIntituleInput, classeInput, classeIntituleInput, codeInput, intituleInput);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class SalleForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(sectionsInput, entitySections, entitySections.toLowerCase()+"Id", parametresGrid, null, args, sectionsInput, sectionsIntituleInput);
+        addAction(sectionInput, entitySection, entitySection.toLowerCase()+"Id", parametresGrid, null, args, sectionInput, sectionIntituleInput);
     }
 
     private void eventClasse() {
@@ -72,12 +72,12 @@ public class SalleForm extends ModelForm {
 
         HashMap arg = new HashMap();
 
-        String filter = "entity.sectionsId=:arg0";
+        String filter = "entity.sectionId=:arg0";
 
         arg.put(Type, Entity);
-        arg.put(Entity, entitySections);
-        arg.put(Model, "sectionsId");
-        arg.put(Value, sectionsInput);
+        arg.put(Entity, entitySection);
+        arg.put(Model, "sectionId");
+        arg.put(Value, sectionInput);
 
         args[0] = arg;
 
@@ -103,8 +103,8 @@ public class SalleForm extends ModelForm {
     @Override
     public void makeModelData() {
         super.makeModelData();
-//        modelFinal.put(entitySections.toLowerCase() + "Id", GlobalParameters.getVar(entitySections.toLowerCase() + "Id"));
-        modelFinal.put(entityClasse.toLowerCase() + "Id", GlobalParameters.getVar(entityClasse.toLowerCase() + "Id"));
+//        modelFinal.put(entitySections.toLowerCase() + "Id", FormParameters.get(entitySections.toLowerCase() + "Id"));
+        modelFinal.put(entityClasse.toLowerCase() + "Id", FormParameters.get(entityClasse.toLowerCase() + "Id"));
     }
 
     /**
@@ -125,8 +125,8 @@ public class SalleForm extends ModelForm {
         intituleInput = new javax.swing.JTextField();
         javax.swing.JPanel panelSections = new javax.swing.JPanel();
         javax.swing.JLabel labelCategorie = new javax.swing.JLabel();
-        sectionsInput = new javax.swing.JTextField();
-        sectionsIntituleInput = new javax.swing.JTextField();
+        sectionInput = new javax.swing.JTextField();
+        sectionIntituleInput = new javax.swing.JTextField();
         javax.swing.JPanel panelClasse = new javax.swing.JPanel();
         javax.swing.JLabel labelClasse = new javax.swing.JLabel();
         classeInput = new javax.swing.JTextField();
@@ -139,20 +139,22 @@ public class SalleForm extends ModelForm {
         panelIdentifiant.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Identifiant))); // NOI18N
         panelIdentifiant.setOpaque(false);
 
-        labelCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code)); // NOI18N
+        labelCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code, true)); // NOI18N
         labelCode.setName("usernameLabel"); // NOI18N
 
-        labelIntitule.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)); // NOI18N
+        labelIntitule.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule, true)); // NOI18N
         labelIntitule.setName("usernameLabel"); // NOI18N
 
         codeInput.setName("codeInput"); // NOI18N
         this.addFormData("code", codeInput);
         this.setRef(codeInput);
         fieldSearch.put("code", codeInput);
+        fieldsRequired.add(codeInput);
 
         intituleInput.setName("intituleInput"); // NOI18N
         this.addFormData("intitule", intituleInput);
         fieldSearch.put("intitule", intituleInput);
+        fieldsRequired.add(intituleInput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
         panelIdentifiant.setLayout(panelIdentifiantLayout);
@@ -189,12 +191,13 @@ public class SalleForm extends ModelForm {
         labelCategorie.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
         labelCategorie.setName("usernameLabel"); // NOI18N
 
-        sectionsInput.setName("code"); // NOI18N
-        fieldSearch.put("classeId->sectionsId->code", sectionsInput);
+        sectionInput.setName("code"); // NOI18N
+        fieldSearch.put("Salle->classeId->code->Classe->sectionId->code", sectionInput);
+        fieldsRequired.add(sectionInput);
 
-        sectionsIntituleInput.setEditable(false);
-        sectionsIntituleInput.setName("intitule"); // NOI18N
-        fieldSearch.put("classeId->sectionsId->intitule", sectionsIntituleInput);
+        sectionIntituleInput.setEditable(false);
+        sectionIntituleInput.setName("intitule"); // NOI18N
+        fieldSearch.put("Salle->classeId->code->Classe->sectionId->intitule", sectionIntituleInput);
 
         javax.swing.GroupLayout panelSectionsLayout = new javax.swing.GroupLayout(panelSections);
         panelSections.setLayout(panelSectionsLayout);
@@ -204,9 +207,9 @@ public class SalleForm extends ModelForm {
                 .addContainerGap()
                 .addComponent(labelCategorie, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(sectionsInput, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(sectionInput, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sectionsIntituleInput, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                .addComponent(sectionIntituleInput, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelSectionsLayout.setVerticalGroup(
@@ -215,24 +218,25 @@ public class SalleForm extends ModelForm {
                 .addContainerGap()
                 .addGroup(panelSectionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelCategorie, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sectionsInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sectionsIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(sectionInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sectionIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         panelClasse.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Classe))); // NOI18N
         panelClasse.setOpaque(false);
 
-        labelClasse.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
+        labelClasse.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level, true)); // NOI18N
         labelClasse.setName("usernameLabel"); // NOI18N
 
         classeInput.setName("code"); // NOI18N
         this.addFormData("classeId", classeInput);
-        fieldSearch.put("classeId->code", classeInput);
+        fieldSearch.put("Salle->classeId->code", classeInput);
+        fieldsRequired.add(classeInput);
 
         classeIntituleInput.setEditable(false);
         classeIntituleInput.setName("intitule"); // NOI18N
-        fieldSearch.put("classeId->intitule", classeIntituleInput);
+        fieldSearch.put("Salle->classeId->intitule", classeIntituleInput);
 
         javax.swing.GroupLayout panelClasseLayout = new javax.swing.GroupLayout(panelClasse);
         panelClasse.setLayout(panelClasseLayout);
@@ -311,8 +315,8 @@ public class SalleForm extends ModelForm {
     private javax.swing.JTextField classeIntituleInput;
     private javax.swing.JTextField codeInput;
     private javax.swing.JTextField intituleInput;
-    private javax.swing.JTextField sectionsInput;
-    private javax.swing.JTextField sectionsIntituleInput;
+    private javax.swing.JTextField sectionInput;
+    private javax.swing.JTextField sectionIntituleInput;
     // End of variables declaration//GEN-END:variables
 
 }

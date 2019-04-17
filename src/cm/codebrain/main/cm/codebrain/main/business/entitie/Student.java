@@ -12,6 +12,7 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -31,18 +32,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Student.findAll", query = "SELECT s FROM Student s")
-    , @NamedQuery(name = "Student.findByStudentId", query = "SELECT s FROM Student s WHERE s.studentId = :studentId")
-    , @NamedQuery(name = "Student.findByCode", query = "SELECT s FROM Student s WHERE s.code = :code")
-    , @NamedQuery(name = "Student.findByMatricule", query = "SELECT s FROM Student s WHERE s.matricule = :matricule")
-    , @NamedQuery(name = "Student.findByFirstName", query = "SELECT s FROM Student s WHERE s.firstName = :firstName")
-    , @NamedQuery(name = "Student.findByLastName", query = "SELECT s FROM Student s WHERE s.lastName = :lastName")
-    , @NamedQuery(name = "Student.findByBirthday", query = "SELECT s FROM Student s WHERE s.birthday = :birthday")
-    , @NamedQuery(name = "Student.findByBornLocation", query = "SELECT s FROM Student s WHERE s.bornLocation = :bornLocation")
-    , @NamedQuery(name = "Student.findBySexe", query = "SELECT s FROM Student s WHERE s.sexe = :sexe")
-    , @NamedQuery(name = "Student.findByStateDb", query = "SELECT s FROM Student s WHERE s.stateDb = :stateDb")
-    , @NamedQuery(name = "Student.findByDtCreated", query = "SELECT s FROM Student s WHERE s.dtCreated = :dtCreated")
-    , @NamedQuery(name = "Student.findByDtModified", query = "SELECT s FROM Student s WHERE s.dtModified = :dtModified")})
+    @NamedQuery(name = "Student.findAll", query = "SELECT s FROM Student s")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Student implements Serializable {
 
@@ -84,13 +74,13 @@ public class Student implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
     @JoinColumn(name = "SALLE_ID", referencedColumnName = "SALLE_ID", nullable = false)
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Salle salleId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userCreated;
 
     public Student() {

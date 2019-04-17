@@ -8,9 +8,10 @@ package cm.codebrain.main.business.entitie;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,13 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Groupe.findAll", query = "SELECT g FROM Groupe g")
-    , @NamedQuery(name = "Groupe.findByGroupeId", query = "SELECT g FROM Groupe g WHERE g.groupeId = :groupeId")
-    , @NamedQuery(name = "Groupe.findByCode", query = "SELECT g FROM Groupe g WHERE g.code = :code")
-    , @NamedQuery(name = "Groupe.findByIntitule", query = "SELECT g FROM Groupe g WHERE g.intitule = :intitule")
-    , @NamedQuery(name = "Groupe.findByStateDb", query = "SELECT g FROM Groupe g WHERE g.stateDb = :stateDb")
-    , @NamedQuery(name = "Groupe.findByDtCreated", query = "SELECT g FROM Groupe g WHERE g.dtCreated = :dtCreated")
-    , @NamedQuery(name = "Groupe.findByDtModified", query = "SELECT g FROM Groupe g WHERE g.dtModified = :dtModified")})
+    @NamedQuery(name = "Groupe.findAll", query = "SELECT g FROM Groupe g")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Groupe implements Serializable {
 
@@ -63,17 +58,17 @@ public class Groupe implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @JoinColumn(name = "SALLE_ID", referencedColumnName = "SALLE_ID", nullable = false)
-    @ManyToOne(optional = false)
-    private Salle salleId;
+    @JoinColumn(name = "CLASSE_ID", referencedColumnName = "CLASSE_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Classe classeId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userCreated;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "groupeId")
-    private Collection<Classe> classeCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "groupeId", fetch = FetchType.LAZY)
+    private Set<Salle> salleSet;
 
     public Groupe() {
     }
@@ -136,12 +131,12 @@ public class Groupe implements Serializable {
         this.dtModified = dtModified;
     }
 
-    public Salle getSalleId() {
-        return salleId;
+    public Classe getClasseId() {
+        return classeId;
     }
 
-    public void setSalleId(Salle salleId) {
-        this.salleId = salleId;
+    public void setClasseId(Classe classeId) {
+        this.classeId = classeId;
     }
 
     public Users getUserModified() {
@@ -161,12 +156,12 @@ public class Groupe implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Classe> getClasseCollection() {
-        return classeCollection;
+    public Set<Salle> getSalleSet() {
+        return salleSet;
     }
 
-    public void setClasseCollection(Collection<Classe> classeCollection) {
-        this.classeCollection = classeCollection;
+    public void setSalleSet(Set<Salle> salleSet) {
+        this.salleSet = salleSet;
     }
 
     @Override
@@ -193,5 +188,5 @@ public class Groupe implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Groupe[ groupeId=" + groupeId + " ]";
     }
-
+    
 }

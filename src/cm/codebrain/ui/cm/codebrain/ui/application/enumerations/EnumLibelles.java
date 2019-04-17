@@ -87,5 +87,17 @@ public enum EnumLibelles {
     Business_Libelle_Add,
     Business_Libelle_Sub,
     Business_Libelle_Reset,
-
+    Business_Libelle_FrontOffice,
+    Business_Libelle_Edition,
+    Business_Libelle_BackOffice,
+    Business_ConfirmExit,
+    Business_Libelle_Modify,
+    Business_Libelle_Search,
+    Business_Libelle_Result,
+    Business_Libelle_RequiredField,
+    Business_Libelle_AnneeAcademique,
+    Business_Libelle_Session,
+    Business_Libelle_DateDebut,
+    Business_Libelle_DateFin,
+    Business_Libelle_ConfigAnneeAcademique,
 }

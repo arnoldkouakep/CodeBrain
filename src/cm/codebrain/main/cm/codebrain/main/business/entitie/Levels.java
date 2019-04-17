@@ -8,8 +8,8 @@ package cm.codebrain.main.business.entitie;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,13 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Levels.findAll", query = "SELECT l FROM Levels l")
-    , @NamedQuery(name = "Levels.findByLevelsId", query = "SELECT l FROM Levels l WHERE l.levelsId = :levelsId")
-    , @NamedQuery(name = "Levels.findByCode", query = "SELECT l FROM Levels l WHERE l.code = :code")
-    , @NamedQuery(name = "Levels.findByIntitule", query = "SELECT l FROM Levels l WHERE l.intitule = :intitule")
-    , @NamedQuery(name = "Levels.findByStateDb", query = "SELECT l FROM Levels l WHERE l.stateDb = :stateDb")
-    , @NamedQuery(name = "Levels.findByDtCreated", query = "SELECT l FROM Levels l WHERE l.dtCreated = :dtCreated")
-    , @NamedQuery(name = "Levels.findByDtModified", query = "SELECT l FROM Levels l WHERE l.dtModified = :dtModified")})
+    @NamedQuery(name = "Levels.findAll", query = "SELECT l FROM Levels l")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Levels implements Serializable {
 
@@ -64,15 +58,15 @@ public class Levels implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "levelsId")
-    private Collection<Users> usersCollection;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "levelsId")
-    private Collection<Widget> widgetCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "levelsId", fetch = FetchType.LAZY)
+    private Set<Users> usersSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "levelsId", fetch = FetchType.LAZY)
+    private Set<Widget> widgetSet;
 
     public Levels() {
     }
@@ -151,21 +145,21 @@ public class Levels implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Users> getUsersCollection() {
-        return usersCollection;
+    public Set<Users> getUsersSet() {
+        return usersSet;
     }
 
-    public void setUsersCollection(Collection<Users> usersCollection) {
-        this.usersCollection = usersCollection;
+    public void setUsersSet(Set<Users> usersSet) {
+        this.usersSet = usersSet;
     }
 
     @XmlTransient
-    public Collection<Widget> getWidgetCollection() {
-        return widgetCollection;
+    public Set<Widget> getWidgetSet() {
+        return widgetSet;
     }
 
-    public void setWidgetCollection(Collection<Widget> widgetCollection) {
-        this.widgetCollection = widgetCollection;
+    public void setWidgetSet(Set<Widget> widgetSet) {
+        this.widgetSet = widgetSet;
     }
 
     @Override
@@ -192,5 +186,5 @@ public class Levels implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Levels[ levelsId=" + levelsId + " ]";
     }
-
+    
 }

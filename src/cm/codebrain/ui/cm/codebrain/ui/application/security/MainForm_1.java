@@ -145,64 +145,6 @@ public class MainForm_1 extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_statusBar1AncestorRemoved
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        final java.util.List argList = Arrays.asList(args);
-        
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-
-        // Add Quaqua to the lafs
-        ArrayList<UIManager.LookAndFeelInfo> infos = new ArrayList<UIManager.LookAndFeelInfo>(Arrays.asList(UIManager.getInstalledLookAndFeels()));
-        infos.add(new UIManager.LookAndFeelInfo("Quaqua", QuaquaManager.getLookAndFeelClassName()));
-        UIManager.setInstalledLookAndFeels(infos.toArray(new UIManager.LookAndFeelInfo[infos.size()]));
-
-        // Turn on look and feel decoration when not running on Mac OS X or Darwin.
-        // This will still not look pretty, because we haven't got cast shadows
-        // for the frame on other operating systems.
-        boolean useDefaultLookAndFeelDecoration =
-                !System.getProperty("os.name").toLowerCase().startsWith("mac")
-                && !System.getProperty("os.name").toLowerCase().startsWith("darwin");
-        int index = argList.indexOf("-decoration");
-        if (index != -1 && index < argList.size() - 1) {
-            useDefaultLookAndFeelDecoration = argList.get(index + 1).equals("true");
-        }
-
-        if (useDefaultLookAndFeelDecoration) {
-            JFrame.setDefaultLookAndFeelDecorated(true);
-            JDialog.setDefaultLookAndFeelDecorated(true);
-        }
-
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainForm_1().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel centerPanel;

@@ -8,8 +8,8 @@ package cm.codebrain.main.business.entitie;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -35,13 +35,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Table(catalog = "", schema = "BRAIN")
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Classe.findAll", query = "SELECT c FROM Classe c")
-    , @NamedQuery(name = "Classe.findByClasseId", query = "SELECT c FROM Classe c WHERE c.classeId = :classeId")
-    , @NamedQuery(name = "Classe.findByCode", query = "SELECT c FROM Classe c WHERE c.code = :code")
-    , @NamedQuery(name = "Classe.findByIntitule", query = "SELECT c FROM Classe c WHERE c.intitule = :intitule")
-    , @NamedQuery(name = "Classe.findByStateDb", query = "SELECT c FROM Classe c WHERE c.stateDb = :stateDb")
-    , @NamedQuery(name = "Classe.findByDtCreated", query = "SELECT c FROM Classe c WHERE c.dtCreated = :dtCreated")
-    , @NamedQuery(name = "Classe.findByDtModified", query = "SELECT c FROM Classe c WHERE c.dtModified = :dtModified")})
+    @NamedQuery(name = "Classe.findAll", query = "SELECT c FROM Classe c")})
 @JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
 public class Classe implements Serializable {
 
@@ -64,19 +58,18 @@ public class Classe implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "classeId")
-    private Collection<Salle> salleCollection;
-    @JoinColumn(name = "GROUPE_ID", referencedColumnName = "GROUPE_ID")
-    @ManyToOne
-    private Groupe groupeId;
-    @JoinColumn(name = "SECTIONS_ID", referencedColumnName = "SECTIONS_ID", nullable = false)
-    @ManyToOne(optional = false)
-    private Sections sectionsId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "classeId", fetch = FetchType.LAZY)
+    private Set<Groupe> groupeSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "classeId", fetch = FetchType.LAZY)
+    private Set<Salle> salleSet;
+    @JoinColumn(name = "SECTION_ID", referencedColumnName = "SECTION_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Section sectionId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userCreated;
 
     public Classe() {
@@ -141,28 +134,29 @@ public class Classe implements Serializable {
     }
 
     @XmlTransient
-    public Collection<Salle> getSalleCollection() {
-        return salleCollection;
+    public Set<Groupe> getGroupeSet() {
+        return groupeSet;
     }
 
-    public void setSalleCollection(Collection<Salle> salleCollection) {
-        this.salleCollection = salleCollection;
+    public void setGroupeSet(Set<Groupe> groupeSet) {
+        this.groupeSet = groupeSet;
     }
 
-    public Groupe getGroupeId() {
-        return groupeId;
+    @XmlTransient
+    public Set<Salle> getSalleSet() {
+        return salleSet;
     }
 
-    public void setGroupeId(Groupe groupeId) {
-        this.groupeId = groupeId;
+    public void setSalleSet(Set<Salle> salleSet) {
+        this.salleSet = salleSet;
     }
 
-    public Sections getSectionsId() {
-        return sectionsId;
+    public Section getSectionId() {
+        return sectionId;
     }
 
-    public void setSectionsId(Sections sectionsId) {
-        this.sectionsId = sectionsId;
+    public void setSectionId(Section sectionId) {
+        this.sectionId = sectionId;
     }
 
     public Users getUserModified() {
@@ -205,5 +199,5 @@ public class Classe implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Classe[ classeId=" + classeId + " ]";
     }
-
+    
 }

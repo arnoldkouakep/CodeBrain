@@ -7,9 +7,9 @@ package cm.codebrain.ui.application.backoffice;
 
 import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
-import cm.codebrain.ui.application.controller.GlobalParameters;
+import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
-import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.CREATE;
 import java.util.HashMap;
 
 /**
@@ -18,7 +18,7 @@ import java.util.HashMap;
  */
 public class ClasseForm extends ModelForm {
     
-    private final String entitySections = "Sections";
+    private final String entitySection = "Section";
 
     /**
      * Creates new form UserForm
@@ -59,7 +59,7 @@ public class ClasseForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(sectionsInput, entitySections, entitySections.toLowerCase()+"Id", parametresGrid, null, args, sectionsInput, sectionsIntituleInput);
+        addAction(sectionsInput, entitySection, entitySection.toLowerCase()+"Id", parametresGrid, null, args, sectionsInput, sectionsIntituleInput);
     }
    
     @Override
@@ -76,7 +76,7 @@ public class ClasseForm extends ModelForm {
     @Override
     public void makeModelData(){
         super.makeModelData();
-        modelFinal.put(entitySections.toLowerCase()+"Id", GlobalParameters.getVar(entitySections.toLowerCase()+"Id"));
+        modelFinal.put(entitySection.toLowerCase()+"Id", FormParameters.get(entitySection.toLowerCase()+"Id"));
 
     }
 
@@ -92,12 +92,12 @@ public class ClasseForm extends ModelForm {
         javax.swing.JPanel mainPanel = new javax.swing.JPanel();
         javax.swing.JPanel panelContent = new javax.swing.JPanel();
         javax.swing.JPanel panelIdentifiant = new javax.swing.JPanel();
-        javax.swing.JLabel labelCode = new javax.swing.JLabel();
-        javax.swing.JLabel labelIntitule = new javax.swing.JLabel();
+        labelCode = new javax.swing.JLabel();
+        labelIntitule = new javax.swing.JLabel();
         codeInput = new javax.swing.JTextField();
         intituleInput = new javax.swing.JTextField();
         javax.swing.JPanel panelCategorie = new javax.swing.JPanel();
-        javax.swing.JLabel labelSections = new javax.swing.JLabel();
+        labelSections = new javax.swing.JLabel();
         sectionsInput = new javax.swing.JTextField();
         sectionsIntituleInput = new javax.swing.JTextField();
 
@@ -108,20 +108,24 @@ public class ClasseForm extends ModelForm {
         panelIdentifiant.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Identifiant))); // NOI18N
         panelIdentifiant.setOpaque(false);
 
-        labelCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code)); // NOI18N
+        labelCode.setLabelFor(codeInput);
+        labelCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code, true)); // NOI18N
         labelCode.setName("usernameLabel"); // NOI18N
 
-        labelIntitule.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)); // NOI18N
+        labelIntitule.setLabelFor(intituleInput);
+        labelIntitule.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule, true)); // NOI18N
         labelIntitule.setName("usernameLabel"); // NOI18N
 
         codeInput.setName("codeInput"); // NOI18N
         this.addFormData("code", codeInput);
         this.setRef(codeInput);
         fieldSearch.put("code", codeInput);
+        fieldsRequired.add(codeInput);
 
         intituleInput.setName("intituleInput"); // NOI18N
         this.addFormData("intitule", intituleInput);
         fieldSearch.put("intitule", intituleInput);
+        fieldsRequired.add(intituleInput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
         panelIdentifiant.setLayout(panelIdentifiantLayout);
@@ -155,15 +159,17 @@ public class ClasseForm extends ModelForm {
         panelCategorie.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Sections))); // NOI18N
         panelCategorie.setOpaque(false);
 
-        labelSections.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
+        labelSections.setLabelFor(sectionsInput);
+        labelSections.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level, true)); // NOI18N
         labelSections.setName("usernameLabel"); // NOI18N
 
         sectionsInput.setName("code"); // NOI18N
-        this.addFormData("sectionsId", sectionsInput);
-        fieldSearch.put("Sections->sectionsId->code", sectionsInput);
+        this.addFormData("sectionId", sectionsInput);
+        fieldSearch.put("Classe->sectionId->code", sectionsInput);
+        fieldsRequired.add(sectionsInput);
 
         sectionsIntituleInput.setName("intitule"); // NOI18N
-        fieldSearch.put("Sections->sectionsId->intitule", sectionsIntituleInput);
+        fieldSearch.put("Classe->sectionId->intitule", sectionsIntituleInput);
 
         javax.swing.GroupLayout panelCategorieLayout = new javax.swing.GroupLayout(panelCategorie);
         panelCategorie.setLayout(panelCategorieLayout);
@@ -188,6 +194,9 @@ public class ClasseForm extends ModelForm {
                     .addComponent(sectionsIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        sectionsInput.getAccessibleContext().setAccessibleName(Dictionnaire.get(EnumLibelles.Business_Libelle_Search)); // NOI18N
+        sectionsIntituleInput.getAccessibleContext().setAccessibleName(Dictionnaire.get(EnumLibelles.Business_Libelle_Result)); // NOI18N
 
         javax.swing.GroupLayout panelContentLayout = new javax.swing.GroupLayout(panelContent);
         panelContent.setLayout(panelContentLayout);
@@ -234,6 +243,9 @@ public class ClasseForm extends ModelForm {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField codeInput;
     private javax.swing.JTextField intituleInput;
+    private javax.swing.JLabel labelCode;
+    private javax.swing.JLabel labelIntitule;
+    private javax.swing.JLabel labelSections;
     private javax.swing.JTextField sectionsInput;
     private javax.swing.JTextField sectionsIntituleInput;
     // End of variables declaration//GEN-END:variables

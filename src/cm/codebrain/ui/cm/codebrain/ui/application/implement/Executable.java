@@ -10,6 +10,7 @@ import cm.codebrain.main.business.controller.CodeBrainExceptions;
 /**
  *
  * @author KSA-INET
+ * @param <T>
  */
 public interface Executable<T> {
     /*

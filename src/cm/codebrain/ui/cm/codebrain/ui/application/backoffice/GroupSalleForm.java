@@ -7,15 +7,24 @@ package cm.codebrain.ui.application.backoffice;
 
 import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
+import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
-import static cm.codebrain.ui.application.enumerations.Enums.CREATE;
-import static cm.codebrain.ui.application.enumerations.Enums.Type;
-import static cm.codebrain.ui.application.enumerations.Enums.Entity;
+import cm.codebrain.ui.application.enumerations.EnumVariable;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Action;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.CREATE;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Entity;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Model;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Type;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Value;
+import java.util.ArrayList;
 import java.util.HashMap;
-import static cm.codebrain.ui.application.enumerations.Enums.Value;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JTable;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -29,9 +38,12 @@ public class GroupSalleForm extends ModelForm {
     private final String entitySalle = "Salle";
     private final String entityClasse = "Classe";
     private TableRowSorter<TableModel> sorter;
-    private DefaultTableModel tableModel;
-    
-    private final String[] columnsId = {"","","",""};
+
+    private List<HashMap> listModelsOriginal;
+    private List<HashMap> listModelsAdd;
+    private List<HashMap> listModelsSub;
+    private HashMap<Object, Object> modelSalle;
+    private boolean gridIsEmpty;
 
     /**
      * Creates new form UserForm
@@ -39,9 +51,11 @@ public class GroupSalleForm extends ModelForm {
      * @param title
      */
     public GroupSalleForm(String title) {
-        super(title, 655, 600);
+        super(title, 655, 600, false, true);
 
         this.showActionBar();
+
+        createList(false);
 
         etatAction = CREATE;
         this.showMenuBar();
@@ -54,13 +68,31 @@ public class GroupSalleForm extends ModelForm {
     public void createForm() {
 
         this.entity = "Groupe";
-        createList(true);
+
+        listModelsOriginal = new ArrayList<>();
+        listModelsAdd = new ArrayList<>();
+        listModelsSub = new ArrayList<>();
 
         initComponents();
 
         sorter = new TableRowSorter<>(grid.getModel());
 
-        setAllComponents(salleInput, salleIntituleInput, salleInput, salleIntituleInput, codeInput, intituleInput);
+        grid.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
+            int rowNumber = grid.getSelectedRow();
+            HashMap model = null;
+            try {
+                model = listModelsOriginal.get(rowNumber);
+            } catch (Exception ex) {
+            }
+                if(model == null){
+                    model = listModelsAdd.get(rowNumber-listModelsOriginal.size());
+                    getModelData(model, salleInput, salleIntituleInput);
+                }else{
+                    reset(salleInput, salleIntituleInput);
+                }
+        });
+
+        setAllComponents(salleInput, salleIntituleInput, classeInput, classeIntituleInput, codeInput, intituleInput, grid);
     }
 
     @Override
@@ -69,6 +101,7 @@ public class GroupSalleForm extends ModelForm {
 
         eventClasse();
         eventSalle();
+
     }
 
     private void eventSalle() {
@@ -81,7 +114,7 @@ public class GroupSalleForm extends ModelForm {
 
         arg.put(Type, Entity);
         arg.put(Entity, entityClasse);
-//        arg.put(clause, "categorie==");
+        arg.put(Model, "classeId");
         arg.put(Value, classeInput);
 
         args[0] = arg;
@@ -91,7 +124,7 @@ public class GroupSalleForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(salleInput, entitySalle, entitySalle.toLowerCase()+"Id", parametresGrid, filter, args, salleInput, salleIntituleInput);
+        addAction(salleInput, entitySalle, entitySalle.toLowerCase() + "Id", parametresGrid, filter, args, salleInput, salleIntituleInput);
     }
 
     private void eventClasse() {
@@ -103,57 +136,134 @@ public class GroupSalleForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(classeInput, entityClasse, entityClasse.toLowerCase()+"Id", parametresGrid, null, args, classeInput, classeIntituleInput);
+        addAction(classeInput, entityClasse, entityClasse.toLowerCase() + "Id", parametresGrid, null, args, classeInput, classeIntituleInput);
     }
 
-    private DefaultTableModel setModelDataTable(List<String> columnsName) {
-//List<HashMap> modelFinal, 
-//        for (String[] param : parametresGrid) {
-//            columnValues.add(param[0]);
-//            columnNames.add(param[1]);
-//        }
+//    private void eventClasseModif() {
+//
+//        HashMap[] args = new HashMap[1];
+//
+//        HashMap arg = new HashMap();
+//
+//        String filter = "entity.classeId=:arg0";
+//
+//        arg.put(Type, Entity);
+//        arg.put(Entity, entityClasse);
+//        arg.put(Model, "classeId");
+//        arg.put(Value, classeInput);
+//
+//        args[0] = arg;
+//
+////        HashMap[] args = null;
+//
+//        String[][] parametresGrid = {
+//            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)},
+//            {"intitule",
+//                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
+//
+//        addAction(classeInput, entityClasse, entityClasse.toLowerCase() + "Id", parametresGrid, filter, args, classeInput, classeIntituleInput);
+//    }
+    @Override
+    protected void eventActionRef() {
 
-        tableModel =  new DefaultTableModel() {
-            @Override
-            public int getRowCount() {
-                return super.getRowCount();
-//                return modelFinal.size();
+        String[][] parametresGrid = {
+            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)},
+            {"intitule",
+                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
+
+//        String[][] parametresGrid = {
+//            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)},
+//            {"intitule",
+//                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
+        addAction(codeInput, entity, entity.toLowerCase() + "Id", parametresGrid, null, null, codeInput, salleIntituleInput);
+    }
+
+    @Override
+    public void makeModelData() {
+        super.makeModelData(); //To change body of generated methods, choose Tools | Templates.
+
+        modelFinal.put(entityClasse.toLowerCase() + "Id", FormParameters.get(entityClasse.toLowerCase() + "Id"));
+
+        modelMaster.put(Action, EnumVariable.Master_Detail);
+        modelMaster.put(Entity, entitySalle);
+        modelMaster.put(Value, entity.toLowerCase() + "Id");
+
+//        listModelsSub.forEach((model) -> {
+//            model.put(entity.toLowerCase()+"Id", null);
+//        });
+        
+        setActionModel(listModelsAdd, listModelsSub);
+    }
+
+    @Override
+    public void addActionComplement() {
+        if (gridIsEmpty) {
+            if (etatAction != CREATE) {
+
+                HashMap[] args = new HashMap[1];
+
+                String filter = "entity.groupeId=:arg0";
+
+                HashMap arg = new HashMap();
+
+                arg.put(Type, Entity);
+                arg.put(Entity, entity);
+                arg.put(Model, "groupeId");
+                arg.put(Value, codeInput);
+
+                args[0] = arg;
+
+                try {
+                    listModelsOriginal = getListModelForSelect(null, entitySalle, null, filter, args);
+                } catch (Exception ex) {
+                    Logger.getLogger(GroupSalleForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                //            listModels
+                //        tableModel.addRow(newRow);
+                //            for(HashMap model : listModels){
+                //                Object[] newRow = {model.get("code"), model.get("intitule")};
+                //                ((DefaultTableModel)((JTable) grid).getModel()).addRow(newRow);
+                //            }
+                listModelsOriginal.stream().map((model) -> {
+                    Object[] newRow = {model.get("code"), model.get("intitule")};
+                    return newRow;
+                }).forEachOrdered((newRow) -> {
+                    ((DefaultTableModel) ((JTable) grid).getModel()).addRow(newRow);
+                });
+                reset(salleInput, salleIntituleInput);
+                gridIsEmpty = false;
             }
+        }
+    }
 
-            @Override
-            public int getColumnCount() {
-                return columnsName.size();
+    @Override
+    public void setActionMenu() {
+        super.setActionMenu();
+        gridIsEmpty = true;
+        listModelsOriginal.clear();
+    }
+
+    @Override
+    public void reset() {
+        super.reset(); //To change body of generated methods, choose Tools | Templates.
+        listModelsOriginal.clear();
+    }
+
+    private HashMap findModel(HashMap model, String filter, List<HashMap> listModelsOriginal) {
+        HashMap modelFind = null;
+        try {
+            if (listModelsOriginal.size() > 0) {
+                for (HashMap tmpModel : listModelsOriginal) {
+                    if (tmpModel.get(filter).equals(model.get(filter))) {
+                        modelFind = tmpModel;
+                        break;
+                    }
+                }
             }
-
-            @Override
-            public String getColumnName(int columnIndex) {
-                return columnsName.get(columnIndex);
-            }
-
-            @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                return super.getColumnClass(columnIndex);
-//                return String.class;
-            }
-
-            @Override
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return false;
-            }
-
-            @Override
-            public Object getValueAt(int row, int column) {
-                return super.getValueAt(row, column);
-//                return modelFinal.get(row).get(columnValues.get(column));
-            }
-
-            @Override
-            public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-                super.setValueAt(aValue, rowIndex, columnIndex);//modelFinal.get(rowIndex).get(columnValues.get(columnIndex)), rowIndex, columnIndex);
-            }
-        };
-
-        return tableModel;
+        } catch (Exception e) {
+        }
+        return modelFind;
     }
 
     /**
@@ -180,8 +290,8 @@ public class GroupSalleForm extends ModelForm {
         grid = new javax.swing.JTable();
         javax.swing.JPanel jPanelButtons = new javax.swing.JPanel();
         addButton = new javax.swing.JButton();
+        modifyButton = new javax.swing.JButton();
         subButton = new javax.swing.JButton();
-        resetButton = new javax.swing.JButton();
         javax.swing.JPanel panelClasse = new javax.swing.JPanel();
         javax.swing.JLabel labelClasse = new javax.swing.JLabel();
         classeInput = new javax.swing.JTextField();
@@ -194,18 +304,22 @@ public class GroupSalleForm extends ModelForm {
         panelIdentifiant.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Identifiant))); // NOI18N
         panelIdentifiant.setOpaque(false);
 
-        labelCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code)); // NOI18N
+        labelCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code, true)); // NOI18N
         labelCode.setName("usernameLabel"); // NOI18N
 
-        labelIntitule.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)); // NOI18N
+        labelIntitule.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule, true)); // NOI18N
         labelIntitule.setName("usernameLabel"); // NOI18N
 
         codeInput.setName("codeInput"); // NOI18N
         this.addFormData("code", codeInput);
         this.setRef(codeInput);
+        fieldSearch.put("code", codeInput);
+        fieldsRequired.add(codeInput);
 
         intituleInput.setName("intituleInput"); // NOI18N
         this.addFormData("intitule", intituleInput);
+        fieldSearch.put("intitule", intituleInput);
+        fieldsRequired.add(intituleInput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
         panelIdentifiant.setLayout(panelIdentifiantLayout);
@@ -244,8 +358,10 @@ public class GroupSalleForm extends ModelForm {
 
         salleInput.setName("code"); // NOI18N
         this.addFormData("salleId", salleInput);
+        fieldSearch("Salle->code", salleInput);
 
         salleIntituleInput.setName("intitule"); // NOI18N
+        fieldSearch("Salle->intitule", salleIntituleInput);
 
         javax.swing.GroupLayout panelSalleLayout = new javax.swing.GroupLayout(panelSalle);
         panelSalle.setLayout(panelSalleLayout);
@@ -272,8 +388,6 @@ public class GroupSalleForm extends ModelForm {
         );
 
         grid.setModel(setModelDataTable(Arrays.asList(
-            Dictionnaire.get(EnumLibelles.Business_Libelle_code).concat(" " + Dictionnaire.get(EnumLibelles.Business_Libelle_Classe)),
-            Dictionnaire.get(EnumLibelles.Business_Libelle_GrouperSalles),
             Dictionnaire.get(EnumLibelles.Business_Libelle_code).concat(" " + Dictionnaire.get(EnumLibelles.Business_Libelle_Salle)),
             Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule).concat(" " + Dictionnaire.get(EnumLibelles.Business_Libelle_Salle))
         )));
@@ -295,6 +409,15 @@ public class GroupSalleForm extends ModelForm {
         });
         jPanelButtons.add(addButton);
 
+        modifyButton.setIcon(new ImageIcon(Dictionnaire.getResource(RESET).getScaledInstance(width, height, 0)));
+        modifyButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Modify)); // NOI18N
+        modifyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                modifyButtonActionPerformed(evt);
+            }
+        });
+        jPanelButtons.add(modifyButton);
+
         subButton.setIcon(new ImageIcon(Dictionnaire.getResource(DEL).getScaledInstance(width, height, 0)));
         subButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Sub)); // NOI18N
         subButton.addActionListener(new java.awt.event.ActionListener() {
@@ -304,25 +427,18 @@ public class GroupSalleForm extends ModelForm {
         });
         jPanelButtons.add(subButton);
 
-        resetButton.setIcon(new ImageIcon(Dictionnaire.getResource(RESET).getScaledInstance(width, height, 0)));
-        resetButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Reset)); // NOI18N
-        resetButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetButtonActionPerformed(evt);
-            }
-        });
-        jPanelButtons.add(resetButton);
-
         panelClasse.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Classe))); // NOI18N
         panelClasse.setOpaque(false);
 
-        labelClasse.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code)); // NOI18N
+        labelClasse.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code, true)); // NOI18N
         labelClasse.setName("usernameLabel"); // NOI18N
 
         classeInput.setName("code"); // NOI18N
-        this.addFormData("classeId", classeInput);
+        fieldSearch("Groupe->classeId->code", classeInput);
+        fieldsRequired.add(classeInput);
 
         classeIntituleInput.setName("intitule"); // NOI18N
+        fieldSearch("Groupe->classeId->intitule", classeIntituleInput);
 
         javax.swing.GroupLayout panelClasseLayout = new javax.swing.GroupLayout(panelClasse);
         panelClasse.setLayout(panelClasseLayout);
@@ -379,9 +495,9 @@ public class GroupSalleForm extends ModelForm {
                 .addComponent(panelClasse, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(panelSalle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanelButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -408,55 +524,82 @@ public class GroupSalleForm extends ModelForm {
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         // TODO add your handling code here:
-        Object[] newRow = {classeInput.getText(), codeInput.getText(), intituleInput.getText(), salleInput.getText()};
-        
-        setTableModel(codeInput, intituleInput, salleInput);
-        
-        tableModel.addRow(newRow);
-        reset(classeInput, classeIntituleInput, salleInput, salleIntituleInput);
+        modelSalle = new HashMap<>();
+        modelSalle = (HashMap) FormParameters.get(entitySalle.toLowerCase() + "Id");
+
+//        if(listModelsOriginal.size()>0){
+//            for(HashMap model : listModelsOriginal){
+//                if(model.get("code").equals(modelSalle.get("code"))){
+//                    find = true;
+//                    break;
+//                }
+//            }
+//        }
+        if (findModel(modelSalle, "code", listModelsOriginal) == null) {
+            Object[] newRow = {salleInput.getText(), salleIntituleInput.getText()};
+
+            setTableModel(salleInput, salleIntituleInput);
+
+            ((DefaultTableModel) ((JTable) grid).getModel()).addRow(newRow);
+
+            listModelsAdd.add(modelSalle);
+
+            reset(salleInput, salleIntituleInput);
+        }
     }//GEN-LAST:event_addButtonActionPerformed
 
     private void subButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subButtonActionPerformed
         // TODO add your handling code here:
-        
-        
-//                ListSelectionModel selectionModel = grid.getSelectionModel();
-//                TableModel model = grid.getModel();
-                
-                
-                int rowIndex = grid.convertRowIndexToModel(grid.getSelectedRow());
-                int columns = grid.getColumnCount();
-//                int x = grid.convertRowIndexToModel(grid.getSelectedRow());
-//                int y = grid.convertColumnIndexToModel(columnIndex);
-                
-                HashMap result = new HashMap();
-                
-                for(int columnIndex=0; columnIndex < columns; columnIndex++){
-                    Object obj = grid.getModel().getValueAt(rowIndex, columnIndex);
-                    result.put("", obj);
-                }
 
-                tableModel.removeRow(rowIndex);
-                
-                
-//                int columnIndex = grid.getSelectedRow();
-//                Object obj = model.getValueAt(x, columnIndex);
-//                System.out.println(String.valueOf(obj));
-//                HashMap result = modelFinal.get(rowIndex);// tableModel.getDataVector().elementAt(grid.getSelectedRow());
+        int rowIndex = grid.convertRowIndexToModel(grid.getSelectedRow());
+        try {
+            ((DefaultTableModel) ((JTable) grid).getModel()).removeRow(rowIndex);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        grid.repaint();
 
-//         tableModel.addRow(newRow);
-        reset(classeInput, classeIntituleInput, salleInput, salleIntituleInput);
+        if (etatAction != CREATE) {
+            modelSalle = listModelsOriginal.get(rowIndex);
+            if (modelSalle != null) {
+                listModelsSub.add(modelSalle);
+            }else{
+                listModelsAdd.remove(rowIndex);
+            }
+        }else{
+            listModelsAdd.remove(rowIndex);
+        }
+
+        reset(salleInput, salleIntituleInput);
     }//GEN-LAST:event_subButtonActionPerformed
 
-    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
+    private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
         // TODO add your handling code here:
-        int rowNumber = tableModel.getRowCount();
-        
-        for(int i=0; i<rowNumber; i++){
-            tableModel.removeRow(i);
-        }
-    }//GEN-LAST:event_resetButtonActionPerformed
+        int rowIndex = grid.convertRowIndexToModel(grid.getSelectedRow());
 
+        modelSalle = new HashMap<>();
+        modelSalle.put(entitySalle.toLowerCase() + "Id", FormParameters.get(entitySalle.toLowerCase() + "Id"));
+
+        if (findModel(modelSalle, "code", listModelsOriginal) == null) {
+            try {
+                ((DefaultTableModel) ((JTable) grid).getModel()).removeRow(rowIndex);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+            grid.repaint();
+
+            listModelsAdd.remove(rowIndex);
+            listModelsAdd.add(modelSalle);
+
+            Object[] newRow = {salleInput.getText(), salleIntituleInput.getText()};
+
+            setTableModel(salleInput, salleIntituleInput);
+
+            //        tableModel.addRow(newRow);
+            ((DefaultTableModel) ((JTable) grid).getModel()).addRow(newRow);
+        }
+        reset(salleInput, salleIntituleInput);
+    }//GEN-LAST:event_modifyButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
@@ -466,7 +609,7 @@ public class GroupSalleForm extends ModelForm {
     private javax.swing.JTable grid;
     private javax.swing.JTextField intituleInput;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JButton resetButton;
+    private javax.swing.JButton modifyButton;
     private javax.swing.JTextField salleInput;
     private javax.swing.JTextField salleIntituleInput;
     private javax.swing.JButton subButton;

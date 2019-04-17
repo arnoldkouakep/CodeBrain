@@ -10,27 +10,32 @@ import javax.swing.JToolBar;
 
 public class MenuUsersList extends JButton {
 
+    private final JPanel mainPanel;
     private ModelForm modelForm;
 
     public MenuUsersList(JPanel mainPanel, JToolBar menu) {
-
-        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Liste_Utilisateur));
+        this.mainPanel = mainPanel;
+        
+        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Liste_Utilisateur.toString(), true));
         putClientProperty("JButton.buttonType", "bevel");
-        addActionListener((ActionEvent e) -> {
-            addComponentPanel(mainPanel, menu);
-        });
 
         setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
         setMaximumSize(new java.awt.Dimension(250, 80));
         setMinimumSize(new java.awt.Dimension(250, 80));
         setPreferredSize(new java.awt.Dimension(250, 80));
 
-        mainPanel.add(this);
+        addActionListener((ActionEvent e) -> {
+            addComponentPanel();
+        });
+        this.mainPanel.add(this);
     }
 
-    public void addComponentPanel(JPanel mainPanel, JToolBar menu) {
+    public void addComponentPanel() {
         modelForm = new ModelForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Liste_Utilisateur));
         modelForm.setVisible(true);
-//        JSheet.showMessageSheet(SwingUtilities.windowForComponent(this), "Bouton Pas encore prêt.", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public JButton getButton(){
+        return this;
     }
 }

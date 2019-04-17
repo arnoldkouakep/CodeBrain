@@ -10,14 +10,18 @@ import cm.codebrain.main.business.entitie.*;
 import cm.codebrain.main.business.enumerations.EnumStatus;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.StringUtils;
-import static cm.codebrain.ui.application.enumerations.Enums.Entity;
-import static cm.codebrain.ui.application.enumerations.Enums.User;
+import cm.codebrain.ui.application.enumerations.EnumVariable;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Action;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Entity;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Master_Detail;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Detail_Master;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.User;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Value;
 import cm.codebrain.ui.application.security.LoginForm;
 import cm.codebrain.ui.application.security.MainForm;
 import cm.codebrain.ui.application.security.ReLoginForm;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.rmi.server.UID;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -25,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -49,23 +52,21 @@ public class CodeBrainManager {
     private final EntityManagerFactory emfManager = Persistence.createEntityManagerFactory("Brain");
     private List<Widget> widgetSecurity;
     private final CodeBrainMapper cbMapper = new CodeBrainMapper();
-    private final CodeBrainEntityManager entityManager = new CodeBrainEntityManager(emfManager);
+    private final CodeBrainEntityManager entityManager;
     private String entity;
-//    private Boolean security;
 
     public CodeBrainManager() {
+        this.entityManager = new CodeBrainEntityManager();
+        this.entityManager.setEntityManagerFactory(emfManager);
     }
 
     public static void CodeBrainManager() {
-//        new CodeBrainManager();
     }
 
     public Users authenticate(String login, String password) throws SQLException {
-        EntityManager em = entityManager.getEntityManager();
+        EntityManager em = entityManager.getEntityManagerFactory().createEntityManager();
+        
         try {
-
-//            UsersJpaController userCtrl = new UsersJpaController(emfManager);
-//        Users user = userCtrl.authentificate(login, MD5(password));
             CriteriaBuilder cb = em.getCriteriaBuilder();
 
             CriteriaQuery cq = cb.createQuery();
@@ -78,7 +79,7 @@ public class CodeBrainManager {
             Query q = em.createQuery(cq);
             Users user = (Users) q.getSingleResult();
 
-            GlobalParameters.addVar(User.toString(), user);
+            GlobalParameters.add(User, user);
 
             getWidgetSecurity(user);
 
@@ -96,11 +97,8 @@ public class CodeBrainManager {
     }
 
     public void getWidgetSecurity(Users userConnected) throws SQLException {
-        WidgetJpaController widgetCtrl = new WidgetJpaController(emfManager);
 
-//        widgetSecurity = widgetCtrl.findWidgetFromLevel(userConnected.getLevelsId());
-//    public List<Widget> findWidgetFromLevel(Levels level) {
-        EntityManager em = entityManager.getEntityManager();
+        EntityManager em = entityManager.getEntityManagerFactory().createEntityManager();
         try {
             Levels level = userConnected.getLevelsId();
             if (level != null) {
@@ -110,36 +108,27 @@ public class CodeBrainManager {
 
                 Root<Widget> rt = cq.from(Widget.class);
 
-//            cq = cq.select(rt).where(cb.equal(rt.get("login"), login));
                 Query q = em.createQuery(cq);
 
                 List<Widget> listTmp = q.getResultList();
 
                 widgetSecurity = listTmp.stream().filter(w -> w.getLevelsId().getCode() >= level.getCode()).collect(Collectors.toList());
 
-//            List<Person> beerDrinkers = persons.stream()
-//                    .filter(p -> p.getAge() > 16).collect(Collectors.toList());
-//            return list;
-//            }
-//            else
-//                return null;
                 widgetSecurity.forEach((w) -> {
                     System.out.println(w.toString());
                 });
 
-                GlobalParameters.addVar("widgets", widgetSecurity);
+                GlobalParameters.add("widgets", widgetSecurity);
             }
         } catch (Exception ex) {
             System.out.println(ex.getLocalizedMessage());
-//            return null;
         } finally {
             em.close();
         }
-//    }
     }
 
     public void logout() {
-        GlobalParameters.reset();
+        GlobalParameters.init();
         restart();
     }
 
@@ -152,11 +141,11 @@ public class CodeBrainManager {
         mainForm = new MainForm(this);
 
         mainForm.setVisible(true);
-        if (GlobalParameters.getVar(User.toString()) == null) {
+        if (GlobalParameters.get(User) == null) {
             login = new LoginForm(this, mainForm, true);
             login.setVisible(true);
         } else {
-            reLogin = new ReLoginForm(this, mainForm, true, ((Users) GlobalParameters.getVar(User.toString())).getLogin());
+            reLogin = new ReLoginForm(this, mainForm, true, ((Users) GlobalParameters.get(User)).getLogin());
             reLogin.setVisible(true);
         }
     }
@@ -181,11 +170,11 @@ public class CodeBrainManager {
 
     public static String generateUIDPrimaryKey() {
         String id;
-        if (GlobalParameters.getVar(User.toString()) == null) {
+        if (GlobalParameters.get(User) == null) {
 
             id = "CB-" + Date.from(Instant.MIN).toString();
         } else {
-            id = ((Users) GlobalParameters.getVar(User.toString())).getLogin();
+            id = ((Users) GlobalParameters.get(User)).getLogin();
         }
 
         return id + new UID().toString();
@@ -193,28 +182,58 @@ public class CodeBrainManager {
 
     public void createEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
-        formDatas.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
+        formDatas.put(getLowerValue(entity) + "Id", generateUIDPrimaryKey());
 
-        formDatas.put("userCreated", GlobalParameters.getVar(User.toString()));
+        formDatas.put("userCreated", GlobalParameters.get(User));
         formDatas.put("dtCreated", new Date());
         formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Create.toString());
         formDatas.put("dtModified", new Date());
-        formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
+        formDatas.put("userModified", GlobalParameters.get(User));
 
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formDatas);
     }
 
+    public void createListEntity(String entity, List<HashMap> formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        this.entity = entity;
+        for (HashMap formData : formDatas) {
+            formData.put(getLowerValue(entity) + "Id", generateUIDPrimaryKey());
+
+            formData.put("userCreated", GlobalParameters.get(User));
+            formData.put("dtCreated", new Date());
+            formData.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Create.toString());
+            formData.put("dtModified", new Date());
+            formData.put("userModified", GlobalParameters.get(User));
+
+            executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formData);
+        }
+    }
+
     public void dupplicateEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
-        formDatas.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
+        formDatas.put(getLowerValue(entity) + "Id", generateUIDPrimaryKey());
 
-        formDatas.put("userCreated", GlobalParameters.getVar(User.toString()));
+        formDatas.put("userCreated", GlobalParameters.get(User));
         formDatas.put("dtCreated", new Date());
         formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Create.toString());
         formDatas.put("dtModified", new Date());
-        formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
+        formDatas.put("userModified", GlobalParameters.get(User));
 
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formDatas);
+    }
+
+    public void dupplicateListEntity(String entity, List<HashMap> formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        this.entity = entity;
+        for (HashMap formData : formDatas) {
+            formData.put(getLowerValue(entity) + "Id", generateUIDPrimaryKey());
+
+            formData.put("userCreated", GlobalParameters.get(User));
+            formData.put("dtCreated", new Date());
+            formData.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Create.toString());
+            formData.put("dtModified", new Date());
+            formData.put("userModified", GlobalParameters.get(User));
+
+            executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "create", formData);
+        }
     }
 
     public void updateEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
@@ -222,9 +241,20 @@ public class CodeBrainManager {
 
         formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Update.toString());
         formDatas.put("dtModified", new Date());
-        formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
+        formDatas.put("userModified", GlobalParameters.get(User));
 
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "edit", formDatas);
+    }
+
+    public void updateListEntity(String entity, List<HashMap> formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        this.entity = entity;
+        for (HashMap formData : formDatas) {
+            formData.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Update.toString());
+            formData.put("dtModified", new Date());
+            formData.put("userModified", GlobalParameters.get(User));
+
+            executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "edit", formData);
+        }
     }
 
     public void deleteEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
@@ -232,9 +262,26 @@ public class CodeBrainManager {
 
         formDatas.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Delete.toString());
         formDatas.put("dtModified", new Date());
-        formDatas.put("userModified", GlobalParameters.getVar(User.toString()));
+        formDatas.put("userModified", GlobalParameters.get(User));
 
         executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "edit", formDatas);
+    }
+
+    public void deleteListEntity(String entity, List<HashMap> formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        this.entity = entity;
+        for (HashMap formData : formDatas) {
+            formData.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Delete.toString());
+            formData.put("dtModified", new Date());
+            formData.put("userModified", GlobalParameters.get(User));
+
+            executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "edit", formData);
+        }
+    }
+
+    public void delete2Entity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
+        this.entity = entity;
+
+        executeMethod("cm.codebrain.main.business.manager." + entity + "JpaController", "destroy", getIdValueObject(formDatas, entity));
     }
 
     public void getEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
@@ -255,8 +302,9 @@ public class CodeBrainManager {
 
         Class<?> controllerClass = Class.forName(className); // convert string classname to class
 
-        Constructor<?> constructor = controllerClass.getConstructor(EntityManagerFactory.class);
-        Object instance = constructor.newInstance(emfManager);
+        Constructor<?> constructor = controllerClass.getConstructor(EntityManager.class);
+        
+        Object instance = constructor.newInstance(entityManager.getEntityManager());
 
         java.lang.reflect.Method[] methods = controllerClass.getMethods();
 
@@ -387,10 +435,245 @@ public class CodeBrainManager {
                 methodName = "get" + getUpperValue(methodName);
             }
             value = getObjectByExecuteMethod("cm.codebrain.main.business.entitie." + entity, methodName, objectConverted);
+
         } catch (ClassNotFoundException | NullPointerException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | InstantiationException ex) {
-            Logger.getLogger(CodeBrainManager.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CodeBrainManager.class
+                    .getName()).log(Level.SEVERE, null, ex);
         }
 
         return value;
+    }
+
+    public void createMasterDetailEntity(String entity, HashMap formData, String detailEntity, List<HashMap> createListModels) throws Exception {
+        /**
+         *
+         * Master
+         *
+         */
+
+        this.entity = entity;
+//        for (HashMap formData : formDatas) {
+        formData.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
+
+        formData.put("userCreated", GlobalParameters.get(User));
+        formData.put("dtCreated", new Date());
+        formData.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Create.toString());
+        formData.put("dtModified", new Date());
+        formData.put("userModified", GlobalParameters.get(User));
+
+        executeMethod("cm.codebrain.main.business.manager." + this.entity + "JpaController", "create", formData);
+//        }
+        /**
+         *
+         * Details
+         *
+         */
+
+        this.entity = detailEntity;
+        for (HashMap model : createListModels) {
+            model.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
+
+            model.put("userCreated", GlobalParameters.get(User));
+            model.put("dtCreated", new Date());
+            model.put("stateDb", cm.codebrain.ui.application.enumerations.EnumLibelles.Business_Status_StateDb_Create.toString());
+            model.put("dtModified", new Date());
+            model.put("userModified", GlobalParameters.get(User));
+
+            executeMethod("cm.codebrain.main.business.manager." + this.entity + "JpaController", "create", model);
+        }
+    }
+
+    public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, HashMap modelMD, List<HashMap> CrUpList, List<HashMap> DeList) throws Exception {
+        if (null != modelMD.get(Action)) {
+            
+            entityManager.setEntityManager(entityManager.getEntityManagerFactory().createEntityManager());
+            entityManager.getTransaction().begin();
+            
+//getTransaction().begin();
+            switch ((EnumVariable) modelMD.get(Action)) {
+                case Master_Detail:
+                    if (null != etatAction) {
+                        switch (etatAction) {
+                            case CREATE:
+                                createEntity(entity, modelFinal);
+
+                                if (CrUpList != null) {
+                                    for (HashMap model : CrUpList) {
+                                        model.put(modelMD.get(Value), modelFinal);
+
+                                        if (getIdValueObject(model, modelMD.get(Entity).toString()) == null) {
+                                            createEntity(modelMD.get(Entity).toString(), model);
+                                        } else {
+                                            updateEntity(modelMD.get(Entity).toString(), model);
+                                        }
+                                    }
+                                }
+
+                                if (DeList != null) {
+                                    for (HashMap model : DeList) {
+                                        model.put(modelMD.get(Value), null);
+                                        updateEntity(modelMD.get(Entity).toString(), model);
+                                    }
+                                }
+                                break;
+                            case MODIF:
+                                updateEntity(entity, modelFinal);
+
+                                if (CrUpList != null) {
+                                    for (HashMap model : CrUpList) {
+                                        model.put(modelMD.get(Value), modelFinal);
+
+                                        if (getIdValueObject(model, modelMD.get(Entity).toString()) == null) {
+                                            createEntity(modelMD.get(Entity).toString(), model);
+                                        } else {
+                                            updateEntity(modelMD.get(Entity).toString(), model);
+                                        }
+                                    }
+                                }
+
+                                if (DeList != null) {
+                                    for (HashMap model : DeList) {
+                                        model.put(modelMD.get(Value), null);
+                                        updateEntity(modelMD.get(Entity).toString(), model);
+                                    }
+                                }
+                                break;
+                            case DUPPLICATE:
+                                dupplicateEntity(entity, modelFinal);
+
+                                if (CrUpList != null) {
+                                    for (HashMap model : CrUpList) {
+                                        model.put(modelMD.get(Value), modelFinal);
+
+                                        if (getIdValueObject(model, modelMD.get(Entity).toString()) == null) {
+                                            createEntity(modelMD.get(Entity).toString(), model);
+                                        } else {
+                                            updateEntity(modelMD.get(Entity).toString(), model);
+                                        }
+                                    }
+                                }
+
+                                if (DeList != null) {
+                                    for (HashMap model : DeList) {
+                                        model.put(modelMD.get(Value), null);
+                                        updateEntity(modelMD.get(Entity).toString(), model);
+                                    }
+                                }
+                                break;
+                            case DELETE:
+                                deleteEntity(entity, modelFinal);
+
+                                if (DeList != null) {
+                                    for (HashMap model : DeList) {
+                                        deleteEntity(modelMD.get(Entity).toString(), model);
+                                    }
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+//                if (createList) {
+//                    makeModelDatas();
+//
+////                    modelFinals = tableModelObject.getModel();
+//                    if (modelFinals == null) {
+//                        modelFinals = (List<HashMap>) FormParameters.get(Model);
+//                    }
+////                    if (modelFinals == null) {
+////                        modelFinals = new ArrayList<>();
+////                        for (HashMap model : modelDataFinal) {
+////                            makeModelDatas(model);
+////                            modelFinals.add(modelFinal);
+////                        }
+////                }
+//                    FormParameters.add(Model, modelFinals);
+//                    if (null != etatAction) {
+//                        switch (etatAction) {
+//                            case CREATE:
+//                                cbManager.createListEntity(entity, modelFinals);
+//                                break;
+//                            case MODIF:
+//                                cbManager.updateListEntity(entity, modelFinals);
+//                                break;
+//                            case DUPPLICATE:
+//                                cbManager.dupplicateListEntity(entity, modelFinals);
+//                                break;
+//                            case DELETE:
+//                                cbManager.deleteListEntity(entity, modelFinals);
+//                                break;
+//                            default:
+//                                break;
+//                        }
+//                    }
+//
+//                    /**
+//                     *
+//                     * To Do
+//                     *
+//                     *
+//                     */
+//                } else {
+//                    if (etatAction == CREATE) {
+//                        modelFinal = new HashMap<>();
+//                    } else {
+//                        modelFinal = (HashMap) FormParameters.get(Model);
+//                    }
+//
+//                    makeModelData();
+//
+//                    if (null != etatAction) {
+//                        switch (etatAction) {
+//                            case CREATE:
+//                                cbManager.createEntity(entity, modelFinal);
+//                                break;
+//                            case MODIF:
+//                                cbManager.updateEntity(entity, modelFinal);
+//                                break;
+//                            case DUPPLICATE:
+//                                cbManager.dupplicateEntity(entity, modelFinal);
+//                                break;
+//                            case DELETE:
+//                                cbManager.deleteEntity(entity, modelFinal);
+//                                break;
+//                            default:
+//                                break;
+//                        }
+//                    }
+//                }
+//        }
+                case Detail_Master:
+                    break;
+                default:
+                    if (null != etatAction) {
+                        switch (etatAction) {
+                            case CREATE:
+                                createEntity(entity, modelFinal);
+                                break;
+                            case MODIF:
+                                updateEntity(entity, modelFinal);
+                                break;
+                            case DUPPLICATE:
+                                dupplicateEntity(entity, modelFinal);
+                                break;
+                            case DELETE:
+                                deleteEntity(entity, modelFinal);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
+            }
+            entityManager.getTransaction().commit();
+            
+            entityManager.getEntityManager().close();
+        }
+    }
+
+    private Object getIdValueObject(HashMap model, String entity) {
+        Object idValue = model.get(entity.toLowerCase() + "Id");
+        return idValue;
     }
 }
