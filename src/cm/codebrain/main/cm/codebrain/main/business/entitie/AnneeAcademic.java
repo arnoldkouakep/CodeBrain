@@ -5,11 +5,14 @@
  */
 package cm.codebrain.main.business.entitie;
 
+import cm.codebrain.main.business.controller.ObjectIdResolver;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,11 +21,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -34,7 +39,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "AnneeAcademic.findAll", query = "SELECT a FROM AnneeAcademic a")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@anneeAcademic", scope = AnneeAcademic.class, resolver = ObjectIdResolver.class)
 public class AnneeAcademic implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,8 +57,6 @@ public class AnneeAcademic implements Serializable {
     @Column(name = "DATE_FERMETURE")
     @Temporal(TemporalType.DATE)
     private Date dateFermeture;
-    @Column(length = 64)
-    private String statut;
     @Column(name = "STATE_DB", length = 64)
     private String stateDb;
     @Column(name = "DT_CREATED")
@@ -65,9 +68,13 @@ public class AnneeAcademic implements Serializable {
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
-    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
+    @OneToMany(mappedBy = "session", fetch = FetchType.LAZY)
+    private Set<Etablissement> etablissementSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "session", fetch = FetchType.LAZY)
+    private Set<ParametreAnneeAcademic> parametreAnneeAcademicSet;
 
     public AnneeAcademic() {
     }
@@ -114,14 +121,6 @@ public class AnneeAcademic implements Serializable {
         this.dateFermeture = dateFermeture;
     }
 
-    public String getStatut() {
-        return statut;
-    }
-
-    public void setStatut(String statut) {
-        this.statut = statut;
-    }
-
     public String getStateDb() {
         return stateDb;
     }
@@ -162,6 +161,24 @@ public class AnneeAcademic implements Serializable {
         this.userCreated = userCreated;
     }
 
+    @XmlTransient
+    public Set<Etablissement> getEtablissementSet() {
+        return etablissementSet;
+    }
+
+    public void setEtablissementSet(Set<Etablissement> etablissementSet) {
+        this.etablissementSet = etablissementSet;
+    }
+
+    @XmlTransient
+    public Set<ParametreAnneeAcademic> getParametreAnneeAcademicSet() {
+        return parametreAnneeAcademicSet;
+    }
+
+    public void setParametreAnneeAcademicSet(Set<ParametreAnneeAcademic> parametreAnneeAcademicSet) {
+        this.parametreAnneeAcademicSet = parametreAnneeAcademicSet;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -186,5 +203,5 @@ public class AnneeAcademic implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.AnneeAcademic[ anneeAcademicId=" + anneeAcademicId + " ]";
     }
-    
+
 }

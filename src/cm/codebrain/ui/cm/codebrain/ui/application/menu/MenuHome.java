@@ -39,10 +39,10 @@ public class MenuHome extends JButton {
          * Panel Home
          */
         addPanel(mainPanel,
-                new MenuAdministration(mainPanel, menu).getButton(),
-                new MenuBackOffice(mainPanel, menu).getButton(),
-                new MenuFrontOffice(mainPanel, menu).getButton(),
-                new MenuEdition(mainPanel, menu).getButton()
+                new MenuAdministration(mainPanel, menu),
+                new MenuBackOffice(mainPanel, menu),
+                new MenuFrontOffice(mainPanel, menu),
+                new MenuEdition(mainPanel, menu)
         );
     }
 
@@ -62,8 +62,5 @@ public class MenuHome extends JButton {
         for (JButton btn : buttons) {
             mainPanel.add(btn);
         }
-    }
-    public JButton getButton(){
-        return this;
     }
 }

@@ -43,19 +43,15 @@ public class StudentForm extends ModelForm {
 //    addActionSupplementaire(
     }
 
-    @Override
     public void createForm() {
-
         this.entity = "Student";
+
         initComponents();
         
         setAllComponents(bornLocationInput, sectionsInput, sectionsIntituleInput, chooseButton, classeInput, classeIntituleInput, codeInput, birthdayInput, femininRadioButton, imageLabel, lastNameInput, masculinRadioButton, matriculeInput, nameInput, salleInput, salleIntituleInput, sexeButtonGroup);
     }
 
-    @Override
-    public void addActionSupplementaire() {
-        super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
-
+    protected void addActionSupplementaire() {
         eventSections();
         eventClasse();
         eventSalle();
@@ -103,7 +99,7 @@ public class StudentForm extends ModelForm {
 
         HashMap[] args = new HashMap[1];
 
-        HashMap arg = new HashMap();
+        HashMap arg;
 //        arg.put(Type, Entity);
 //        arg.put(Entity, entitySections);
 //        arg.put(Model, "sectionsId");

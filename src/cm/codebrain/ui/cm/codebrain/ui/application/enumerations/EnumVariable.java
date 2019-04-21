@@ -19,6 +19,7 @@ public enum EnumVariable {
     Clause,
     Value,
     Indice,
+    Field,
     Entity,
     Model,
     User,

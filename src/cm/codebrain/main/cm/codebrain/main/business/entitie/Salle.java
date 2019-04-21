@@ -5,6 +5,7 @@
  */
 package cm.codebrain.main.business.entitie;
 
+import cm.codebrain.main.business.controller.ObjectIdResolver;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
@@ -36,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Salle.findAll", query = "SELECT s FROM Salle s")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@salle", scope = Salle.class, resolver = ObjectIdResolver.class)
 public class Salle implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -58,8 +59,6 @@ public class Salle implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "salleId", fetch = FetchType.LAZY)
-    private Set<Student> studentSet;
     @JoinColumn(name = "CLASSE_ID", referencedColumnName = "CLASSE_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Classe classeId;
@@ -69,9 +68,11 @@ public class Salle implements Serializable {
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
-    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "salleId", fetch = FetchType.LAZY)
+    private Set<Student> studentSet;
 
     public Salle() {
     }
@@ -134,15 +135,6 @@ public class Salle implements Serializable {
         this.dtModified = dtModified;
     }
 
-    @XmlTransient
-    public Set<Student> getStudentSet() {
-        return studentSet;
-    }
-
-    public void setStudentSet(Set<Student> studentSet) {
-        this.studentSet = studentSet;
-    }
-
     public Classe getClasseId() {
         return classeId;
     }
@@ -175,6 +167,15 @@ public class Salle implements Serializable {
         this.userCreated = userCreated;
     }
 
+    @XmlTransient
+    public Set<Student> getStudentSet() {
+        return studentSet;
+    }
+
+    public void setStudentSet(Set<Student> studentSet) {
+        this.studentSet = studentSet;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -199,5 +200,5 @@ public class Salle implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Salle[ salleId=" + salleId + " ]";
     }
-    
+
 }

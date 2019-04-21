@@ -5,6 +5,7 @@
  */
 package cm.codebrain.main.business.entitie;
 
+import cm.codebrain.main.business.controller.ObjectIdResolver;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
@@ -36,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Section.findAll", query = "SELECT s FROM Section s")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@section", scope = Section.class, resolver = ObjectIdResolver.class)
 public class Section implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -58,17 +59,17 @@ public class Section implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sectionId", fetch = FetchType.LAZY)
+    private Set<Classe> classeSet;
     @JoinColumn(name = "ETABLISSEMENT_ID", referencedColumnName = "ETABLISSEMENT_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Etablissement etablissementId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
-    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sectionId", fetch = FetchType.LAZY)
-    private Set<Classe> classeSet;
 
     public Section() {
     }
@@ -131,6 +132,15 @@ public class Section implements Serializable {
         this.dtModified = dtModified;
     }
 
+    @XmlTransient
+    public Set<Classe> getClasseSet() {
+        return classeSet;
+    }
+
+    public void setClasseSet(Set<Classe> classeSet) {
+        this.classeSet = classeSet;
+    }
+
     public Etablissement getEtablissementId() {
         return etablissementId;
     }
@@ -153,15 +163,6 @@ public class Section implements Serializable {
 
     public void setUserCreated(Users userCreated) {
         this.userCreated = userCreated;
-    }
-
-    @XmlTransient
-    public Set<Classe> getClasseSet() {
-        return classeSet;
-    }
-
-    public void setClasseSet(Set<Classe> classeSet) {
-        this.classeSet = classeSet;
     }
 
     @Override
@@ -188,5 +189,5 @@ public class Section implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Section[ sectionId=" + sectionId + " ]";
     }
-    
+
 }

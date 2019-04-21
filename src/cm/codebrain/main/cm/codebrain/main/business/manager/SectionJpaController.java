@@ -8,7 +8,6 @@ package cm.codebrain.main.business.manager;
 import cm.codebrain.main.business.controller.CodeBrainEntityManager;
 import java.io.Serializable;
 import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import cm.codebrain.main.business.entitie.Etablissement;
@@ -20,10 +19,8 @@ import cm.codebrain.main.business.manager.exceptions.NonexistentEntityException;
 import cm.codebrain.main.business.manager.exceptions.PreexistingEntityException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  *
@@ -136,6 +133,9 @@ public class SectionJpaController extends CodeBrainEntityManager implements Seri
             if (userCreatedNew != null) {
                 userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 section.setUserCreated(userCreatedNew);
+            }else{
+                userCreatedOld = (Users) refreshEntity(userCreatedOld.getClass(), userCreatedOld.getUsersId());
+                section.setUserCreated(userCreatedOld);
             }
             Set<Classe> attachedClasseSetNew = new HashSet<Classe>();
             for (Classe classeSetNewClasseToAttach : classeSetNew) {

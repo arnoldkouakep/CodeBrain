@@ -5,6 +5,7 @@
  */
 package cm.codebrain.main.business.entitie;
 
+import cm.codebrain.main.business.controller.ObjectIdResolver;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
@@ -36,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Levels.findAll", query = "SELECT l FROM Levels l")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@levels", scope = Levels.class, resolver = ObjectIdResolver.class)
 public class Levels implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -60,8 +61,8 @@ public class Levels implements Serializable {
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
-    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "levelsId", fetch = FetchType.LAZY)
     private Set<Users> usersSet;
@@ -186,5 +187,5 @@ public class Levels implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Levels[ levelsId=" + levelsId + " ]";
     }
-    
+
 }

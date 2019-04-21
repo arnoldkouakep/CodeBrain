@@ -5,12 +5,14 @@
  */
 package cm.codebrain.main.business.entitie;
 
+import cm.codebrain.main.business.controller.ObjectIdResolver;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@users", scope = Users.class, resolver = ObjectIdResolver.class)
 public class Users implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -71,29 +73,41 @@ public class Users implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
     @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
-    private Set<Student> studentSet;
-    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
-    private Set<Student> studentSet1;
+    private Set<Enseignant> enseignantSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Enseignant> enseignantSet1;
     @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
-    private Set<Groupe> groupeSet;
-    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
-    private Set<Groupe> groupeSet1;
+    private Set<Cours> coursSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Cours> coursSet1;
     @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
     private Set<Salle> salleSet;
-    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
     private Set<Salle> salleSet1;
     @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
     private Set<Levels> levelsSet;
-    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
     private Set<Levels> levelsSet1;
     @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
     private Set<AnneeAcademic> anneeAcademicSet;
-    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
     private Set<AnneeAcademic> anneeAcademicSet1;
     @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
     private Set<Etablissement> etablissementSet;
-    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
     private Set<Etablissement> etablissementSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Classe> classeSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Classe> classeSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Student> studentSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Student> studentSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Groupe> groupeSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Groupe> groupeSet1;
     @JoinColumn(name = "LEVELS_ID", referencedColumnName = "LEVELS_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Levels levelsId;
@@ -102,23 +116,31 @@ public class Users implements Serializable {
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
-    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
     private Set<Users> usersSet1;
-    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
     @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<ParametreAnneeAcademic> parametreAnneeAcademicSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<ParametreAnneeAcademic> parametreAnneeAcademicSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
     private Set<Section> sectionSet;
-    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
     private Set<Section> sectionSet1;
     @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
     private Set<Widget> widgetSet;
-    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
     private Set<Widget> widgetSet1;
     @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
-    private Set<Classe> classeSet;
-    @OneToMany(mappedBy = "userCreated", fetch = FetchType.LAZY)
-    private Set<Classe> classeSet1;
+    private Set<AffectationCours> affectationCoursSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<AffectationCours> affectationCoursSet1;
+    @OneToMany(mappedBy = "userModified", fetch = FetchType.LAZY)
+    private Set<Profession> professionSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCreated", fetch = FetchType.LAZY)
+    private Set<Profession> professionSet1;
 
     public Users() {
     }
@@ -231,39 +253,39 @@ public class Users implements Serializable {
     }
 
     @XmlTransient
-    public Set<Student> getStudentSet() {
-        return studentSet;
+    public Set<Enseignant> getEnseignantSet() {
+        return enseignantSet;
     }
 
-    public void setStudentSet(Set<Student> studentSet) {
-        this.studentSet = studentSet;
-    }
-
-    @XmlTransient
-    public Set<Student> getStudentSet1() {
-        return studentSet1;
-    }
-
-    public void setStudentSet1(Set<Student> studentSet1) {
-        this.studentSet1 = studentSet1;
+    public void setEnseignantSet(Set<Enseignant> enseignantSet) {
+        this.enseignantSet = enseignantSet;
     }
 
     @XmlTransient
-    public Set<Groupe> getGroupeSet() {
-        return groupeSet;
+    public Set<Enseignant> getEnseignantSet1() {
+        return enseignantSet1;
     }
 
-    public void setGroupeSet(Set<Groupe> groupeSet) {
-        this.groupeSet = groupeSet;
+    public void setEnseignantSet1(Set<Enseignant> enseignantSet1) {
+        this.enseignantSet1 = enseignantSet1;
     }
 
     @XmlTransient
-    public Set<Groupe> getGroupeSet1() {
-        return groupeSet1;
+    public Set<Cours> getCoursSet() {
+        return coursSet;
     }
 
-    public void setGroupeSet1(Set<Groupe> groupeSet1) {
-        this.groupeSet1 = groupeSet1;
+    public void setCoursSet(Set<Cours> coursSet) {
+        this.coursSet = coursSet;
+    }
+
+    @XmlTransient
+    public Set<Cours> getCoursSet1() {
+        return coursSet1;
+    }
+
+    public void setCoursSet1(Set<Cours> coursSet1) {
+        this.coursSet1 = coursSet1;
     }
 
     @XmlTransient
@@ -338,6 +360,60 @@ public class Users implements Serializable {
         this.etablissementSet1 = etablissementSet1;
     }
 
+    @XmlTransient
+    public Set<Classe> getClasseSet() {
+        return classeSet;
+    }
+
+    public void setClasseSet(Set<Classe> classeSet) {
+        this.classeSet = classeSet;
+    }
+
+    @XmlTransient
+    public Set<Classe> getClasseSet1() {
+        return classeSet1;
+    }
+
+    public void setClasseSet1(Set<Classe> classeSet1) {
+        this.classeSet1 = classeSet1;
+    }
+
+    @XmlTransient
+    public Set<Student> getStudentSet() {
+        return studentSet;
+    }
+
+    public void setStudentSet(Set<Student> studentSet) {
+        this.studentSet = studentSet;
+    }
+
+    @XmlTransient
+    public Set<Student> getStudentSet1() {
+        return studentSet1;
+    }
+
+    public void setStudentSet1(Set<Student> studentSet1) {
+        this.studentSet1 = studentSet1;
+    }
+
+    @XmlTransient
+    public Set<Groupe> getGroupeSet() {
+        return groupeSet;
+    }
+
+    public void setGroupeSet(Set<Groupe> groupeSet) {
+        this.groupeSet = groupeSet;
+    }
+
+    @XmlTransient
+    public Set<Groupe> getGroupeSet1() {
+        return groupeSet1;
+    }
+
+    public void setGroupeSet1(Set<Groupe> groupeSet1) {
+        this.groupeSet1 = groupeSet1;
+    }
+
     public Levels getLevelsId() {
         return levelsId;
     }
@@ -381,6 +457,24 @@ public class Users implements Serializable {
     }
 
     @XmlTransient
+    public Set<ParametreAnneeAcademic> getParametreAnneeAcademicSet() {
+        return parametreAnneeAcademicSet;
+    }
+
+    public void setParametreAnneeAcademicSet(Set<ParametreAnneeAcademic> parametreAnneeAcademicSet) {
+        this.parametreAnneeAcademicSet = parametreAnneeAcademicSet;
+    }
+
+    @XmlTransient
+    public Set<ParametreAnneeAcademic> getParametreAnneeAcademicSet1() {
+        return parametreAnneeAcademicSet1;
+    }
+
+    public void setParametreAnneeAcademicSet1(Set<ParametreAnneeAcademic> parametreAnneeAcademicSet1) {
+        this.parametreAnneeAcademicSet1 = parametreAnneeAcademicSet1;
+    }
+
+    @XmlTransient
     public Set<Section> getSectionSet() {
         return sectionSet;
     }
@@ -417,21 +511,39 @@ public class Users implements Serializable {
     }
 
     @XmlTransient
-    public Set<Classe> getClasseSet() {
-        return classeSet;
+    public Set<AffectationCours> getAffectationCoursSet() {
+        return affectationCoursSet;
     }
 
-    public void setClasseSet(Set<Classe> classeSet) {
-        this.classeSet = classeSet;
+    public void setAffectationCoursSet(Set<AffectationCours> affectationCoursSet) {
+        this.affectationCoursSet = affectationCoursSet;
     }
 
     @XmlTransient
-    public Set<Classe> getClasseSet1() {
-        return classeSet1;
+    public Set<AffectationCours> getAffectationCoursSet1() {
+        return affectationCoursSet1;
     }
 
-    public void setClasseSet1(Set<Classe> classeSet1) {
-        this.classeSet1 = classeSet1;
+    public void setAffectationCoursSet1(Set<AffectationCours> affectationCoursSet1) {
+        this.affectationCoursSet1 = affectationCoursSet1;
+    }
+
+    @XmlTransient
+    public Set<Profession> getProfessionSet() {
+        return professionSet;
+    }
+
+    public void setProfessionSet(Set<Profession> professionSet) {
+        this.professionSet = professionSet;
+    }
+
+    @XmlTransient
+    public Set<Profession> getProfessionSet1() {
+        return professionSet1;
+    }
+
+    public void setProfessionSet1(Set<Profession> professionSet1) {
+        this.professionSet1 = professionSet1;
     }
 
     @Override

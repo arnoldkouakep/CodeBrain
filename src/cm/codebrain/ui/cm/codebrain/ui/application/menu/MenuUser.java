@@ -73,7 +73,4 @@ public class MenuUser extends JButton {
             mainPanel.add(btn);
         }
     }
-    public JButton getButton(){
-        return this;
-    }
 }

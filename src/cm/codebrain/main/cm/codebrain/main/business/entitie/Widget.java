@@ -5,6 +5,7 @@
  */
 package cm.codebrain.main.business.entitie;
 
+import cm.codebrain.main.business.controller.ObjectIdResolver;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
@@ -36,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Widget.findAll", query = "SELECT w FROM Widget w")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@widget", scope = Widget.class, resolver = ObjectIdResolver.class)
 public class Widget implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -51,6 +52,8 @@ public class Widget implements Serializable {
     @Column(nullable = false, length = 64)
     private String label;
     private Short available;
+    @Column(name = "STATE_DB", length = 64)
+    private String stateDb;
     @Column(name = "DT_CREATED")
     @Temporal(TemporalType.DATE)
     private Date dtCreated;
@@ -63,8 +66,8 @@ public class Widget implements Serializable {
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
-    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "parent", fetch = FetchType.LAZY)
     private Set<Widget> widgetSet;
@@ -115,6 +118,14 @@ public class Widget implements Serializable {
 
     public void setAvailable(Short available) {
         this.available = available;
+    }
+
+    public String getStateDb() {
+        return stateDb;
+    }
+
+    public void setStateDb(String stateDb) {
+        this.stateDb = stateDb;
     }
 
     public Date getDtCreated() {

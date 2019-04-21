@@ -37,21 +37,16 @@ public class SalleForm extends ModelForm {
 
     }
 
-    @Override
     public void createForm() {
-
         this.entity = "Salle";
+
         initComponents();
         setAllComponents(sectionInput, sectionIntituleInput, classeInput, classeIntituleInput, codeInput, intituleInput);
     }
 
-    @Override
     public void addActionSupplementaire() {
-        super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
-        
         eventSections();
         eventClasse();
-        
     }
 
     private void eventSections() {
@@ -89,7 +84,6 @@ public class SalleForm extends ModelForm {
         addAction(classeInput, entityClasse, entityClasse.toLowerCase()+"Id", parametresGrid, filter, args, classeInput, classeIntituleInput);
     }
 
-    @Override
     protected void eventActionRef() {
 
         String[][] parametresGrid = {

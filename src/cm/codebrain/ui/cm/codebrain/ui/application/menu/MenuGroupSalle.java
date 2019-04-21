@@ -34,8 +34,4 @@ public class MenuGroupSalle extends JButton {
         form = new GroupSalleForm(Dictionnaire.get(EnumLibelles.Business_Libelle_GrouperSalles));
         form.setVisible(true);
     }
-
-    public JButton getButton(){
-        return this;
-    }
 }

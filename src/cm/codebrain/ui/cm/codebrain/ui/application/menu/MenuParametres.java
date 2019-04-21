@@ -52,11 +52,11 @@ public class MenuParametres extends JButton {
          */
         
         addPanel(this.mainPanel,
-                new MenuEtablissement(this.mainPanel, this.menu).getButton(),
-                new MenuCategorie(this.mainPanel, this.menu).getButton(),
-                new MenuClasse(this.mainPanel, this.menu).getButton(),
-                new MenuSalle(this.mainPanel, this.menu).getButton(),
-                new MenuGroupSalle(this.mainPanel, this.menu).getButton()
+                new MenuEtablissement(this.mainPanel, this.menu),
+                new MenuCategorie(this.mainPanel, this.menu),
+                new MenuClasse(this.mainPanel, this.menu),
+                new MenuSalle(this.mainPanel, this.menu),
+                new MenuGroupSalle(this.mainPanel, this.menu)
         );
     }
 

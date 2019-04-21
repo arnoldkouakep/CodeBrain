@@ -34,8 +34,4 @@ public class MenuSalle extends JButton {
         form = new SalleForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Salle));
         form.setVisible(true);
     }
-
-    public JButton getButton(){
-        return this;
-    }
 }

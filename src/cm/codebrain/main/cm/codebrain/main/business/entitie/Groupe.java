@@ -5,6 +5,7 @@
  */
 package cm.codebrain.main.business.entitie;
 
+import cm.codebrain.main.business.controller.ObjectIdResolver;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
@@ -36,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Groupe.findAll", query = "SELECT g FROM Groupe g")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@groupe", scope = Groupe.class, resolver = ObjectIdResolver.class)
 public class Groupe implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -58,17 +59,19 @@ public class Groupe implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "groupeId", fetch = FetchType.LAZY)
+    private Set<Cours> coursSet;
+    @OneToMany(mappedBy = "groupeId", fetch = FetchType.LAZY)
+    private Set<Salle> salleSet;
     @JoinColumn(name = "CLASSE_ID", referencedColumnName = "CLASSE_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Classe classeId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
-    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "groupeId", fetch = FetchType.LAZY)
-    private Set<Salle> salleSet;
 
     public Groupe() {
     }
@@ -131,6 +134,24 @@ public class Groupe implements Serializable {
         this.dtModified = dtModified;
     }
 
+    @XmlTransient
+    public Set<Cours> getCoursSet() {
+        return coursSet;
+    }
+
+    public void setCoursSet(Set<Cours> coursSet) {
+        this.coursSet = coursSet;
+    }
+
+    @XmlTransient
+    public Set<Salle> getSalleSet() {
+        return salleSet;
+    }
+
+    public void setSalleSet(Set<Salle> salleSet) {
+        this.salleSet = salleSet;
+    }
+
     public Classe getClasseId() {
         return classeId;
     }
@@ -153,15 +174,6 @@ public class Groupe implements Serializable {
 
     public void setUserCreated(Users userCreated) {
         this.userCreated = userCreated;
-    }
-
-    @XmlTransient
-    public Set<Salle> getSalleSet() {
-        return salleSet;
-    }
-
-    public void setSalleSet(Set<Salle> salleSet) {
-        this.salleSet = salleSet;
     }
 
     @Override
@@ -188,5 +200,5 @@ public class Groupe implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Groupe[ groupeId=" + groupeId + " ]";
     }
-    
+
 }

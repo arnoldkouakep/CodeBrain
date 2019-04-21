@@ -30,22 +30,17 @@ public class EtablissementForm extends ModelForm {
 
     }
 
-    @Override
     public void createForm() {
-
         this.entity = "Etablissement";
+
         initComponents();
         setAllComponents(adresseInput, emailInput, nomAbregeInput, nomCompletInput, telephoneInput, villeInput);
     }
 
-    @Override
     public void addActionSupplementaire() {
-        super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
-        
     }
     
     
-    @Override
     protected void eventActionRef() {
 
         String[][] parametresGrid = {

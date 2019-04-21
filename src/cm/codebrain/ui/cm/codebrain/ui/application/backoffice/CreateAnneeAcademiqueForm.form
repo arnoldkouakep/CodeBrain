@@ -192,6 +192,7 @@
                     <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
                       <Format format="dd/MM/yyyy" subtype="-1" type="1"/>
                     </Property>
+                    <Property name="name" type="java.lang.String" value="dateOuverture" noResource="true"/>
                   </Properties>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;dateOuverture&quot;, dateDebutInput);&#xd;&#xa;fieldSearch(&quot;dateOuverture&quot;, dateDebutInput);&#xd;&#xa;fieldsRequired.add(dateDebutInput);"/>
@@ -214,6 +215,7 @@
                     <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
                       <Format format="dd/MM/yyyy" subtype="-1" type="1"/>
                     </Property>
+                    <Property name="name" type="java.lang.String" value="dateFermeture" noResource="true"/>
                   </Properties>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;dateFermeture&quot;, dateFinInput);&#xd;&#xa;fieldSearch(&quot;dateFermeture&quot;, dateFinInput);&#xd;&#xa;fieldsRequired.add(dateFinInput);"/>

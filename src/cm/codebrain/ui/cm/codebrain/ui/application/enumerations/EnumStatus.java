@@ -10,5 +10,6 @@ package cm.codebrain.ui.application.enumerations;
  * @author KSA-INET
  */
 public enum EnumStatus {
-    Business_Statut_NonActif
+    Business_Statut_NonActif,
+    Business_Statut_Actif,
 }

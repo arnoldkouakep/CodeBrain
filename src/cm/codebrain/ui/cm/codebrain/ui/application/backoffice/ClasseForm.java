@@ -34,19 +34,15 @@ public class ClasseForm extends ModelForm {
 
     }
 
-    @Override
     public void createForm() {
-
         this.entity = "Classe";
+
         initComponents();
         setAllComponents(sectionsInput, sectionsIntituleInput, codeInput, intituleInput);
 
     }
 
-    @Override
     public void addActionSupplementaire() {
-        super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
-        
         eventSections();
     }
 

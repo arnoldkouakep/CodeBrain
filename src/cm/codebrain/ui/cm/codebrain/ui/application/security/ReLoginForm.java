@@ -8,6 +8,7 @@ package cm.codebrain.ui.application.security;
 import ch.randelshofer.quaqua.JSheet;
 import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.main.business.controller.CodeBrainManager;
+import cm.codebrain.ui.application.MessageForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.Locale;
 import cm.codebrain.ui.application.enumerations.EnumError;
@@ -43,7 +44,7 @@ public class ReLoginForm extends javax.swing.JDialog {
         super(parent, modal);
 //dialog = new Loading_old(this.getContentPane(), true);
         this.codeBrainManager = codeBrainManager;
-        
+
         Locale.initBundle();
 //        mainForm = (MainForm) parent;
 
@@ -65,7 +66,6 @@ public class ReLoginForm extends javax.swing.JDialog {
         logoLabel.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/logo.png")).getImage().getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));
 
 //        logoutButton.setText(StringUtil.UTF8Encode(Locale.i18n.getString("Business_Libelle_Annuler")));
-
         if (Locale.LANGUAGE == 0) {
             btnLocal.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/en_en.png")).getImage().getScaledInstance(btnLocal.getWidth(), btnLocal.getHeight(), 0)));
         } else if (Locale.LANGUAGE == 1) {
@@ -227,71 +227,48 @@ public class ReLoginForm extends javax.swing.JDialog {
                 String login = usernameInput.getText();
                 String password = String.valueOf(passwordInput.getPassword());
 
-                try {
-                    //            codeBrainManager.authenticate(login, password);
-                    String res = codeBrainManager.authenticate(login, password).getLogin();
+                String res = codeBrainManager.authenticate(login, password).getLogin();
 
-                    /**
-                     *
-                     * User connected
-                     */
-//                    JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), "User : " + res + " Connecté.", JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println("User : " + res + " Connecté.");
-                    doClose(RET_OK);
-                    
-                    return res;
-                } catch (SQLException ex) {
-                    JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
-                }
-                return null;
+                /**
+                 *
+                 * User connected
+                 */
+                System.out.println("User : " + res + " Connecté.");
+                doClose(RET_OK);
+
+                return res;
             }
 
             @Override
             public void error(CodeBrainExceptions ex) {
-//                    System.out.println("Error : "+ex.getCause());
-                JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
+                MessageForm.showsError(new CodeBrainExceptions(EnumError.UserLoginException.toString()).getMessage(), "Message", false, null);
             }
-
         });
-
-//        } catch (Exception e) {
-//            JSheet.showMessageSheet(this, e.getMessage(), JOptionPane.ERROR_MESSAGE);
-//        }
-//        loading.hide();
     }//GEN-LAST:event_btnOkActionPerformed
 
     private void logoutButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutButtonActionPerformed
         Loading.show(btnOk, new Executable() {
 
             @Override
-            public Object execute() {
+            public Void execute() {
 
                 String login = usernameInput.getText();
-                String password = String.valueOf(passwordInput.getPassword());
+//                String password = String.valueOf(passwordInput.getPassword());
 
-                try {
-                    //            codeBrainManager.authenticate(login, password);
-                    codeBrainManager.logout();
+                codeBrainManager.logout();
 
-                    /**
-                     *
-                     * User connected
-                     */
-//                    JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), "User : " + res + " Connecté.", JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println("User : " + login + " DéConnecté.");
-                    doClose(RET_OK);
-                } catch (Exception ex) {
-//                    JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
-                    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnOk), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
-                }
+                /**
+                 *
+                 * User connected
+                 */
+                System.out.println("User : " + login + " DéConnecté.");
+                doClose(RET_OK);
                 return null;
             }
 
             @Override
             public void error(CodeBrainExceptions ex) {
-//                    System.out.println("Error : "+ex.getCause());
-//                JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
-                JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnOk), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
+                MessageForm.showsError(ex.getMessage(), "Message", false, null);
             }
 
         });
@@ -307,9 +284,6 @@ public class ReLoginForm extends javax.swing.JDialog {
         }
 
         this.codeBrainManager.restart();
-//        dispose();
-//        new LoginForm(mainForm, true).setVisible(true);
-//        codeBrainManager.reload();
     }//GEN-LAST:event_btnLocalActionPerformed
 
     private void doClose(int retStatus) {

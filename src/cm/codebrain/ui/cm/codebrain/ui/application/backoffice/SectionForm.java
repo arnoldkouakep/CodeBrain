@@ -36,18 +36,14 @@ public class SectionForm extends ModelForm {
 //    addActionSupplementaire(
     }
 
-    @Override
     public void createForm() {
-
         this.entity = "Section";
+
         initComponents();
         setAllComponents(codeInput, intituleInput, etablissementCodeInput, etablissementIntituleInput);
     }
 
-    @Override
     public void addActionSupplementaire() {
-        super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
-
         eventEtablissement();
     }
 
@@ -58,7 +54,6 @@ public class SectionForm extends ModelForm {
 
     }
 
-    @Override
     protected void eventActionRef() {
 
         String[][] parametresGrid = {

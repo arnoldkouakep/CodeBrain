@@ -31,11 +31,22 @@ public class MenuUsersList extends JButton {
     }
 
     public void addComponentPanel() {
-        modelForm = new ModelForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Liste_Utilisateur));
-        modelForm.setVisible(true);
-    }
+        modelForm = new ModelForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Liste_Utilisateur)) {
+            @Override
+            protected void addActionSupplementaire() {
+//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
 
-    public JButton getButton(){
-        return this;
+            @Override
+            protected void createForm() {
+//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            protected void eventActionRef() {
+//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+        };
+        modelForm.setVisible(true);
     }
 }

@@ -5,6 +5,7 @@
  */
 package cm.codebrain.main.business.entitie;
 
+import cm.codebrain.main.business.controller.ObjectIdResolver;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
@@ -36,7 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Etablissement.findAll", query = "SELECT e FROM Etablissement e")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@cb")
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@etablissement", scope = Etablissement.class, resolver = ObjectIdResolver.class)
 public class Etablissement implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -70,12 +71,17 @@ public class Etablissement implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
+    @JoinColumn(name = "SESSION", referencedColumnName = "SESSION")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private AnneeAcademic session;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
-    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "etablissementId", fetch = FetchType.LAZY)
+    private Set<ParametreAnneeAcademic> parametreAnneeAcademicSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "etablissementId", fetch = FetchType.LAZY)
     private Set<Section> sectionSet;
 
@@ -176,6 +182,14 @@ public class Etablissement implements Serializable {
         this.dtModified = dtModified;
     }
 
+    public AnneeAcademic getSession() {
+        return session;
+    }
+
+    public void setSession(AnneeAcademic session) {
+        this.session = session;
+    }
+
     public Users getUserModified() {
         return userModified;
     }
@@ -190,6 +204,15 @@ public class Etablissement implements Serializable {
 
     public void setUserCreated(Users userCreated) {
         this.userCreated = userCreated;
+    }
+
+    @XmlTransient
+    public Set<ParametreAnneeAcademic> getParametreAnneeAcademicSet() {
+        return parametreAnneeAcademicSet;
+    }
+
+    public void setParametreAnneeAcademicSet(Set<ParametreAnneeAcademic> parametreAnneeAcademicSet) {
+        this.parametreAnneeAcademicSet = parametreAnneeAcademicSet;
     }
 
     @XmlTransient
@@ -225,5 +248,5 @@ public class Etablissement implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Etablissement[ etablissementId=" + etablissementId + " ]";
     }
-    
+
 }

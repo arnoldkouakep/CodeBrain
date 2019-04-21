@@ -7,7 +7,9 @@ package cm.codebrain.main.business.controller;
 
 import cm.codebrain.main.business.manager.*;
 import cm.codebrain.main.business.entitie.*;
+import cm.codebrain.main.business.enumerations.EnumError;
 import cm.codebrain.main.business.enumerations.EnumStatus;
+import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.StringUtils;
 import cm.codebrain.ui.application.enumerations.EnumVariable;
@@ -15,6 +17,8 @@ import static cm.codebrain.ui.application.enumerations.EnumVariable.Action;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Entity;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Master_Detail;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Detail_Master;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Field;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Model;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.User;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Value;
 import cm.codebrain.ui.application.security.LoginForm;
@@ -63,10 +67,10 @@ public class CodeBrainManager {
     public static void CodeBrainManager() {
     }
 
-    public Users authenticate(String login, String password) throws SQLException {
+    public Users authenticate(String login, String password) {
         EntityManager em = entityManager.getEntityManagerFactory().createEntityManager();
         
-        try {
+//        try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
 
             CriteriaQuery cq = cb.createQuery();
@@ -86,20 +90,22 @@ public class CodeBrainManager {
             mainForm.loadMenu();
             mainForm.initStatus(Boolean.TRUE);
 
+            em.close();
             return user;
 
-        } catch (SQLException ex) {
-            System.out.println(ex.getLocalizedMessage());
-            return null;
-        } finally {
-            em.close();
-        }
+//        } catch (CodeBrainExceptions ex) {
+            
+//            throw CodeBrainExceptions.fromTypeExceptions(EnumError.UserLoginException); //CodeBrainExceptions(Dictionnaire.get(EnumError.UserLoginException));
+//            System.out.println(ex.getLocalizedMessage());
+//            return null;
+//        } finally {
+//        }
     }
 
-    public void getWidgetSecurity(Users userConnected) throws SQLException {
+    public void getWidgetSecurity(Users userConnected) {
 
         EntityManager em = entityManager.getEntityManagerFactory().createEntityManager();
-        try {
+//        try {
             Levels level = userConnected.getLevelsId();
             if (level != null) {
                 CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -120,11 +126,11 @@ public class CodeBrainManager {
 
                 GlobalParameters.add("widgets", widgetSecurity);
             }
-        } catch (Exception ex) {
-            System.out.println(ex.getLocalizedMessage());
-        } finally {
+//        } catch (Exception ex) {
+//            System.out.println(ex.getLocalizedMessage());
+//        } finally {
             em.close();
-        }
+//        }
     }
 
     public void logout() {
@@ -483,91 +489,128 @@ public class CodeBrainManager {
         }
     }
 
-    public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, HashMap modelMD, List<HashMap> CrUpList, List<HashMap> DeList) throws Exception {
-        if (null != modelMD.get(Action)) {
+    public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, EnumVariable etatActionList, List<HashMap> listCreUp, List<HashMap> listDel) throws Exception {
+        if (null != etatActionList) {
             
             entityManager.setEntityManager(entityManager.getEntityManagerFactory().createEntityManager());
             entityManager.getTransaction().begin();
             
 //getTransaction().begin();
-            switch ((EnumVariable) modelMD.get(Action)) {
+            switch (etatActionList) {
                 case Master_Detail:
                     if (null != etatAction) {
                         switch (etatAction) {
                             case CREATE:
                                 createEntity(entity, modelFinal);
 
-                                if (CrUpList != null) {
-                                    for (HashMap model : CrUpList) {
-                                        model.put(modelMD.get(Value), modelFinal);
-
-                                        if (getIdValueObject(model, modelMD.get(Entity).toString()) == null) {
-                                            createEntity(modelMD.get(Entity).toString(), model);
+                                for(HashMap modelMD2 : listCreUp){
+                                    String tmpEntity = modelMD2.get(Entity).toString();
+                                    String field = modelMD2.get(Field).toString();
+                                    List<HashMap> CrUpList = (List<HashMap>) modelMD2.get(Model);
+                                    
+                                    for(HashMap modelCU : CrUpList){
+                                        modelCU.put(field, modelFinal);
+                                        if (getIdValueObject(modelCU, tmpEntity) == null) {
+                                            try{createEntity(tmpEntity, modelCU);}
+                                            catch(Exception ee){}
                                         } else {
-                                            updateEntity(modelMD.get(Entity).toString(), model);
+                                            try{updateEntity(tmpEntity, modelCU);}
+                                            catch(Exception ee){}
                                         }
                                     }
                                 }
-
-                                if (DeList != null) {
-                                    for (HashMap model : DeList) {
-                                        model.put(modelMD.get(Value), null);
-                                        updateEntity(modelMD.get(Entity).toString(), model);
+                                
+                                for(HashMap modelMD2 : listDel){
+                                    String tmpEntity = modelMD2.get(Entity).toString();
+                                    String field = modelMD2.get(Field).toString();
+                                    List<HashMap> DelList = (List<HashMap>) modelMD2.get(Model);
+                                    
+                                    for(HashMap modelDel : DelList){
+                                        modelDel.put(field, null);
+                                        
+                                        try{updateEntity(tmpEntity, modelDel);}
+                                        catch(Exception ee){}
                                     }
                                 }
+                                
                                 break;
                             case MODIF:
                                 updateEntity(entity, modelFinal);
 
-                                if (CrUpList != null) {
-                                    for (HashMap model : CrUpList) {
-                                        model.put(modelMD.get(Value), modelFinal);
-
-                                        if (getIdValueObject(model, modelMD.get(Entity).toString()) == null) {
-                                            createEntity(modelMD.get(Entity).toString(), model);
+                                for(HashMap modelMD2 : listCreUp){
+                                    String tmpEntity = modelMD2.get(Entity).toString();
+                                    String field = modelMD2.get(Field).toString();
+                                    List<HashMap> CrUpList = (List<HashMap>) modelMD2.get(Model);
+                                    
+                                    for(HashMap modelCU : CrUpList){
+                                        modelCU.put(field, modelFinal);
+                                        if (getIdValueObject(modelCU, tmpEntity) == null) {
+                                            try{createEntity(tmpEntity, modelCU);}
+                                            catch(Exception ee){}
                                         } else {
-                                            updateEntity(modelMD.get(Entity).toString(), model);
+                                            try{updateEntity(tmpEntity, modelCU);}
+                                            catch(Exception ee){}
                                         }
                                     }
                                 }
-
-                                if (DeList != null) {
-                                    for (HashMap model : DeList) {
-                                        model.put(modelMD.get(Value), null);
-                                        updateEntity(modelMD.get(Entity).toString(), model);
+                                
+                                for(HashMap modelMD2 : listDel){
+                                    String tmpEntity = modelMD2.get(Entity).toString();
+                                    String field = modelMD2.get(Field).toString();
+                                    List<HashMap> DelList = (List<HashMap>) modelMD2.get(Model);
+                                    
+                                    for(HashMap modelDel : DelList){
+                                        modelDel.put(field, null);
+                                        
+                                        try{updateEntity(tmpEntity, modelDel);}
+                                        catch(Exception ee){}
                                     }
                                 }
+                                
                                 break;
                             case DUPPLICATE:
                                 dupplicateEntity(entity, modelFinal);
 
-                                if (CrUpList != null) {
-                                    for (HashMap model : CrUpList) {
-                                        model.put(modelMD.get(Value), modelFinal);
-
-                                        if (getIdValueObject(model, modelMD.get(Entity).toString()) == null) {
-                                            createEntity(modelMD.get(Entity).toString(), model);
-                                        } else {
-                                            updateEntity(modelMD.get(Entity).toString(), model);
-                                        }
-                                    }
-                                }
-
-                                if (DeList != null) {
-                                    for (HashMap model : DeList) {
-                                        model.put(modelMD.get(Value), null);
-                                        updateEntity(modelMD.get(Entity).toString(), model);
-                                    }
-                                }
+//                                if (CrUpList != null) {
+//                                    for (HashMap model : CrUpList) {
+//                                        model.put(modelMD.get(Value), modelFinal);
+//
+//                                        if (getIdValueObject(model, modelMD.get(Entity).toString()) == null) {
+//                                            createEntity(modelMD.get(Entity).toString(), model);
+//                                        } else {
+//                                            updateEntity(modelMD.get(Entity).toString(), model);
+//                                        }
+//                                    }
+//                                }
+//
+//                                if (DeList != null) {
+//                                    for (HashMap model : DeList) {
+//                                        model.put(modelMD.get(Value), null);
+//                                        updateEntity(modelMD.get(Entity).toString(), model);
+//                                    }
+//                                }
                                 break;
                             case DELETE:
                                 deleteEntity(entity, modelFinal);
 
-                                if (DeList != null) {
-                                    for (HashMap model : DeList) {
-                                        deleteEntity(modelMD.get(Entity).toString(), model);
+                                for(HashMap modelMD2 : listDel){
+                                    String tmpEntity = modelMD2.get(Entity).toString();
+                                    String field = modelMD2.get(Field).toString();
+                                    List<HashMap> DelList = (List<HashMap>) modelMD2.get(Model);
+                                    
+                                    for(HashMap modelDel : DelList){
+                                        modelDel.put(field, null);
+                                        
+                                        try{deleteEntity(tmpEntity, modelDel);}
+                                        catch(Exception ee){}
                                     }
                                 }
+                                
+//                                if (DeList != null) {
+//                                    for (HashMap model : DeList) {
+//                                        deleteEntity(modelMD.get(Entity).toString(), model);
+//                                    }
+//                                }
                                 break;
                             default:
                                 break;

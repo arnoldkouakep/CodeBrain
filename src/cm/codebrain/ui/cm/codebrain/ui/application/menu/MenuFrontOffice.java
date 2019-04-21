@@ -72,7 +72,4 @@ public class MenuFrontOffice extends JButton {
             mainPanel.add(btn);
         }
     }
-    public JButton getButton(){
-        return this;
-    }
 }

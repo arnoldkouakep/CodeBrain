@@ -71,7 +71,4 @@ public class MenuEdition extends JButton {
             mainPanel.add(btn);
         }
     }
-    public JButton getButton(){
-        return this;
-    }
 }

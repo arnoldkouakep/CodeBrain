@@ -8,7 +8,6 @@ package cm.codebrain.main.business.manager;
 import cm.codebrain.main.business.controller.CodeBrainEntityManager;
 import java.io.Serializable;
 import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import cm.codebrain.main.business.entitie.Levels;
@@ -29,7 +28,6 @@ import cm.codebrain.main.business.manager.exceptions.PreexistingEntityException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  *
@@ -40,6 +38,7 @@ public class UsersJpaController extends CodeBrainEntityManager implements Serial
     public UsersJpaController(EntityManager em) {
         setEntityManager(em);
     }
+    
     public void create(Users users) throws IllegalOrphanException, PreexistingEntityException, Exception {
         if (users.getStudentSet() == null) {
             users.setStudentSet(new HashSet<Student>());
@@ -536,6 +535,9 @@ public class UsersJpaController extends CodeBrainEntityManager implements Serial
             if (userCreatedNew != null) {
                 userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 users.setUserCreated(userCreatedNew);
+            }else{
+                userCreatedOld = (Users) refreshEntity(userCreatedOld.getClass(), userCreatedOld.getUsersId());
+                users.setUserCreated(userCreatedOld);
             }
             Set<Student> attachedStudentSetNew = new HashSet<Student>();
             for (Student studentSetNewStudentToAttach : studentSetNew) {

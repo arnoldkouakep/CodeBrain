@@ -34,8 +34,4 @@ public class MenuCreateUser extends JButton {
         userCreateForm = new UserForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Create_Utilisateur));
         userCreateForm.setVisible(true);
     }
-
-    public JButton getButton(){
-        return this;
-    }
 }

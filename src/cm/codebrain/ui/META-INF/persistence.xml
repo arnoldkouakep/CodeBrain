@@ -12,6 +12,11 @@
     <class>cm.codebrain.main.business.entitie.AnneeAcademic</class>
     <class>cm.codebrain.main.business.entitie.Users</class>
     <class>cm.codebrain.main.business.entitie.Widget</class>
+    <class>cm.codebrain.main.business.entitie.ParametreAnneeAcademic</class>
+    <class>cm.codebrain.main.business.entitie.Enseignant</class>
+    <class>cm.codebrain.main.business.entitie.Cours</class>
+    <class>cm.codebrain.main.business.entitie.AffectationCours</class>
+    <class>cm.codebrain.main.business.entitie.Profession</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/BRAIN"/>
       <property name="javax.persistence.jdbc.user" value="brain"/>

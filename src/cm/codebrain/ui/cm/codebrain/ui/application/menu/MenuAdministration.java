@@ -51,8 +51,10 @@ public class MenuAdministration extends JButton {
          * Panel Home
          */
         addPanel(this.mainPanel,
-                new MenuUser(this.mainPanel, this.menu).getButton(),
-                new MenuConfigurationAnneeAcademique(this.mainPanel, this.menu).getButton()
+                new MenuUser(this.mainPanel, this.menu),
+                new MenuConfigurationAnneeAcademique(this.mainPanel, this.menu),
+                new MenuProfession(this.mainPanel, this.menu),
+                new MenuAffectationCours(this.mainPanel, this.menu)
         );
     }
 
@@ -72,9 +74,6 @@ public class MenuAdministration extends JButton {
         for (JButton btn : buttons) {
             mainPanel.add(btn);
         }
-    }
-    public JButton getButton(){
-        return this;
     }
 }
     

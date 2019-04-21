@@ -81,6 +81,9 @@ public class AnneeAcademicJpaController extends CodeBrainEntityManager implement
             if (userCreatedNew != null) {
                 userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 anneeAcademic.setUserCreated(userCreatedNew);
+            }else{
+                userCreatedOld = (Users) refreshEntity(userCreatedOld.getClass(), userCreatedOld.getUsersId());
+                anneeAcademic.setUserCreated(userCreatedOld);
             }
             anneeAcademic = (AnneeAcademic) merge(anneeAcademic);
 //            if (userModifiedOld != null && !userModifiedOld.equals(userModifiedNew)) {
@@ -113,7 +116,7 @@ public class AnneeAcademicJpaController extends CodeBrainEntityManager implement
     }
 
     public void destroy(String id) throws NonexistentEntityException {
-        EntityManager em = null;
+//        EntityManager em = null;
 //                    em = getEntityManager();
 //            em.getTransaction().begin();
 //            AnneeAcademic anneeAcademic;

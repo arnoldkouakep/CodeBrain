@@ -8,7 +8,6 @@ package cm.codebrain.main.business.manager;
 import cm.codebrain.main.business.controller.CodeBrainEntityManager;
 import java.io.Serializable;
 import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import cm.codebrain.main.business.entitie.Salle;
@@ -18,7 +17,6 @@ import cm.codebrain.main.business.manager.exceptions.NonexistentEntityException;
 import cm.codebrain.main.business.manager.exceptions.PreexistingEntityException;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  *
@@ -88,18 +86,21 @@ public class StudentJpaController extends CodeBrainEntityManager implements Seri
             Users userModifiedNew = student.getUserModified();
             Users userCreatedOld = persistentStudent.getUserCreated();
             Users userCreatedNew = student.getUserCreated();
-//            if (salleIdNew != null) {
-//                salleIdNew = () refreshEntity(salleIdNew.getClass(), salleIdNew.getSalleId());
-//                student.setSalleId(salleIdNew);
-//            }
-//            if (userModifiedNew != null) {
-//                userModifiedNew = () refreshEntity(userModifiedNew.getClass(), userModifiedNew.getUsersId());
-//                student.setUserModified(userModifiedNew);
-//            }
-//            if (userCreatedNew != null) {
-//                userCreatedNew = () refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
-//                student.setUserCreated(userCreatedNew);
-//            }
+            if (salleIdNew != null) {
+                salleIdNew = (Salle) refreshEntity(salleIdNew.getClass(), salleIdNew.getSalleId());
+                student.setSalleId(salleIdNew);
+            }
+            if (userModifiedNew != null) {
+                userModifiedNew = (Users) refreshEntity(userModifiedNew.getClass(), userModifiedNew.getUsersId());
+                student.setUserModified(userModifiedNew);
+            }
+            if (userCreatedNew != null) {
+                userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
+                student.setUserCreated(userCreatedNew);
+            }else{
+                userCreatedOld = (Users) refreshEntity(userCreatedOld.getClass(), userCreatedOld.getUsersId());
+                student.setUserCreated(userCreatedOld);
+            }
             student = (Student) merge(student);
 //            if (salleIdOld != null && !salleIdOld.equals(salleIdNew)) {
 //                salleIdOld.getStudentSet().remove(student);

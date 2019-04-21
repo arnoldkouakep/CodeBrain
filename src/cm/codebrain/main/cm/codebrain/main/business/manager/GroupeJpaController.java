@@ -133,6 +133,9 @@ public class GroupeJpaController extends CodeBrainEntityManager implements Seria
             if (userCreatedNew != null) {
                 userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 groupe.setUserCreated(userCreatedNew);
+            }else{
+                userCreatedOld = (Users) refreshEntity(userCreatedOld.getClass(), userCreatedOld.getUsersId());
+                groupe.setUserCreated(userCreatedOld);
             }
             Set<Salle> attachedSalleSetNew = new HashSet<Salle>();
             for (Salle salleSetNewSalleToAttach : salleSetNew) {

@@ -51,12 +51,8 @@ public class MenuBackOffice extends JButton {
          * Panel Home
          */
         addPanel(this.mainPanel,
-                new MenuCreateAnneeAcademique(mainPanel, menu),
-                new MenuEtablissement(this.mainPanel, this.menu),
-                new MenuCategorie(this.mainPanel, this.menu),
-                new MenuClasse(this.mainPanel, this.menu),
-                new MenuSalle(this.mainPanel, this.menu),
-                new MenuGroupSalle(this.mainPanel, this.menu)
+                new MenuConfigAnnuelle(mainPanel, menu),
+                new MenuGestionCours(mainPanel, menu)
         );
     }
 
@@ -76,9 +72,5 @@ public class MenuBackOffice extends JButton {
         for (JButton btn : buttons) {
             mainPanel.add(btn);
         }
-    }
-
-    public JButton getButton() {
-        return this;
     }
 }

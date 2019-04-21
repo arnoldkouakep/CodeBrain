@@ -94,7 +94,7 @@ public class EtablissementJpaController extends CodeBrainEntityManager implement
             Etablissement persistentEtablissement = (Etablissement) find(Etablissement.class, etablissement.getEtablissementId());
 //            Users userModifiedOld = persistentEtablissement.getUserModified();
             Users userModifiedNew = etablissement.getUserModified();
-//            Users userCreatedOld = persistentEtablissement.getUserCreated();
+            Users userCreatedOld = persistentEtablissement.getUserCreated();
             Users userCreatedNew = etablissement.getUserCreated();
 //            Set<Section> sectionSetOld = persistentEtablissement.getSectionSet();
             Set<Section> sectionSetNew = etablissement.getSectionSet();
@@ -117,6 +117,9 @@ public class EtablissementJpaController extends CodeBrainEntityManager implement
             if (userCreatedNew != null) {
                 userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 etablissement.setUserCreated(userCreatedNew);
+            }else{
+                userCreatedOld = (Users) refreshEntity(userCreatedOld.getClass(), userCreatedOld.getUsersId());
+                etablissement.setUserCreated(userCreatedOld);
             }
             Set<Section> attachedSectionSetNew = new HashSet<Section>();
             for (Section sectionSetNewSectionToAttach : sectionSetNew) {

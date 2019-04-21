@@ -9,7 +9,6 @@ import cm.codebrain.main.business.controller.CodeBrainEntityManager;
 import cm.codebrain.main.business.entitie.Levels;
 import java.io.Serializable;
 import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import cm.codebrain.main.business.entitie.Users;
@@ -22,7 +21,6 @@ import cm.codebrain.main.business.manager.exceptions.PreexistingEntityException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  *
@@ -148,6 +146,9 @@ public class LevelsJpaController extends CodeBrainEntityManager implements Seria
             if (userCreatedNew != null) {
                 userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 levels.setUserCreated(userCreatedNew);
+            }else{
+                userCreatedOld = (Users) refreshEntity(userCreatedOld.getClass(), userCreatedOld.getUsersId());
+                levels.setUserCreated(userCreatedOld);
             }
             Set<Users> attachedUsersSetNew = new HashSet<Users>();
             for (Users usersSetNewUsersToAttach : usersSetNew) {

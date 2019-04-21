@@ -8,7 +8,6 @@ package cm.codebrain.main.business.manager;
 import cm.codebrain.main.business.controller.CodeBrainEntityManager;
 import java.io.Serializable;
 import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import cm.codebrain.main.business.entitie.Classe;
@@ -24,7 +23,6 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  *
@@ -154,6 +152,9 @@ public class SalleJpaController extends CodeBrainEntityManager implements Serial
             if (userCreatedNew != null) {
                 userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 salle.setUserCreated(userCreatedNew);
+            }else{
+                userCreatedOld = (Users) refreshEntity(userCreatedOld.getClass(), userCreatedOld.getUsersId());
+                salle.setUserCreated(userCreatedOld);
             }
             Set<Student> attachedStudentSetNew = new HashSet<Student>();
             for (Student studentSetNewStudentToAttach : studentSetNew) {

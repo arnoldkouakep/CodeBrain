@@ -7,15 +7,13 @@ package cm.codebrain.ui.application.security;
 
 import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.main.business.controller.CodeBrainManager;
+import cm.codebrain.ui.application.MessageForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.Locale;
 import cm.codebrain.ui.application.enumerations.EnumError;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.implement.Executable;
-import java.sql.SQLException;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -35,6 +33,7 @@ public class LoginForm extends javax.swing.JDialog {
 
     /**
      * Creates new form LoginForm
+     *
      * @param codeBrainManager
      * @param parent
      * @param modal
@@ -209,29 +208,21 @@ public class LoginForm extends javax.swing.JDialog {
                 String login = usernameInput.getText();
                 String password = String.valueOf(passwordInput.getPassword());
 
-                try {
-                    //            codeBrainManager.authenticate(login, password);
-                    String res = codeBrainManager.authenticate(login, password).getLogin();
+                String res = codeBrainManager.authenticate(login, password).getLogin();
 
-                    /**
-                     *
-                     * User connected
-                     */
-//                    JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), "User : " + res + " Connecté.", JOptionPane.INFORMATION_MESSAGE);
-                    System.out.println("User : " + res + " Connecté.");
-                    codeBrainManager.load();
-                    doClose(RET_OK);
-                    return res;
-                } catch (SQLException ex) {
-//                    JSheet.showMessageSheet(SwingUtilities.windowForComponent(btnOk), ex.getMessage(), JOptionPane.ERROR_MESSAGE);
-                    JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnOk), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
-                }
-                return null;
+                /**
+                 *
+                 * User connected
+                 */
+                System.out.println("User : " + res + " Connecté.");
+                codeBrainManager.load();
+                doClose(RET_OK);
+                return res;
             }
 
             @Override
             public void error(CodeBrainExceptions ex) {
-                JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(btnOk), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
+                MessageForm.showsError(new CodeBrainExceptions(EnumError.UserLoginException.toString()).getMessage(), "Message", false, null);
             }
 
         });

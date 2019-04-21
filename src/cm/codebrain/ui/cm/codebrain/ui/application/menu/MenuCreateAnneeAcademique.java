@@ -1,6 +1,6 @@
 package cm.codebrain.ui.application.menu;
 
-import cm.codebrain.ui.application.administration.CreateAnneeAcademiqueForm;
+import cm.codebrain.ui.application.backoffice.CreateAnneeAcademiqueForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import java.awt.event.ActionEvent;
@@ -33,9 +33,5 @@ public class MenuCreateAnneeAcademique extends JButton {
     public void addComponentPanel() {
         form = new CreateAnneeAcademiqueForm(Dictionnaire.get(EnumLibelles.Business_Libelle_AnneeAcademique));
         form.setVisible(true);
-    }
-
-    public JButton getButton(){
-        return this;
     }
 }

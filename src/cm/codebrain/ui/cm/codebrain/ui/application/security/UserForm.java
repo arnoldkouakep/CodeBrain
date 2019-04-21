@@ -45,16 +45,8 @@ public class UserForm extends ModelForm {
         setAllComponents(codeInput, nomInput, prenomInput, telephoneInput, emailInput, cniImput, levelCodeInput, levelIntituleInput, userNameInput, passwordInput);
     }
 
-    @Override
-    public void addActionSupplementaire() {
-        super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
-
+    protected void addActionSupplementaire() {
         eventLevelSecurity();
-    }
-
-    @Override
-    public void actionBtnValider(java.awt.event.ActionEvent evt) {
-        super.actionBtnValider(evt);
     }
 
     private void eventLevelSecurity() {

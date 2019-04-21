@@ -8,7 +8,6 @@ package cm.codebrain.main.business.manager;
 import cm.codebrain.main.business.controller.CodeBrainEntityManager;
 import java.io.Serializable;
 import javax.persistence.Query;
-import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import cm.codebrain.main.business.entitie.Levels;
@@ -19,10 +18,8 @@ import cm.codebrain.main.business.manager.exceptions.NonexistentEntityException;
 import cm.codebrain.main.business.manager.exceptions.PreexistingEntityException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 
 /**
  *
@@ -146,6 +143,9 @@ public class WidgetJpaController extends CodeBrainEntityManager implements Seria
             if (userCreatedNew != null) {
                 userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 widget.setUserCreated(userCreatedNew);
+            }else{
+                userCreatedOld = (Users) refreshEntity(userCreatedOld.getClass(), userCreatedOld.getUsersId());
+                widget.setUserCreated(userCreatedOld);
             }
             if (parentNew != null) {
                 parentNew = (Widget) refreshEntity(parentNew.getClass(), parentNew.getWidgetId());

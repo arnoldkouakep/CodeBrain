@@ -34,8 +34,4 @@ public class MenuCategorie extends JButton {
         form = new SectionForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Sections));
         form.setVisible(true);
     }
-
-    public JButton getButton(){
-        return this;
-    }
 }

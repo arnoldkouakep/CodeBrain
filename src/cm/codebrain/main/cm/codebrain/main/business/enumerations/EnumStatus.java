@@ -13,4 +13,6 @@ public enum EnumStatus {
     Business_Status_StateDb_Create,
     Business_Status_StateDb_Update,
     Business_Status_StateDb_Delete,
+    Business_Statut_NonActif,
+    Business_Statut_Actif,
 }

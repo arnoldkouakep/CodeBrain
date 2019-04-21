@@ -10,9 +10,9 @@ import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.enumerations.EnumVariable;
-import static cm.codebrain.ui.application.enumerations.EnumVariable.Action;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.CREATE;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Entity;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Field;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Model;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Type;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Value;
@@ -56,7 +56,8 @@ public class GroupSalleForm extends ModelForm {
         this.showActionBar();
 
         createList(false);
-
+        setAction(EnumVariable.Master_Detail);
+        
         etatAction = CREATE;
         this.showMenuBar();
 
@@ -64,7 +65,9 @@ public class GroupSalleForm extends ModelForm {
 //    addActionSupplementaire(
     }
 
-    @Override
+    /**
+     *
+     */
     public void createForm() {
 
         this.entity = "Groupe";
@@ -77,6 +80,13 @@ public class GroupSalleForm extends ModelForm {
 
         sorter = new TableRowSorter<>(grid.getModel());
 
+        setAllComponents(salleInput, salleIntituleInput, classeInput, classeIntituleInput, codeInput, intituleInput, grid);
+    }
+
+    public void addActionSupplementaire() {
+        eventClasse();
+        eventSalle();
+        
         grid.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             int rowNumber = grid.getSelectedRow();
             HashMap model = null;
@@ -87,20 +97,14 @@ public class GroupSalleForm extends ModelForm {
                 if(model == null){
                     model = listModelsAdd.get(rowNumber-listModelsOriginal.size());
                     getModelData(model, salleInput, salleIntituleInput);
+                    modifyButton.setEnabled(true);
+                    addButton.setEnabled(false);
                 }else{
+                    modifyButton.setEnabled(false);
+                    addButton.setEnabled(true);
                     reset(salleInput, salleIntituleInput);
                 }
         });
-
-        setAllComponents(salleInput, salleIntituleInput, classeInput, classeIntituleInput, codeInput, intituleInput, grid);
-    }
-
-    @Override
-    public void addActionSupplementaire() {
-        super.addActionSupplementaire(); //To change body of generated methods, choose Tools | Templates.
-
-        eventClasse();
-        eventSalle();
 
     }
 
@@ -163,7 +167,7 @@ public class GroupSalleForm extends ModelForm {
 //
 //        addAction(classeInput, entityClasse, entityClasse.toLowerCase() + "Id", parametresGrid, filter, args, classeInput, classeIntituleInput);
 //    }
-    @Override
+
     protected void eventActionRef() {
 
         String[][] parametresGrid = {
@@ -184,15 +188,24 @@ public class GroupSalleForm extends ModelForm {
 
         modelFinal.put(entityClasse.toLowerCase() + "Id", FormParameters.get(entityClasse.toLowerCase() + "Id"));
 
-        modelMaster.put(Action, EnumVariable.Master_Detail);
-        modelMaster.put(Entity, entitySalle);
-        modelMaster.put(Value, entity.toLowerCase() + "Id");
+//        modelMaster.put(Entity, entitySalle);
+//        modelMaster.put(Value, entity.toLowerCase() + "Id");
 
 //        listModelsSub.forEach((model) -> {
 //            model.put(entity.toLowerCase()+"Id", null);
 //        });
         
-        setActionModel(listModelsAdd, listModelsSub);
+        HashMap modelAdd = new HashMap();
+        modelAdd.put(Entity, entitySalle);
+        modelAdd.put(Field, entity.toLowerCase() + "Id");
+        modelAdd.put(Model, listModelsAdd);
+
+        HashMap modelSub = new HashMap();
+        modelSub.put(Entity, entitySalle);
+        modelSub.put(Field, entity.toLowerCase() + "Id");
+        modelSub.put(Model, listModelsSub);
+
+        setActionModel(Arrays.asList(modelAdd), Arrays.asList(modelSub));
     }
 
     @Override
@@ -387,10 +400,10 @@ public class GroupSalleForm extends ModelForm {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        grid.setModel(setModelDataTable(Arrays.asList(
+        grid.setModel(setModelDataTable(
             Dictionnaire.get(EnumLibelles.Business_Libelle_code).concat(" " + Dictionnaire.get(EnumLibelles.Business_Libelle_Salle)),
             Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule).concat(" " + Dictionnaire.get(EnumLibelles.Business_Libelle_Salle))
-        )));
+        ));
         grid.setShowHorizontalLines(true);
         grid.setShowVerticalLines(true);
         grid.getTableHeader().setReorderingAllowed(false);
@@ -411,6 +424,7 @@ public class GroupSalleForm extends ModelForm {
 
         modifyButton.setIcon(new ImageIcon(Dictionnaire.getResource(RESET).getScaledInstance(width, height, 0)));
         modifyButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Modify)); // NOI18N
+        modifyButton.setEnabled(false);
         modifyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 modifyButtonActionPerformed(evt);
@@ -545,6 +559,9 @@ public class GroupSalleForm extends ModelForm {
             listModelsAdd.add(modelSalle);
 
             reset(salleInput, salleIntituleInput);
+            
+            modifyButton.setEnabled(false);
+            addButton.setEnabled(true);
         }
     }//GEN-LAST:event_addButtonActionPerformed
 
@@ -599,6 +616,9 @@ public class GroupSalleForm extends ModelForm {
             ((DefaultTableModel) ((JTable) grid).getModel()).addRow(newRow);
         }
         reset(salleInput, salleIntituleInput);
+        
+        modifyButton.setEnabled(false);
+        addButton.setEnabled(true);
     }//GEN-LAST:event_modifyButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

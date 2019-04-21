@@ -16,7 +16,7 @@ public class MenuConfigurationAnneeAcademique extends JButton {
     public MenuConfigurationAnneeAcademique(JPanel mainPanel, JToolBar menu) {
         this.mainPanel = mainPanel;
         
-        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_AnneeAcademique.toString(), true));
+        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_ConfigAnneeAcademique.toString(), true));
         putClientProperty("JButton.buttonType", "bevel");
 
         setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
@@ -33,9 +33,5 @@ public class MenuConfigurationAnneeAcademique extends JButton {
     public void addComponentPanel() {
         form = new ParametreAnneeAcademiqueForm(Dictionnaire.get(EnumLibelles.Business_Libelle_ConfigAnneeAcademique));
         form.setVisible(true);
-    }
-
-    public JButton getButton(){
-        return this;
     }
 }
