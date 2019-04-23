@@ -95,7 +95,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
     private List modelResult;
     private Boolean createList = false;
     private final String title;
-    private boolean hideActionMenuTitle;
+    private boolean hideActionMenuTitle = true;
     private boolean confirmExit = false;
 
     public CodeBrainManager cbManager = new CodeBrainManager();
@@ -193,10 +193,12 @@ public abstract class ModelForm extends javax.swing.JDialog {
         setSize(width, height);
 
         this.title = title;
+        hideActionMenuTitle = false;
 
+        showTitle();
+        
         this.wi = width;
         this.he = height;
-        hideActionMenuTitle = false;
 
         createList(false);
 
@@ -233,10 +235,11 @@ public abstract class ModelForm extends javax.swing.JDialog {
         setSize(width, height);
 
         this.title = title;
+        this.hideActionMenuTitle = hideActionMenuTitle;
 
+        showTitle();
         this.wi = width;
         this.he = height;
-        this.hideActionMenuTitle = hideActionMenuTitle;
 
         createList(false);
 
@@ -273,11 +276,13 @@ public abstract class ModelForm extends javax.swing.JDialog {
         setSize(width, height);
 
         this.title = title;
+        this.hideActionMenuTitle = hideActionMenuTitle;
 
+        showTitle();
+        
         this.wi = width;
         this.he = height;
 
-        this.hideActionMenuTitle = hideActionMenuTitle;
         this.confirmExit = confirmExit;
 
         createList(false);
@@ -411,9 +416,11 @@ public abstract class ModelForm extends javax.swing.JDialog {
         this.fieldSearch.putIfAbsent(key, value);
     }
 
-    public void showActionBar() {
-
+    public void showTitle(){
         setTitle(stateMenuLabel(title, hideActionMenuTitle));
+    }
+    
+    public void showActionBar() {
 
         setActionMenu();
         getContentPane().add(actionBar, java.awt.BorderLayout.EAST);
@@ -641,7 +648,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         this.etatActionList = action;
     }
 
-    public void makeModelDatas() {
+//    public void makeModelDatas() {
         /*
         modelFinal = new HashMap<>();
         makeModelData();
@@ -654,7 +661,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         });
          */
 
-    }
+//    }
 
     public void makeModelData() {
 //        if (!createList) {
@@ -1157,7 +1164,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
 //
 //    }
     private String stateMenuLabel(String title, boolean hideActionMenuTitle) {
-        if (null == etatAction || hideActionMenuTitle) {
+        if (null != etatAction && hideActionMenuTitle) {
             return title;
         } else {
             switch (etatAction) {

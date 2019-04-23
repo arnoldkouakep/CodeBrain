@@ -14,6 +14,7 @@ import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.implement.Executable;
 import cm.codebrain.ui.application.security.Loading;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -32,13 +33,16 @@ public class AffectationCoursForm extends ModelForm {
     private final String entityEnseignant = "Enseignant";
     private final String entityCours = "Cours";
     private List<HashMap> listModelsOriginal;
+    private DefaultTableModel modelList;
+    private final List<HashMap> listCours = new ArrayList<>();
+
     /**
      * Creates new form CategorieForm
      *
      * @param title
      */
     public AffectationCoursForm(String title) {
-        super(title, 950, 500);
+        super(title, 950, 500, true, true);
 
         createList(true);
         this.showMenuBar();
@@ -62,14 +66,21 @@ public class AffectationCoursForm extends ModelForm {
         modelFinal.put(entityCours.toLowerCase() + "Id", FormParameters.get(entityCours.toLowerCase() + "Id"));
     }
 
+//    @Override
+//    public void makeModelDatas() {
+//        super.makeModelDatas(); //To change body of generated methods, choose Tools | Templates.
+//    }
+    
+    
+
     protected void eventActionRef() {
     }
 
     private void loadGrid() {
-        Loading.show(btnValider, new Executable() {
+        Loading.show(null, new Executable() {
             @Override
             public List<HashMap> execute() throws Exception {
-                
+
                 HashMap[] args = null;
 
                 listModelsOriginal = null;
@@ -83,9 +94,9 @@ public class AffectationCoursForm extends ModelForm {
                     Object[] newRow = {false, model.get("code"), model.get("libelleFr"), model.get("libelleEn")};
                     return newRow;
                 }).forEachOrdered((newRow) -> {
-                    ((DefaultTableModel) ((JTable) coursListInput).getModel()).addRow(newRow);
+                    ((DefaultTableModel) ((JTable) coursListTable).getModel()).addRow(newRow);
                 });
-                
+
                 return listModelsOriginal;
             }
 
@@ -108,6 +119,38 @@ public class AffectationCoursForm extends ModelForm {
         addAction(matriculeInput, entityEnseignant, entityEnseignant.toLowerCase() + "Id", parametresGrid, null, null, matriculeInput, firstNameInput, lastNameInput);
     }
 
+    private List<HashMap> filterModel(List<HashMap> listModelsOriginal, String value, List<HashMap> listTmp) {
+        List<HashMap> lst = new ArrayList<>();
+        for (HashMap modelFind : listTmp) {
+            Boolean find = false;
+            for (HashMap model : listModelsOriginal) {
+                if (modelFind.get(value).equals(model.get(value))) {
+                    find = true;
+                    break;
+                }
+            }
+
+            if (!find) {
+                lst.add(modelFind);
+            }
+        }
+
+        return lst;
+    }
+
+    private void addModelToTable(JTable grid, List<HashMap> list) {
+
+        this.modelList = ((DefaultTableModel) ((JTable) grid).getModel());
+
+        for (HashMap model : list) {
+            Object[] newRow = {false, model.get("code"), model.get("libelleFr"), model.get("libelleEn")};
+            this.modelList.addRow(newRow);
+        }
+        grid.repaint();
+    }
+
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -126,7 +169,7 @@ public class AffectationCoursForm extends ModelForm {
         lastNameInput = new javax.swing.JTextField();
         jPanel1 = new javax.swing.JPanel();
         javax.swing.JScrollPane jScrollPane3 = new javax.swing.JScrollPane();
-        coursListInput = new javax.swing.JTable();
+        coursListTable = new javax.swing.JTable();
         javax.swing.JPanel jPanel2 = new javax.swing.JPanel();
         javax.swing.JScrollPane jScrollPane4 = new javax.swing.JScrollPane();
         coursInputsTable = new javax.swing.JTable();
@@ -188,31 +231,29 @@ public class AffectationCoursForm extends ModelForm {
 
         jScrollPane3.setAutoscrolls(true);
 
-        coursListInput.setModel(setModelDataTable(Arrays.asList(Boolean.class, null, null, null),
+        coursListTable.setModel(setModelDataTable(Arrays.asList(Boolean.class, null, null, null),
             "",
-            Dictionnaire.get(EnumLibelles.Business_Libelle_Matricule),
+            Dictionnaire.get(EnumLibelles.Business_Libelle_code),
             Dictionnaire.get(EnumLibelles.Business_Libelle_IntituleFr),
             Dictionnaire.get(EnumLibelles.Business_Libelle_IntituleEn)));
-    coursListInput.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-    coursListInput.setIntercellSpacing(new java.awt.Dimension(4, 1));
-    coursListInput.setShowHorizontalLines(true);
-    coursListInput.setShowVerticalLines(true);
-    coursListInput.putClientProperty("Quaqua.Table.style", "striped");
-    setSelectedCheckbox(coursListInput, true);
-    resizeTableColumnModel(coursListInput, 30, 90, 140, 140);
-    jScrollPane3.setViewportView(coursListInput);
+    coursListTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+    coursListTable.setIntercellSpacing(new java.awt.Dimension(4, 1));
+    coursListTable.setShowHorizontalLines(true);
+    coursListTable.setShowVerticalLines(true);
+    coursListTable.putClientProperty("Quaqua.Table.style", "striped");
+    setSelectedCheckbox(coursListTable, true);
+    resizeTableColumnModel(coursListTable, 30, 90, 140, 140);
+    jScrollPane3.setViewportView(coursListTable);
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 415, Short.MAX_VALUE)
-            .addContainerGap())
+        .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
     );
     jPanel1Layout.setVerticalGroup(
         jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+        .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
     );
 
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Dictionnaire.get(EnumLibelles.Business_Libelle_Cours, true), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("sansserif", 1, 14))); // NOI18N
@@ -221,7 +262,7 @@ public class AffectationCoursForm extends ModelForm {
 
     coursInputsTable.setModel(setModelDataTable(Arrays.asList(Boolean.class, null, null, null),
         "",
-        Dictionnaire.get(EnumLibelles.Business_Libelle_Matricule),
+        Dictionnaire.get(EnumLibelles.Business_Libelle_code),
         Dictionnaire.get(EnumLibelles.Business_Libelle_IntituleFr),
         Dictionnaire.get(EnumLibelles.Business_Libelle_IntituleEn)));
 coursInputsTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
@@ -239,9 +280,7 @@ javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
 jPanel2.setLayout(jPanel2Layout);
 jPanel2Layout.setHorizontalGroup(
     jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-        .addGap(0, 0, 0)
-        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
+    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
     );
     jPanel2Layout.setVerticalGroup(
         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -249,8 +288,18 @@ jPanel2Layout.setHorizontalGroup(
     );
 
     inButton.setIcon(new ImageIcon(Dictionnaire.getResource(NEXT).getScaledInstance(width, height, 0)));
+    inButton.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            inButtonActionPerformed(evt);
+        }
+    });
 
     outButton.setIcon(new ImageIcon(Dictionnaire.getResource(PREVIEW).getScaledInstance(width, height, 0)));
+    outButton.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+            outButtonActionPerformed(evt);
+        }
+    });
 
     javax.swing.GroupLayout panelContentLayout = new javax.swing.GroupLayout(panelContent);
     panelContent.setLayout(panelContentLayout);
@@ -310,10 +359,53 @@ jPanel2Layout.setHorizontalGroup(
     getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void inButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inButtonActionPerformed
+        // TODO add your handling code here:
+        if (this.listModelsOriginal != null && this.listModelsOriginal.size() > 0) {
+            this.modelList = (DefaultTableModel) coursListTable.getModel();
+            List<HashMap> listTmp = new ArrayList<>();
+            for (int row = 0; row < this.modelList.getRowCount(); row++) {
+                Boolean selected = (Boolean) this.modelList.getValueAt(row, 0);
+
+                if (selected) {
+                    listTmp.add(this.listModelsOriginal.get(row));
+                }
+            }
+            if (listTmp.size() > 0) {
+                listTmp = filterModel(this.listCours, "code", listTmp);
+            }
+            if (listTmp.size() > 0) {
+                try {
+                    addModelToTable(coursInputsTable, listTmp);
+
+                    this.listCours.addAll(listTmp);
+                } catch (Exception ee) {
+                }
+            }
+        }
+    }//GEN-LAST:event_inButtonActionPerformed
+
+    private void outButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outButtonActionPerformed
+        // TODO add your handling code here:
+        if (this.listCours.size() > 0) {
+            this.modelList = (DefaultTableModel) coursInputsTable.getModel();
+            for (int row = 0; row < this.modelList.getRowCount(); row++) {
+                Boolean selected = (Boolean) this.modelList.getValueAt(row, 0);
+                if (selected) {
+                    try {
+                        ((DefaultTableModel) coursInputsTable.getModel()).removeRow(row);
+                        this.listCours.remove(row);
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        }
+    }//GEN-LAST:event_outButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTable coursInputsTable;
-    private javax.swing.JTable coursListInput;
+    private javax.swing.JTable coursListTable;
     private javax.swing.JTextField firstNameInput;
     private javax.swing.JButton inButton;
     private javax.swing.JPanel jPanel1;

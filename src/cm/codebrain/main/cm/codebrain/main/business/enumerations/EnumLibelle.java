@@ -9,6 +9,6 @@ package cm.codebrain.main.business.enumerations;
  *
  * @author KSA-INET
  */
-public enum EnumError {
-    WorkFlowException, NullValueException, UserLoginException, LoseConnexionException
+public enum EnumLibelle {
+    Business_Libelle_Connexion, Business_Libelle_Deconnexion
 }

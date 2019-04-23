@@ -60,9 +60,6 @@ public class GroupSalleForm extends ModelForm {
         
         etatAction = CREATE;
         this.showMenuBar();
-
-//        this.addFormData("userCode", title);
-//    addActionSupplementaire(
     }
 
     /**
@@ -105,7 +102,6 @@ public class GroupSalleForm extends ModelForm {
                     reset(salleInput, salleIntituleInput);
                 }
         });
-
     }
 
     private void eventSalle() {
@@ -143,31 +139,6 @@ public class GroupSalleForm extends ModelForm {
         addAction(classeInput, entityClasse, entityClasse.toLowerCase() + "Id", parametresGrid, null, args, classeInput, classeIntituleInput);
     }
 
-//    private void eventClasseModif() {
-//
-//        HashMap[] args = new HashMap[1];
-//
-//        HashMap arg = new HashMap();
-//
-//        String filter = "entity.classeId=:arg0";
-//
-//        arg.put(Type, Entity);
-//        arg.put(Entity, entityClasse);
-//        arg.put(Model, "classeId");
-//        arg.put(Value, classeInput);
-//
-//        args[0] = arg;
-//
-////        HashMap[] args = null;
-//
-//        String[][] parametresGrid = {
-//            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)},
-//            {"intitule",
-//                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
-//
-//        addAction(classeInput, entityClasse, entityClasse.toLowerCase() + "Id", parametresGrid, filter, args, classeInput, classeIntituleInput);
-//    }
-
     protected void eventActionRef() {
 
         String[][] parametresGrid = {
@@ -175,10 +146,6 @@ public class GroupSalleForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-//        String[][] parametresGrid = {
-//            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)},
-//            {"intitule",
-//                Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
         addAction(codeInput, entity, entity.toLowerCase() + "Id", parametresGrid, null, null, codeInput, salleIntituleInput);
     }
 
@@ -188,13 +155,6 @@ public class GroupSalleForm extends ModelForm {
 
         modelFinal.put(entityClasse.toLowerCase() + "Id", FormParameters.get(entityClasse.toLowerCase() + "Id"));
 
-//        modelMaster.put(Entity, entitySalle);
-//        modelMaster.put(Value, entity.toLowerCase() + "Id");
-
-//        listModelsSub.forEach((model) -> {
-//            model.put(entity.toLowerCase()+"Id", null);
-//        });
-        
         HashMap modelAdd = new HashMap();
         modelAdd.put(Entity, entitySalle);
         modelAdd.put(Field, entity.toLowerCase() + "Id");
@@ -232,12 +192,6 @@ public class GroupSalleForm extends ModelForm {
                     Logger.getLogger(GroupSalleForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                //            listModels
-                //        tableModel.addRow(newRow);
-                //            for(HashMap model : listModels){
-                //                Object[] newRow = {model.get("code"), model.get("intitule")};
-                //                ((DefaultTableModel)((JTable) grid).getModel()).addRow(newRow);
-                //            }
                 listModelsOriginal.stream().map((model) -> {
                     Object[] newRow = {model.get("code"), model.get("intitule")};
                     return newRow;
@@ -541,14 +495,6 @@ public class GroupSalleForm extends ModelForm {
         modelSalle = new HashMap<>();
         modelSalle = (HashMap) FormParameters.get(entitySalle.toLowerCase() + "Id");
 
-//        if(listModelsOriginal.size()>0){
-//            for(HashMap model : listModelsOriginal){
-//                if(model.get("code").equals(modelSalle.get("code"))){
-//                    find = true;
-//                    break;
-//                }
-//            }
-//        }
         if (findModel(modelSalle, "code", listModelsOriginal) == null) {
             Object[] newRow = {salleInput.getText(), salleIntituleInput.getText()};
 
@@ -612,7 +558,6 @@ public class GroupSalleForm extends ModelForm {
 
             setTableModel(salleInput, salleIntituleInput);
 
-            //        tableModel.addRow(newRow);
             ((DefaultTableModel) ((JTable) grid).getModel()).addRow(newRow);
         }
         reset(salleInput, salleIntituleInput);

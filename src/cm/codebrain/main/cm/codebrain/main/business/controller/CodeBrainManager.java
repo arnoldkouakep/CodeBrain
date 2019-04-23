@@ -8,9 +8,12 @@ package cm.codebrain.main.business.controller;
 import cm.codebrain.main.business.manager.*;
 import cm.codebrain.main.business.entitie.*;
 import cm.codebrain.main.business.enumerations.EnumError;
+import cm.codebrain.main.business.enumerations.EnumLibelle;
 import cm.codebrain.main.business.enumerations.EnumStatus;
+import cm.codebrain.ui.application.MessageForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
+import cm.codebrain.ui.application.controller.Locale;
 import cm.codebrain.ui.application.controller.StringUtils;
 import cm.codebrain.ui.application.enumerations.EnumVariable;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Action;
@@ -21,6 +24,8 @@ import static cm.codebrain.ui.application.enumerations.EnumVariable.Field;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Model;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.User;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Value;
+import cm.codebrain.ui.application.implement.Executable;
+import cm.codebrain.ui.application.security.Loading;
 import cm.codebrain.ui.application.security.LoginForm;
 import cm.codebrain.ui.application.security.MainForm;
 import cm.codebrain.ui.application.security.ReLoginForm;
@@ -68,10 +73,8 @@ public class CodeBrainManager {
     }
 
     public Users authenticate(String login, String password) {
-        EntityManager em = entityManager.getEntityManagerFactory().createEntityManager();
-        
 //        try {
-            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaBuilder cb = entityManager.getEntityManager().getCriteriaBuilder();
 
             CriteriaQuery cq = cb.createQuery();
 
@@ -80,7 +83,7 @@ public class CodeBrainManager {
             cq = cq.select(rt).where(cb.equal(rt.get("login"), login),
                     cb.equal(rt.get("password"), MD5(password)));
 
-            Query q = em.createQuery(cq);
+            Query q = entityManager.getEntityManager().createQuery(cq);
             Users user = (Users) q.getSingleResult();
 
             GlobalParameters.add(User, user);
@@ -90,7 +93,8 @@ public class CodeBrainManager {
             mainForm.loadMenu();
             mainForm.initStatus(Boolean.TRUE);
 
-            em.close();
+                System.out.println("User : " + user.getLogin() + " Connecté.");
+//            em.close();
             return user;
 
 //        } catch (CodeBrainExceptions ex) {
@@ -134,25 +138,76 @@ public class CodeBrainManager {
     }
 
     public void logout() {
-        GlobalParameters.init();
-        restart();
+        if(!disConnexion()){
+            GlobalParameters.init();
+            restart();
+        }
+    }
+
+    public Boolean disConnexion(){
+        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Deconnexion), new Executable() {
+                @Override
+                public Object execute() throws Exception {
+                    connexion = true;
+                    if(entityManager.getEntityManager().isOpen()) entityManager.getEntityManager().close();
+
+                    Users user = (Users) GlobalParameters.get(User);
+
+                    System.out.println("User : " + user.getLogin() + " Deconnecté.");
+                    connexion = false;
+                    return connexion;
+                }
+
+                @Override
+                public void error(CodeBrainExceptions ex) {
+                    MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException), "Message", false, null);
+                }
+            });
+        return connexion;
+    }
+    
+    public void quit() {
+        if(!disConnexion()){
+            GlobalParameters.init();
+            System.exit(0);
+        }
     }
 
     public String MD5(String md5) {
         return StringUtils.MD5encode(md5);
     }
 
+    private boolean connexion;
     public void start() {
+        
+        Locale.initBundle();
 
-        mainForm = new MainForm(this);
+        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Connexion), new Executable() {
+            @Override
+            public Boolean execute() throws Exception {
+                connexion = false;
+                entityManager.setEntityManager(entityManager.getEntityManagerFactory().createEntityManager());
+                connexion = true;
+                return connexion;
+            }
 
-        mainForm.setVisible(true);
-        if (GlobalParameters.get(User) == null) {
-            login = new LoginForm(this, mainForm, true);
-            login.setVisible(true);
-        } else {
-            reLogin = new ReLoginForm(this, mainForm, true, ((Users) GlobalParameters.get(User)).getLogin());
-            reLogin.setVisible(true);
+            @Override
+            public void error(CodeBrainExceptions ex) {
+                MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException), "Message", false, null);
+            }
+        });
+        
+        if(connexion){
+            mainForm = new MainForm(this);
+
+            mainForm.setVisible(true);
+            if (GlobalParameters.get(User) == null) {
+                login = new LoginForm(this, mainForm, true);
+                login.setVisible(true);
+            } else {
+                reLogin = new ReLoginForm(this, mainForm, true, ((Users) GlobalParameters.get(User)).getLogin());
+                reLogin.setVisible(true);
+            }
         }
     }
 
@@ -495,8 +550,27 @@ public class CodeBrainManager {
             entityManager.setEntityManager(entityManager.getEntityManagerFactory().createEntityManager());
             entityManager.getTransaction().begin();
             
-//getTransaction().begin();
             switch (etatActionList) {
+                case List:
+                    if (null != etatAction) {
+                        switch (etatAction) {
+                            case CREATE:
+                                createEntity(entity, modelFinal);
+                                break;
+                            case MODIF:
+                                updateEntity(entity, modelFinal);
+                                break;
+                            case DUPPLICATE:
+                                dupplicateEntity(entity, modelFinal);
+                                break;
+                            case DELETE:
+                                deleteEntity(entity, modelFinal);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    break;
                 case Master_Detail:
                     if (null != etatAction) {
                         switch (etatAction) {
@@ -571,24 +645,6 @@ public class CodeBrainManager {
                             case DUPPLICATE:
                                 dupplicateEntity(entity, modelFinal);
 
-//                                if (CrUpList != null) {
-//                                    for (HashMap model : CrUpList) {
-//                                        model.put(modelMD.get(Value), modelFinal);
-//
-//                                        if (getIdValueObject(model, modelMD.get(Entity).toString()) == null) {
-//                                            createEntity(modelMD.get(Entity).toString(), model);
-//                                        } else {
-//                                            updateEntity(modelMD.get(Entity).toString(), model);
-//                                        }
-//                                    }
-//                                }
-//
-//                                if (DeList != null) {
-//                                    for (HashMap model : DeList) {
-//                                        model.put(modelMD.get(Value), null);
-//                                        updateEntity(modelMD.get(Entity).toString(), model);
-//                                    }
-//                                }
                                 break;
                             case DELETE:
                                 deleteEntity(entity, modelFinal);
@@ -606,16 +662,12 @@ public class CodeBrainManager {
                                     }
                                 }
                                 
-//                                if (DeList != null) {
-//                                    for (HashMap model : DeList) {
-//                                        deleteEntity(modelMD.get(Entity).toString(), model);
-//                                    }
-//                                }
                                 break;
                             default:
                                 break;
                         }
                     }
+                    
                     break;
 //                if (createList) {
 //                    makeModelDatas();

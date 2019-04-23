@@ -5,13 +5,6 @@
  */
 package cm.codebrain.ui.application.security;
 
-import ch.randelshofer.quaqua.QuaquaManager;
-import java.util.ArrayList;
-import java.util.Arrays;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.UIManager;
-
 /**
  *
  * @author KSA-INET

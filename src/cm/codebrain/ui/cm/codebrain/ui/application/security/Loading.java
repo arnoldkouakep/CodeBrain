@@ -44,7 +44,28 @@ public class Loading extends javax.swing.JDialog implements
     public Loading(java.awt.Frame parent, Executable exe) {
         super(parent);
         initComponents();
-        
+        this.executable = exe;
+
+        logoLabel.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/logo.png")).getImage().getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));
+        setVisible(true);
+    }
+    
+    public Loading(Component parent, String message, Executable exe) {
+        super(SwingUtilities.windowForComponent(parent));
+        initComponents();
+        this.executable = exe;
+
+        indeterminateBar2.setString(message);
+        logoLabel.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/logo.png")).getImage().getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));
+        setVisible(true);
+    }
+    
+    public Loading(String message, Executable exe) {
+        super();
+        initComponents();
+        this.executable = exe;
+
+        indeterminateBar2.setString(message);
         logoLabel.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/logo.png")).getImage().getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));
         setVisible(true);
     }
@@ -63,8 +84,28 @@ public class Loading extends javax.swing.JDialog implements
         setVisible(true);
     }
     
+    /**
+     * Creates new form Loading
+     * @param parent
+     * @param exe
+     */
+    private Loading(Executable exe) {
+        super();
+        this.executable = exe;
+
+        initComponents();
+        logoLabel.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/logo.png")).getImage().getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));
+        setVisible(true);
+    }
+    
     public static void show(Component parent, Executable executable){
-        new Loading(parent, executable);
+        if(parent == null) new Loading(executable);
+        else new Loading(parent, executable);
+    }
+    
+    public static void show(Component parent, String message, Executable executable){
+        if(parent == null) new Loading(message, executable);
+        else new Loading(parent, message, executable);
     }
 
     /**

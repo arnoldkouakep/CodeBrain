@@ -28,5 +28,6 @@ public enum EnumVariable {
     Action,
     Master_Detail,
     Detail_Master,
+    List,
     Default,
 }

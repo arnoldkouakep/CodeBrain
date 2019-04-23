@@ -87,7 +87,7 @@ public class MainForm extends JFrame{
          */
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(Dictionnaire.get(EnumLibelles.Business_Libelle_Title));
-//        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(1280, 720));
         setName("mainFrame"); // NOI18N
@@ -167,40 +167,8 @@ public class MainForm extends JFrame{
         
         menuBar.putClientProperty("Quaqua.ToolBar.style", "bottom");
 
-        
-        
-        /*
-        *
-        *Button Home
-        *
-         */
-//        homeButton = new JButton();
-////        homeButton.setText(StringUtil.UTF8Encode(Locale.i18n.getString(EnumLibelles.Business_Libelle_Language.toString())));
-////        languageButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(153, 153, 153), new java.awt.Color(153, 153, 153), new java.awt.Color(204, 204, 204), new java.awt.Color(204, 204, 204)));
-////        languageButton.setSize(width, height);
-//        homeButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource(homeImg)).getImage().getScaledInstance(width, height, 0)));
-//        homeButton.putClientProperty("JButton.buttonType", "bevel");
-//        homeButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                System.out.println("Home");
-//            }
-//        });
-//        menuBar.add(homeButton);
-        
         add(menuBar, BorderLayout.NORTH);
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         /*
         *
         *StatusBar
@@ -323,7 +291,7 @@ public class MainForm extends JFrame{
         exitButton.setFont(new java.awt.Font("sansserif", 1, 12));
         exitButton.putClientProperty("JButton.buttonType", "bevel");
         exitButton.addActionListener((ActionEvent e) -> {
-            System.exit(0);
+            codeBrainManager.quit();
         });
         statusBarRight.add(exitButton);
 
@@ -335,7 +303,7 @@ public class MainForm extends JFrame{
 //        add(mainPanel);
         refresh();
         pack();
-        setLocationRelativeTo(null);
+//        setLocationRelativeTo(null);
     }
 
     private void statusBarAncestorAdded(javax.swing.event.AncestorEvent evt) {

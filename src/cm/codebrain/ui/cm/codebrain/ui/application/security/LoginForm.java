@@ -42,7 +42,7 @@ public class LoginForm extends javax.swing.JDialog {
         super(parent, modal);
         this.codeBrainManager = codeBrainManager;
 
-        Locale.initBundle();
+//        Locale.initBundle();
 
         initComponents();
 
@@ -200,7 +200,7 @@ public class LoginForm extends javax.swing.JDialog {
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
 //        loading.show();
 //        try {
-        Loading.show(btnOk, new Executable<String>() {
+        Loading.show(btnOk, Dictionnaire.get(EnumLibelles.Business_Libelle_Login), new Executable<String>() {
 
             @Override
             public String execute() {
@@ -214,7 +214,6 @@ public class LoginForm extends javax.swing.JDialog {
                  *
                  * User connected
                  */
-                System.out.println("User : " + res + " Connecté.");
                 codeBrainManager.load();
                 doClose(RET_OK);
                 return res;
