@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -59,8 +58,6 @@ public class Groupe implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "groupeId", fetch = FetchType.LAZY)
-    private Set<Cours> coursSet;
     @OneToMany(mappedBy = "groupeId", fetch = FetchType.LAZY)
     private Set<Salle> salleSet;
     @JoinColumn(name = "CLASSE_ID", referencedColumnName = "CLASSE_ID", nullable = false)
@@ -72,6 +69,8 @@ public class Groupe implements Serializable {
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
+    @OneToMany(mappedBy = "groupeId", fetch = FetchType.LAZY)
+    private Set<Cours> coursSet;
 
     public Groupe() {
     }
@@ -135,15 +134,6 @@ public class Groupe implements Serializable {
     }
 
     @XmlTransient
-    public Set<Cours> getCoursSet() {
-        return coursSet;
-    }
-
-    public void setCoursSet(Set<Cours> coursSet) {
-        this.coursSet = coursSet;
-    }
-
-    @XmlTransient
     public Set<Salle> getSalleSet() {
         return salleSet;
     }
@@ -176,6 +166,15 @@ public class Groupe implements Serializable {
         this.userCreated = userCreated;
     }
 
+    @XmlTransient
+    public Set<Cours> getCoursSet() {
+        return coursSet;
+    }
+
+    public void setCoursSet(Set<Cours> coursSet) {
+        this.coursSet = coursSet;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -200,5 +199,5 @@ public class Groupe implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Groupe[ groupeId=" + groupeId + " ]";
     }
-
+    
 }

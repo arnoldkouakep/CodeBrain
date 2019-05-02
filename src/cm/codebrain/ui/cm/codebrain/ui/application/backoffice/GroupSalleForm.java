@@ -51,7 +51,7 @@ public class GroupSalleForm extends ModelForm {
      * @param title
      */
     public GroupSalleForm(String title) {
-        super(title, 655, 600, false, true);
+        super(title, 655, 610, false, true);
 
         this.showActionBar();
 
@@ -168,7 +168,6 @@ public class GroupSalleForm extends ModelForm {
         setActionModel(Arrays.asList(modelAdd), Arrays.asList(modelSub));
     }
 
-    @Override
     public void addActionComplement() {
         if (gridIsEmpty) {
             if (etatAction != CREATE) {
@@ -327,8 +326,15 @@ public class GroupSalleForm extends ModelForm {
         this.addFormData("salleId", salleInput);
         fieldSearch("Salle->code", salleInput);
 
+        salleIntituleInput.setEditable(false);
+        salleIntituleInput.setFocusable(false);
         salleIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Salle->intitule", salleIntituleInput);
+        salleIntituleInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                salleIntituleInputActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelSalleLayout = new javax.swing.GroupLayout(panelSalle);
         panelSalle.setLayout(panelSalleLayout);
@@ -405,6 +411,8 @@ public class GroupSalleForm extends ModelForm {
         fieldSearch("Groupe->classeId->code", classeInput);
         fieldsRequired.add(classeInput);
 
+        classeIntituleInput.setEditable(false);
+        classeIntituleInput.setFocusable(false);
         classeIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Groupe->classeId->intitule", classeIntituleInput);
 
@@ -465,9 +473,9 @@ public class GroupSalleForm extends ModelForm {
                 .addComponent(panelSalle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanelButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
@@ -543,28 +551,35 @@ public class GroupSalleForm extends ModelForm {
         modelSalle = new HashMap<>();
         modelSalle.put(entitySalle.toLowerCase() + "Id", FormParameters.get(entitySalle.toLowerCase() + "Id"));
 
+        modelSalle = (HashMap) FormParameters.get(entitySalle.toLowerCase() + "Id");
+        
+        int r = listModelsOriginal.size();
+        listModelsAdd.set(rowIndex-r, modelSalle);
+
+        Object[] newRow = {salleInput.getText(), salleIntituleInput.getText()};
+
+        setTableModel(salleInput, salleIntituleInput);
+        
         if (findModel(modelSalle, "code", listModelsOriginal) == null) {
             try {
-                ((DefaultTableModel) ((JTable) grid).getModel()).removeRow(rowIndex);
+                ((DefaultTableModel) ((JTable) grid).getModel()).setValueAt(newRow[0], rowIndex, 0);
+                ((DefaultTableModel) ((JTable) grid).getModel()).setValueAt(newRow[1], rowIndex, 1);
+
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
             grid.repaint();
-
-            listModelsAdd.remove(rowIndex);
-            listModelsAdd.add(modelSalle);
-
-            Object[] newRow = {salleInput.getText(), salleIntituleInput.getText()};
-
-            setTableModel(salleInput, salleIntituleInput);
-
-            ((DefaultTableModel) ((JTable) grid).getModel()).addRow(newRow);
         }
         reset(salleInput, salleIntituleInput);
         
         modifyButton.setEnabled(false);
         addButton.setEnabled(true);
     }//GEN-LAST:event_modifyButtonActionPerformed
+
+    private void salleIntituleInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salleIntituleInputActionPerformed
+        // TODO add your handling code here:
+        addActionComplement();
+    }//GEN-LAST:event_salleIntituleInputActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;

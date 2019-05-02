@@ -7,10 +7,7 @@ package cm.codebrain.ui.application.administration;
 
 import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
-import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
-import static cm.codebrain.ui.application.enumerations.EnumVariable.CREATE;
-import java.util.HashMap;
 
 /**
  *
@@ -24,7 +21,7 @@ public class ProfessionForm extends ModelForm {
      * @param title
      */
     public ProfessionForm(String title) {
-        super(title, 520, 300);
+        super(title, 520, 350);
 
         this.showActionBar();
         this.showMenuBar();
@@ -60,7 +57,7 @@ public class ProfessionForm extends ModelForm {
     private void initComponents() {
 
         javax.swing.JPanel mainPanel = new javax.swing.JPanel();
-        javax.swing.JPanel panelContent = new javax.swing.JPanel();
+        panelContent = new javax.swing.JPanel();
         javax.swing.JPanel panelIdentifiant = new javax.swing.JPanel();
         javax.swing.JLabel labelCode = new javax.swing.JLabel();
         javax.swing.JLabel labelPrenom = new javax.swing.JLabel();
@@ -125,8 +122,8 @@ public class ProfessionForm extends ModelForm {
         panelContentLayout.setHorizontalGroup(
             panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelContentLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(panelIdentifiant, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addComponent(panelIdentifiant, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelContentLayout.setVerticalGroup(
@@ -161,6 +158,7 @@ public class ProfessionForm extends ModelForm {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField codeInput;
     private javax.swing.JTextField intituleInput;
+    private javax.swing.JPanel panelContent;
     // End of variables declaration//GEN-END:variables
 
 }

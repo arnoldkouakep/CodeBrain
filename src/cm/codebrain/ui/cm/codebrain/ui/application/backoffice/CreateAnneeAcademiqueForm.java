@@ -9,6 +9,7 @@ import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.CREATE;
+import java.util.Date;
 
 /**
  *
@@ -22,7 +23,7 @@ public class CreateAnneeAcademiqueForm extends ModelForm {
      * @param title
      */
     public CreateAnneeAcademiqueForm(String title) {
-        super(title, 520, 300);
+        super(title, 520, 320);
 
         this.showActionBar();
         etatAction = CREATE;
@@ -44,10 +45,11 @@ public class CreateAnneeAcademiqueForm extends ModelForm {
 
     protected void eventActionRef() {
 
-        String[][] parametresGrid = {
-            {"session", Dictionnaire.get(EnumLibelles.Business_Libelle_Session)}};
+        Object[][] parametresGrid = {
+            {"session", Dictionnaire.get(EnumLibelles.Business_Libelle_Session)},
+            {"dateOuverture", Dictionnaire.get(EnumLibelles.Business_Libelle_DateDebut), Date.class}};
 
-        addAction(sessionInput, entity, "anneeAcademicId", parametresGrid, null, null, sessionInput);
+        addAction(sessionInput, entity, "anneeAcademicId", parametresGrid, null, null, sessionInput, dateDebutInput);
     }
 
 //    @Override

@@ -5,6 +5,9 @@
  */
 package cm.codebrain.main.business.entitie;
 
+import cm.codebrain.main.business.controller.ObjectIdResolver;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -34,6 +37,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Profession.findAll", query = "SELECT p FROM Profession p")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@profession", scope = Profession.class, resolver = ObjectIdResolver.class)
 public class Profession implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -55,14 +59,14 @@ public class Profession implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionId", fetch = FetchType.LAZY)
+    private Set<Enseignant> enseignantSet;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "professionId", fetch = FetchType.LAZY)
-    private Set<Enseignant> enseignantSet;
 
     public Profession() {
     }
@@ -125,6 +129,15 @@ public class Profession implements Serializable {
         this.dtModified = dtModified;
     }
 
+    @XmlTransient
+    public Set<Enseignant> getEnseignantSet() {
+        return enseignantSet;
+    }
+
+    public void setEnseignantSet(Set<Enseignant> enseignantSet) {
+        this.enseignantSet = enseignantSet;
+    }
+
     public Users getUserModified() {
         return userModified;
     }
@@ -141,15 +154,6 @@ public class Profession implements Serializable {
         this.userCreated = userCreated;
     }
 
-    @XmlTransient
-    public Set<Enseignant> getEnseignantSet() {
-        return enseignantSet;
-    }
-
-    public void setEnseignantSet(Set<Enseignant> enseignantSet) {
-        this.enseignantSet = enseignantSet;
-    }
-    
     @Override
     public int hashCode() {
         int hash = 0;

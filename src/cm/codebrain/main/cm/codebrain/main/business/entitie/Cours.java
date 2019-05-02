@@ -65,20 +65,20 @@ public class Cours implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @JoinColumn(name = "GROUPE_ID", referencedColumnName = "GROUPE_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Groupe groupeId;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "coursId", fetch = FetchType.LAZY)
+    private Set<AffectationCours> affectationCoursSet;
     @JoinColumn(name = "CLASSE_ID", referencedColumnName = "CLASSE_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Classe classeId;
+    @JoinColumn(name = "GROUPE_ID", referencedColumnName = "GROUPE_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Groupe groupeId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "coursId", fetch = FetchType.LAZY)
-    private Set<AffectationCours> affectationCoursSet;
 
     public Cours() {
     }
@@ -159,12 +159,13 @@ public class Cours implements Serializable {
         this.dtModified = dtModified;
     }
 
-    public Groupe getGroupeId() {
-        return groupeId;
+    @XmlTransient
+    public Set<AffectationCours> getAffectationCoursSet() {
+        return affectationCoursSet;
     }
 
-    public void setGroupeId(Groupe groupeId) {
-        this.groupeId = groupeId;
+    public void setAffectationCoursSet(Set<AffectationCours> affectationCoursSet) {
+        this.affectationCoursSet = affectationCoursSet;
     }
 
     public Classe getClasseId() {
@@ -173,6 +174,14 @@ public class Cours implements Serializable {
 
     public void setClasseId(Classe classeId) {
         this.classeId = classeId;
+    }
+
+    public Groupe getGroupeId() {
+        return groupeId;
+    }
+
+    public void setGroupeId(Groupe groupeId) {
+        this.groupeId = groupeId;
     }
 
     public Users getUserModified() {
@@ -191,15 +200,6 @@ public class Cours implements Serializable {
         this.userCreated = userCreated;
     }
 
-    @XmlTransient
-    public Set<AffectationCours> getAffectationCoursSet() {
-        return affectationCoursSet;
-    }
-
-    public void setAffectationCoursSet(Set<AffectationCours> affectationCoursSet) {
-        this.affectationCoursSet = affectationCoursSet;
-    }
-    
     @Override
     public int hashCode() {
         int hash = 0;
@@ -224,5 +224,5 @@ public class Cours implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Cours[ coursId=" + coursId + " ]";
     }
-
+    
 }

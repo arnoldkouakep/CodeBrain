@@ -24,7 +24,7 @@ public class UserCreateForm1 extends ModelForm {
      * A return status code - returned if OK button has been pressed
      */
     public static final int RET_OK = 1;
-    private CodeBrainManager codeBrainManager;
+//    private CodeBrainManager codeBrainManager;
 //    private MainForm mainForm;
 //    private Loading loading;
 
@@ -142,7 +142,8 @@ public class UserCreateForm1 extends ModelForm {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void doClose(int retStatus) {
+    @Override
+    protected void doClose(int retStatus) {
         returnStatus = retStatus;
         setVisible(false);
         dispose();

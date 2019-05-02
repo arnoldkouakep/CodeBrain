@@ -17,6 +17,8 @@
     <class>cm.codebrain.main.business.entitie.Cours</class>
     <class>cm.codebrain.main.business.entitie.AffectationCours</class>
     <class>cm.codebrain.main.business.entitie.Profession</class>
+    <class>cm.codebrain.main.business.entitie.Sequence</class>
+    <class>cm.codebrain.main.business.entitie.Trimestre</class>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:derby://localhost:1527/BRAIN"/>
       <property name="javax.persistence.jdbc.user" value="brain"/>

@@ -15,4 +15,9 @@ public enum EnumError {
     Business_Libelle_No_Result_Found,
     Business_Error_find_required,
     UserLoginException,
+    BadSyntaxException,
+    NumberArgumentException,
+    ConstraintViolationException,
+    NullValueException,
+    LoseConnexionException,
 }

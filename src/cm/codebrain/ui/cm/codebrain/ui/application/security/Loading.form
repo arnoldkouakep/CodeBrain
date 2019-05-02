@@ -33,12 +33,12 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" attributes="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jSeparator1" alignment="0" max="32767" attributes="0"/>
+                  <Component id="separateur" alignment="0" max="32767" attributes="0"/>
                   <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="indeterminateBar2" min="-2" pref="247" max="-2" attributes="0"/>
+                              <Component id="progressBar" min="-2" pref="247" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
@@ -58,16 +58,16 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="logoLabel" min="-2" pref="76" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
-              <Component id="jSeparator1" min="-2" max="-2" attributes="0"/>
+              <Component id="separateur" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
-              <Component id="indeterminateBar2" max="-2" attributes="0"/>
+              <Component id="progressBar" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JProgressBar" name="indeterminateBar2">
+    <Component class="javax.swing.JProgressBar" name="progressBar">
       <Properties>
         <Property name="indeterminate" type="boolean" value="true"/>
         <Property name="string" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -76,7 +76,7 @@
         <Property name="stringPainted" type="boolean" value="true"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JSeparator" name="jSeparator1">
+    <Component class="javax.swing.JSeparator" name="separateur">
     </Component>
     <Component class="javax.swing.JLabel" name="logoLabel">
       <Properties>

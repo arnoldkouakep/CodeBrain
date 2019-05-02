@@ -5,13 +5,13 @@
  */
 package cm.codebrain.ui.application.security;
 
-import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.Task;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.implement.Executable;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Toolkit;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import javax.swing.ImageIcon;
@@ -55,7 +55,7 @@ public class Loading extends javax.swing.JDialog implements
         initComponents();
         this.executable = exe;
 
-        indeterminateBar2.setString(message);
+        progressBar.setString(message);
         logoLabel.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/logo.png")).getImage().getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));
         setVisible(true);
     }
@@ -65,7 +65,7 @@ public class Loading extends javax.swing.JDialog implements
         initComponents();
         this.executable = exe;
 
-        indeterminateBar2.setString(message);
+        progressBar.setString(message);
         logoLabel.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/logo.png")).getImage().getScaledInstance(logoLabel.getWidth(), logoLabel.getHeight(), 0)));
         setVisible(true);
     }
@@ -116,12 +116,15 @@ public class Loading extends javax.swing.JDialog implements
         if ("progress".equals(evt.getPropertyName())) {
                 
             int progress = (Integer) evt.getNewValue();
-            indeterminateBar2.setValue(progress);
+            progressBar.setValue(progress);
             setVisible(false);
             dispose();
             
-            if(task.getException() != null){
-                this.executable.error(new CodeBrainExceptions(task.getException()));
+            if(task.getException() == null){
+                this.executable.success();
+            }else{
+                Toolkit.getDefaultToolkit().beep();
+                this.executable.error(task.getException());
             }
         }
     }
@@ -139,8 +142,8 @@ public class Loading extends javax.swing.JDialog implements
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        indeterminateBar2 = new javax.swing.JProgressBar();
-        jSeparator1 = new javax.swing.JSeparator();
+        progressBar = new javax.swing.JProgressBar();
+        separateur = new javax.swing.JSeparator();
         logoLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -157,9 +160,9 @@ public class Loading extends javax.swing.JDialog implements
             }
         });
 
-        indeterminateBar2.setIndeterminate(true);
-        indeterminateBar2.setString(Dictionnaire.get(EnumLibelles.Business_Libelle_Loading)); // NOI18N
-        indeterminateBar2.setStringPainted(true);
+        progressBar.setIndeterminate(true);
+        progressBar.setString(Dictionnaire.get(EnumLibelles.Business_Libelle_Loading)); // NOI18N
+        progressBar.setStringPainted(true);
 
         logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
@@ -169,12 +172,12 @@ public class Loading extends javax.swing.JDialog implements
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1)
+                    .addComponent(separateur)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
-                                .addComponent(indeterminateBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 247, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(17, 17, 17)
                                 .addComponent(logoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -187,9 +190,9 @@ public class Loading extends javax.swing.JDialog implements
                 .addContainerGap()
                 .addComponent(logoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(separateur, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(indeterminateBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(13, 13, 13))
         );
 
@@ -209,9 +212,9 @@ public class Loading extends javax.swing.JDialog implements
     }//GEN-LAST:event_formWindowOpened
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JProgressBar indeterminateBar2;
-    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JLabel logoLabel;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JSeparator separateur;
     // End of variables declaration//GEN-END:variables
 
 }

@@ -8,11 +8,14 @@ package cm.codebrain.ui.application.security;
 import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.main.business.entitie.Levels;
 import cm.codebrain.main.business.entitie.Users;
+import cm.codebrain.ui.application.CodeBrainAccess;
+import cm.codebrain.ui.application.MessageForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.Locale;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.User;
+import cm.codebrain.ui.application.implement.Action;
 import cm.codebrain.ui.application.menu.MenuHome;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
@@ -46,8 +49,7 @@ public class MainForm extends JFrame{
     private final int height = 18;
 
     private final ImageIcon image = new ImageIcon(getClass().getResource(logoImg));
-//    private RibbonFactory factory;
-    private final CodeBrainManager codeBrainManager;
+    private final CodeBrainAccess codeBrainAccess;
     private JLabel hourStatusLabel;
     private JLabel userStatusLabel;
     private Users userConnected;
@@ -64,12 +66,11 @@ public class MainForm extends JFrame{
     private static JToolBar statusBar;
     private static JToolBar menuBar;
     private static Timer timer;
-//    private JButton homeButton;
     private JPanel mainPanel;
 
-    public MainForm(CodeBrainManager codeBrainManager) {
+    public MainForm(CodeBrainAccess codeBrainManager) {
 
-        this.codeBrainManager = codeBrainManager;
+        this.codeBrainAccess = codeBrainManager;
 
         userConnected = (GlobalParameters.get(User) == null ? null : ((Users) GlobalParameters.get(User)));
 
@@ -87,13 +88,14 @@ public class MainForm extends JFrame{
          */
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle(Dictionnaire.get(EnumLibelles.Business_Libelle_Title));
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+//        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLocationByPlatform(true);
         setMinimumSize(new java.awt.Dimension(1280, 720));
         setName("mainFrame"); // NOI18N
         setIconImage(image.getImage());
         setLayout(new BorderLayout());
-
+        
+        setLocationRelativeTo(null);
         /*
         *
         *CENTER Panel Container
@@ -125,31 +127,13 @@ public class MainForm extends JFrame{
         
         /*
          *
-         *Main Containeer Panel
+         *Main Container Panel
          *
          */
         
         mainPanel = new JPanel();
         mainPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEADING, 100, 50));
 
-//        mainPanel.setLocation(25, 25);
-//        mainPanel.setLayout(new GridLayout());
-        
-        
-        /*
-        *
-        *Button Adminsitratrion
-        *
-        */
-        
-//        JButton btnAdmin = new JButton();
-//        btnAdmin.setText(StringUtil.UTF8Encode(Locale.i18n.getString(EnumLibelles.Business_Libelle_Administration.toString())));
-//        btnAdmin.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
-//        btnAdmin.setMaximumSize(new java.awt.Dimension(250, 80));
-//        btnAdmin.setMinimumSize(new java.awt.Dimension(250, 80));
-//        btnAdmin.setPreferredSize(new java.awt.Dimension(250, 80));
-//        mainPanel.add(btnAdmin);
-        
         centerPanel.add(mainPanel);
 
         centerPanel.add(logoPanel);
@@ -262,7 +246,7 @@ public class MainForm extends JFrame{
             *Restart Application
             *Lock user Identification
             */
-            codeBrainManager.restart();
+            codeBrainAccess.restart();
         });
         statusBarRight.add(languageButton);
 
@@ -276,7 +260,7 @@ public class MainForm extends JFrame{
         logoutButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource(logoutImg)).getImage().getScaledInstance(width, height, 0)));        
         logoutButton.putClientProperty("JButton.buttonType", "bevel");
         logoutButton.addActionListener((ActionEvent e) -> {
-            codeBrainManager.logout();
+            codeBrainAccess.logout();
         });
         statusBarRight.add(logoutButton);
 
@@ -291,7 +275,17 @@ public class MainForm extends JFrame{
         exitButton.setFont(new java.awt.Font("sansserif", 1, 12));
         exitButton.putClientProperty("JButton.buttonType", "bevel");
         exitButton.addActionListener((ActionEvent e) -> {
-            codeBrainManager.quit();
+            
+            MessageForm.shows(Dictionnaire.get(EnumLibelles.Business_ConfirmExit), "Message", true, new Action() {
+                @Override
+                public void Ok() {
+                    codeBrainAccess.quit();
+                }
+
+                @Override
+                public void Cancel() {
+                }
+            });
         });
         statusBarRight.add(exitButton);
 
@@ -303,7 +297,7 @@ public class MainForm extends JFrame{
 //        add(mainPanel);
         refresh();
         pack();
-//        setLocationRelativeTo(null);
+        
     }
 
     private void statusBarAncestorAdded(javax.swing.event.AncestorEvent evt) {

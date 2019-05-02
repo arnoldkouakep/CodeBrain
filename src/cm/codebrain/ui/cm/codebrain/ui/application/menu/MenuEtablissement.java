@@ -1,6 +1,6 @@
 package cm.codebrain.ui.application.menu;
 
-import cm.codebrain.ui.application.backoffice.EtablissementForm;
+import cm.codebrain.ui.application.administration.EtablissementForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import java.awt.event.ActionEvent;

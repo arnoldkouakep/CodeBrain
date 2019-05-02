@@ -5,7 +5,6 @@
  */
 package cm.codebrain.ui.application.security;
 
-import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.ui.application.MessageForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
@@ -84,7 +83,6 @@ public class LoginForm extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(Dictionnaire.get(EnumLibelles.Business_Libelle_Login)); // NOI18N
-        setModal(true);
         setResizable(false);
 
         btnOk.setText("OK");
@@ -200,30 +198,35 @@ public class LoginForm extends javax.swing.JDialog {
     private void btnOkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOkActionPerformed
 //        loading.show();
 //        try {
-        Loading.show(btnOk, Dictionnaire.get(EnumLibelles.Business_Libelle_Login), new Executable<String>() {
 
+        Loading.show(btnOk, Dictionnaire.get(EnumLibelles.Business_Libelle_Login), new Executable<String>(){
+            String response;
+            
             @Override
-            public String execute() {
-
+            public void execute() throws Exception {
+                
                 String login = usernameInput.getText();
                 String password = String.valueOf(passwordInput.getPassword());
 
-                String res = codeBrainManager.authenticate(login, password).getLogin();
+                response = codeBrainManager.authenticate(login, password).getLogin();
 
                 /**
                  *
                  * User connected
                  */
                 codeBrainManager.load();
-                doClose(RET_OK);
-                return res;
             }
 
             @Override
-            public void error(CodeBrainExceptions ex) {
-                MessageForm.showsError(new CodeBrainExceptions(EnumError.UserLoginException.toString()).getMessage(), "Message", false, null);
+            public String success() {
+                doClose(RET_OK);
+                return response;
             }
 
+            @Override
+            public void error(Exception ex) {
+                MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException), "Message", false, null);
+            }
         });
     }//GEN-LAST:event_btnOkActionPerformed
 

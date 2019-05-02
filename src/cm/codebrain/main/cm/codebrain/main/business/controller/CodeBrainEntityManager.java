@@ -6,7 +6,6 @@
 package cm.codebrain.main.business.controller;
 
 import cm.codebrain.main.business.enumerations.EnumStatus;
-import cm.codebrain.ui.application.controller.GlobalParameters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,15 +65,20 @@ public class CodeBrainEntityManager {
     }
 
     public EntityManager getEntityManager() {
-//        if(this.emf==null){
+        if(this.em==null){
+            setEntityManager(emf.createEntityManager());
 //            this.emf = (EntityManagerFactory) GlobalParameters.get("emf");
-//        }
+        }
         
         return this.em;
     }
 
     public void setEntityManager(EntityManager em) {
         this.em = em;
+    }
+    
+    public void createEntityManager(){
+        setEntityManager(getEntityManagerFactory().createEntityManager());
     }
 
     public void persist(Object entityObject) {
@@ -86,17 +90,25 @@ public class CodeBrainEntityManager {
 //            EntityTransaction tx = getTransaction();
             if(!getTransaction().isActive())
                 getTransaction().begin();
+//                createEntityManager();
 
             getEntityManager().persist(entityObject);
-
-            getEntityManager().flush();
+//            try{
+//                getEntityManager().flush();
+//            }catch(Exception e){
+//                System.out.println(e.getMessage());
+//            }
 //          tx.commit();
         } catch (Exception ex) {
+            System.out.println("Erreur Persist : " + ex.getMessage());
+            getTransaction().setRollbackOnly();//rollback();
             throw ex;
 //        } finally {
 //            if (em != null) {
 //                em.close();
 //            }
+        }finally{
+            getEntityManager().flush();
         }
     }
 
@@ -106,19 +118,25 @@ public class CodeBrainEntityManager {
 //            em = getEntityManager();
             
 //            EntityTransaction tx = getEntityManager().getTransaction();
-            if(!getTransaction().isActive())
+            if(!getTransaction().isActive()){
+                createEntityManager();
                 getTransaction().begin();
+            }
 
             entityObject = getEntityManager().merge(entityObject);
 
-            getEntityManager().flush();
+//            getEntityManager().flush();
 //            tx.commit();
         } catch (Exception ex) {
+            System.out.println("Erreur Merge : " + ex.getMessage());
+            getTransaction().rollback();
             throw ex;
 //        } finally {
 //            if (em != null) {
 //                em.close();
 //            }
+        }finally{
+            getEntityManager().flush();
         }
 
         return entityObject;
@@ -131,8 +149,10 @@ public class CodeBrainEntityManager {
 //            em = getEntityManager();
             
 //            EntityTransaction tx = em.getTransaction();
-            if(!getTransaction().isActive())
+            if(!getTransaction().isActive()){
+                createEntityManager();
                 getTransaction().begin();
+            }
 
             Object entityObject;
 //            try {
@@ -143,14 +163,17 @@ public class CodeBrainEntityManager {
 //            }
             getEntityManager().remove(entityObject);
 
-            getEntityManager().flush();
+//            getEntityManager().flush();
 //            tx.commit();
         } catch (Exception ex) {
+//            getTransaction().rollback();
             throw ex;
 //        } finally {
 //            if (em != null) {
 //                em.close();
 //            }
+        }finally{
+            getEntityManager().flush();
         }
 
     }

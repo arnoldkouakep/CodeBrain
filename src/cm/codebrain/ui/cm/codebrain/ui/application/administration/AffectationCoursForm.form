@@ -196,8 +196,12 @@
                 <Component class="javax.swing.JTextField" name="firstNameInput">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
+                    <Property name="focusable" type="boolean" value="false"/>
                     <Property name="name" type="java.lang.String" value="firstName" noResource="true"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="firstNameInputActionPerformed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.setRef(firstNameInput);&#xd;&#xa;fieldSearch(&quot;AffectationCours-&gt;EnseignantId-&gt;firstName&quot;, firstNameInput);"/>
                   </AuxValues>
@@ -205,6 +209,7 @@
                 <Component class="javax.swing.JTextField" name="lastNameInput">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
+                    <Property name="focusable" type="boolean" value="false"/>
                     <Property name="name" type="java.lang.String" value="lastName" noResource="true"/>
                   </Properties>
                   <AuxValues>

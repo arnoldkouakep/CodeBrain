@@ -5,7 +5,6 @@
  */
 package cm.codebrain.main.business.controller;
 
-import cm.codebrain.main.business.manager.*;
 import cm.codebrain.main.business.entitie.*;
 import cm.codebrain.main.business.enumerations.EnumError;
 import cm.codebrain.main.business.enumerations.EnumLibelle;
@@ -16,14 +15,12 @@ import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.Locale;
 import cm.codebrain.ui.application.controller.StringUtils;
 import cm.codebrain.ui.application.enumerations.EnumVariable;
-import static cm.codebrain.ui.application.enumerations.EnumVariable.Action;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Entity;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Master_Detail;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Detail_Master;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Field;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Model;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.User;
-import static cm.codebrain.ui.application.enumerations.EnumVariable.Value;
 import cm.codebrain.ui.application.implement.Executable;
 import cm.codebrain.ui.application.security.Loading;
 import cm.codebrain.ui.application.security.LoginForm;
@@ -32,7 +29,6 @@ import cm.codebrain.ui.application.security.ReLoginForm;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.server.UID;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,8 +38,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
+//import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -73,52 +72,40 @@ public class CodeBrainManager {
     }
 
     public Users authenticate(String login, String password) {
-//        try {
-            CriteriaBuilder cb = entityManager.getEntityManager().getCriteriaBuilder();
+        CriteriaBuilder cb = entityManager.getEntityManager().getCriteriaBuilder();
 
-            CriteriaQuery cq = cb.createQuery();
+        CriteriaQuery cq = cb.createQuery();
 
-            Root<Users> rt = cq.from(Users.class);
+        Root<Users> rt = cq.from(Users.class);
 
-            cq = cq.select(rt).where(cb.equal(rt.get("login"), login),
-                    cb.equal(rt.get("password"), MD5(password)));
+        cq = cq.select(rt).where(cb.equal(rt.get("login"), login),
+                cb.equal(rt.get("password"), MD5(password)));
 
-            Query q = entityManager.getEntityManager().createQuery(cq);
-            Users user = (Users) q.getSingleResult();
+        Query q = entityManager.getEntityManager().createQuery(cq);
+        Users user = (Users) q.getSingleResult();
 
-            GlobalParameters.add(User, user);
+        GlobalParameters.add(User, user);
 
-            getWidgetSecurity(user);
+        getWidgetSecurity(user);
 
-            mainForm.loadMenu();
-            mainForm.initStatus(Boolean.TRUE);
+        mainForm.loadMenu();
+        mainForm.initStatus(Boolean.TRUE);
 
-                System.out.println("User : " + user.getLogin() + " Connecté.");
-//            em.close();
-            return user;
-
-//        } catch (CodeBrainExceptions ex) {
-            
-//            throw CodeBrainExceptions.fromTypeExceptions(EnumError.UserLoginException); //CodeBrainExceptions(Dictionnaire.get(EnumError.UserLoginException));
-//            System.out.println(ex.getLocalizedMessage());
-//            return null;
-//        } finally {
-//        }
+        System.out.println("User : " + user.getLogin() + " Connecté.");
+        return user;
     }
 
     public void getWidgetSecurity(Users userConnected) {
 
-        EntityManager em = entityManager.getEntityManagerFactory().createEntityManager();
-//        try {
             Levels level = userConnected.getLevelsId();
             if (level != null) {
-                CriteriaBuilder cb = em.getCriteriaBuilder();
+                CriteriaBuilder cb = entityManager.getEntityManager().getCriteriaBuilder();
 
                 CriteriaQuery cq = cb.createQuery();
 
                 Root<Widget> rt = cq.from(Widget.class);
 
-                Query q = em.createQuery(cq);
+                Query q = entityManager.getEntityManager().createQuery(cq);
 
                 List<Widget> listTmp = q.getResultList();
 
@@ -130,11 +117,6 @@ public class CodeBrainManager {
 
                 GlobalParameters.add("widgets", widgetSecurity);
             }
-//        } catch (Exception ex) {
-//            System.out.println(ex.getLocalizedMessage());
-//        } finally {
-            em.close();
-//        }
     }
 
     public void logout() {
@@ -145,9 +127,9 @@ public class CodeBrainManager {
     }
 
     public Boolean disConnexion(){
-        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Deconnexion), new Executable() {
+        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Deconnexion), new Executable<Boolean>() {
                 @Override
-                public Object execute() throws Exception {
+                public void execute() throws Exception {
                     connexion = true;
                     if(entityManager.getEntityManager().isOpen()) entityManager.getEntityManager().close();
 
@@ -155,11 +137,16 @@ public class CodeBrainManager {
 
                     System.out.println("User : " + user.getLogin() + " Deconnecté.");
                     connexion = false;
+                }
+
+                @Override
+                public Boolean success() {
                     return connexion;
                 }
 
                 @Override
-                public void error(CodeBrainExceptions ex) {
+                public void error(Exception ex) {
+                    System.out.println(ex.getMessage());
                     MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException), "Message", false, null);
                 }
             });
@@ -178,22 +165,28 @@ public class CodeBrainManager {
     }
 
     private boolean connexion;
+    
     public void start() {
         
         Locale.initBundle();
 
-        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Connexion), new Executable() {
+        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Connexion), new Executable<Boolean>() {
             @Override
-            public Boolean execute() throws Exception {
+            public void execute() throws Exception {
                 connexion = false;
                 entityManager.setEntityManager(entityManager.getEntityManagerFactory().createEntityManager());
                 connexion = true;
+            }
+
+            @Override
+            public Boolean success() {
                 return connexion;
             }
 
             @Override
-            public void error(CodeBrainExceptions ex) {
-                MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException), "Message", false, null);
+            public void error(Exception ex) {
+                System.out.println(ex.getMessage());
+                MessageForm.showsError(Dictionnaire.get(EnumError.LoseConnexionException), "Message", false, null);
             }
         });
         
@@ -202,10 +195,10 @@ public class CodeBrainManager {
 
             mainForm.setVisible(true);
             if (GlobalParameters.get(User) == null) {
-                login = new LoginForm(this, mainForm, true);
+                login = new LoginForm(this, mainForm, false);
                 login.setVisible(true);
             } else {
-                reLogin = new ReLoginForm(this, mainForm, true, ((Users) GlobalParameters.get(User)).getLogin());
+                reLogin = new ReLoginForm(this, mainForm, false, ((Users) GlobalParameters.get(User)).getLogin());
                 reLogin.setVisible(true);
             }
         }
@@ -243,7 +236,7 @@ public class CodeBrainManager {
 
     public void createEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
-        formDatas.put(getLowerValue(entity) + "Id", generateUIDPrimaryKey());
+        formDatas.put(getIdOfEntity(entity), generateUIDPrimaryKey());
 
         formDatas.put("userCreated", GlobalParameters.get(User));
         formDatas.put("dtCreated", new Date());
@@ -257,7 +250,7 @@ public class CodeBrainManager {
     public void createListEntity(String entity, List<HashMap> formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
         for (HashMap formData : formDatas) {
-            formData.put(getLowerValue(entity) + "Id", generateUIDPrimaryKey());
+            formData.put(getIdOfEntity(entity), generateUIDPrimaryKey());
 
             formData.put("userCreated", GlobalParameters.get(User));
             formData.put("dtCreated", new Date());
@@ -271,7 +264,7 @@ public class CodeBrainManager {
 
     public void dupplicateEntity(String entity, HashMap formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
-        formDatas.put(getLowerValue(entity) + "Id", generateUIDPrimaryKey());
+        formDatas.put(getIdOfEntity(entity), generateUIDPrimaryKey());
 
         formDatas.put("userCreated", GlobalParameters.get(User));
         formDatas.put("dtCreated", new Date());
@@ -285,7 +278,7 @@ public class CodeBrainManager {
     public void dupplicateListEntity(String entity, List<HashMap> formDatas) throws ClassNotFoundException, NullPointerException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, InstantiationException {
         this.entity = entity;
         for (HashMap formData : formDatas) {
-            formData.put(getLowerValue(entity) + "Id", generateUIDPrimaryKey());
+            formData.put(getIdOfEntity(entity), generateUIDPrimaryKey());
 
             formData.put("userCreated", GlobalParameters.get(User));
             formData.put("dtCreated", new Date());
@@ -428,7 +421,7 @@ public class CodeBrainManager {
     }
 
     public Object getEntity(String entity, String entityId) throws Exception {
-        String criteria = "entity." + entity.toLowerCase() + "Id=:arg0";
+        String criteria = "entity." + getIdOfEntity(entity) + "=:arg0";
         return getListEntity(entity, criteria, entityId).get(0);
     }
 
@@ -462,6 +455,10 @@ public class CodeBrainManager {
                 + value.substring(1, value.length());
     }
 
+    public String getIdOfEntity(String entity){
+        return getLowerValue(entity) + "Id";
+    }
+    
     public List getListEntity(String entity, String criteria,
             Object... args) throws Exception {
 
@@ -485,7 +482,7 @@ public class CodeBrainManager {
 
             return lstObjects;
         } catch (Exception e) {
-            throw new CodeBrainExceptions(e);
+            throw e;
         }
     }
 
@@ -514,7 +511,7 @@ public class CodeBrainManager {
 
         this.entity = entity;
 //        for (HashMap formData : formDatas) {
-        formData.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
+        formData.put(getIdOfEntity(entity), generateUIDPrimaryKey());
 
         formData.put("userCreated", GlobalParameters.get(User));
         formData.put("dtCreated", new Date());
@@ -532,7 +529,7 @@ public class CodeBrainManager {
 
         this.entity = detailEntity;
         for (HashMap model : createListModels) {
-            model.put(entity.toLowerCase() + "Id", generateUIDPrimaryKey());
+            model.put(getIdOfEntity(entity), generateUIDPrimaryKey());
 
             model.put("userCreated", GlobalParameters.get(User));
             model.put("dtCreated", new Date());
@@ -547,29 +544,14 @@ public class CodeBrainManager {
     public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, EnumVariable etatActionList, List<HashMap> listCreUp, List<HashMap> listDel) throws Exception {
         if (null != etatActionList) {
             
-            entityManager.setEntityManager(entityManager.getEntityManagerFactory().createEntityManager());
+            entityManager.createEntityManager();//entityManager.getEntityManagerFactory().createEntityManager());
             entityManager.getTransaction().begin();
             
             switch (etatActionList) {
                 case List:
-                    if (null != etatAction) {
-                        switch (etatAction) {
-                            case CREATE:
-                                createEntity(entity, modelFinal);
-                                break;
-                            case MODIF:
-                                updateEntity(entity, modelFinal);
-                                break;
-                            case DUPPLICATE:
-                                dupplicateEntity(entity, modelFinal);
-                                break;
-                            case DELETE:
-                                deleteEntity(entity, modelFinal);
-                                break;
-                            default:
-                                break;
-                        }
-                    }
+                    createListEntity(entity, listCreUp.stream().filter((model)-> (getIdValueObject(model, entity) == null)).collect(Collectors.toList()));
+                    updateListEntity(entity, listCreUp.stream().filter((model)-> (getIdValueObject(model, entity) != null)).collect(Collectors.toList()));
+                    deleteListEntity(entity, listDel);
                     break;
                 case Master_Detail:
                     if (null != etatAction) {
@@ -761,9 +743,23 @@ public class CodeBrainManager {
                     }
                     break;
             }
-            entityManager.getTransaction().commit();
+//            try{//(EntityTransaction currentTx = entityManager.getTransaction()){
+                
+//                EntityTransaction currentTx = entityManager.getTransaction();
+
+            if (entityManager.getTransaction().getRollbackOnly())
+                entityManager.getTransaction().rollback();
+            else
+                entityManager.getTransaction().commit();
             
-            entityManager.getEntityManager().close();
+//            } catch(Exception ex){
+//                System.out.println("111 : " + ex.getMessage());
+//            }
+            try{
+                entityManager.getEntityManager().close();
+            }catch(Exception ex){
+                System.out.println("111 : " + ex.getMessage());
+            }
         }
     }
 

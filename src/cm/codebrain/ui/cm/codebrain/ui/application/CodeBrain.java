@@ -6,7 +6,8 @@
 package cm.codebrain.ui.application;
 
 import ch.randelshofer.quaqua.QuaquaManager;
-import cm.codebrain.main.business.controller.CodeBrainManager;
+import cm.codebrain.ui.application.services.CodeBrainServiceAsync;
+//import cm.codebrain.main.business.controller.CodeBrainManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -51,9 +52,8 @@ public class CodeBrain {
 
         // Launch the Main program
         SwingUtilities.invokeLater(new Runnable() {
-//            private MainForm mainForm;
-//            private LoginForm login;
-            private CodeBrainManager codeBrainManager;
+            private CodeBrainAccess codeBrainAccess;
+//            private CodeBrainManager codeBrainManager;
 
             public void run() {
                 int index;
@@ -87,18 +87,25 @@ public class CodeBrain {
                     }
 
                     try {
-//                        System.out.println("   CREATING LAF   " + lafName);
-
                         LookAndFeel laf = (LookAndFeel) Class.forName(lafName).newInstance();
                         UIManager.setLookAndFeel(laf);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                codeBrainManager = new CodeBrainManager();
-                codeBrainManager.start();
+                codeBrainAccess = new CodeBrainAccess();
+                codeBrainAccess.start();
+//                getAdministrationService().start();
             }
         });
     }
 
+    private static CodeBrainServiceAsync getAdministrationService() {
+        CodeBrainServiceAsync svc = null;
+        try{
+            svc = CodeBrainServiceAsync.class.newInstance();
+        }catch(IllegalAccessException | InstantiationException ex){
+        }
+        return svc;
+    }
 }

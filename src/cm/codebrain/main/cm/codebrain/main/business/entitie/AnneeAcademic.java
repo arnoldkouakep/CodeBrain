@@ -65,6 +65,10 @@ public class AnneeAcademic implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "anneeAcademicId", fetch = FetchType.LAZY)
+    private Set<Trimestre> trimestreSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "anneeAcademicId", fetch = FetchType.LAZY)
+    private Set<Sequence> sequenceSet;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
@@ -145,6 +149,24 @@ public class AnneeAcademic implements Serializable {
         this.dtModified = dtModified;
     }
 
+    @XmlTransient
+    public Set<Trimestre> getTrimestreSet() {
+        return trimestreSet;
+    }
+
+    public void setTrimestreSet(Set<Trimestre> trimestreSet) {
+        this.trimestreSet = trimestreSet;
+    }
+
+    @XmlTransient
+    public Set<Sequence> getSequenceSet() {
+        return sequenceSet;
+    }
+
+    public void setSequenceSet(Set<Sequence> sequenceSet) {
+        this.sequenceSet = sequenceSet;
+    }
+
     public Users getUserModified() {
         return userModified;
     }
@@ -203,5 +225,5 @@ public class AnneeAcademic implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.AnneeAcademic[ anneeAcademicId=" + anneeAcademicId + " ]";
     }
-
+    
 }

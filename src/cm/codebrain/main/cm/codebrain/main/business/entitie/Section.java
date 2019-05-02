@@ -189,5 +189,5 @@ public class Section implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Section[ sectionId=" + sectionId + " ]";
     }
-
+    
 }

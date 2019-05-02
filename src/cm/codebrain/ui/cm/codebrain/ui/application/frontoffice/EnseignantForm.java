@@ -357,6 +357,8 @@ public class EnseignantForm extends ModelForm {
         fieldSearch("Profession->professionId->code", professionInput);
         fieldsRequired.add(professionInput);
 
+        professionIntituleInput.setEditable(false);
+        professionIntituleInput.setFocusable(false);
         professionIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Profession->professionId->intitule", professionIntituleInput);
 

@@ -10,5 +10,17 @@ package cm.codebrain.main.business.enumerations;
  * @author KSA-INET
  */
 public enum EnumError {
-    WorkFlowException, NullValueException, UserLoginException, LoseConnexionException
+
+    BusinessLibelleError,
+    WorkFlowException,
+    Business_Libelle_No_Result_Found,
+    Business_Error_find_required,
+    UserLoginException,
+    BadSyntaxException,
+    NumberArgumentException,
+    ConstraintViolationException,
+    NullValueException,
+    LoseConnexionException,
+    
+    DupplicateDatasException,
 }

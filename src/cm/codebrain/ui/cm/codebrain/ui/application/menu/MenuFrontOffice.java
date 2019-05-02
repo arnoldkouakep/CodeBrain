@@ -51,7 +51,8 @@ public class MenuFrontOffice extends JButton {
          * Panel Home
          */
         addPanel(this.mainPanel,
-                new MenuStudent(this.mainPanel, this.menu)
+                new MenuStudent(this.mainPanel, this.menu),
+                new MenuNoteEtudiant(this.mainPanel, this.menu)
         );
     }
 

@@ -370,6 +370,8 @@ public class StudentForm extends ModelForm {
         sectionsInput.setName("code"); // NOI18N
         fieldSearch("Student->salleId->code->Salle->classeId->code->Classe->sectionId->code", sectionsInput);
 
+        sectionsIntituleInput.setEditable(false);
+        sectionsIntituleInput.setFocusable(false);
         sectionsIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Student->salleId->code->Salle->classeId->code->Classe->sectionId->intitule", sectionsIntituleInput);
 
@@ -433,6 +435,8 @@ public class StudentForm extends ModelForm {
         fieldSearch("Student->salleId->code", salleInput);
         fieldsRequired.add(salleInput);
 
+        salleIntituleInput.setEditable(false);
+        salleIntituleInput.setFocusable(false);
         salleIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Student->salleId->intitule", salleIntituleInput);
 
@@ -470,6 +474,8 @@ public class StudentForm extends ModelForm {
         classeInput.setName("code"); // NOI18N
         fieldSearch("Student->salleId->code->Salle->classeId->code", classeInput);
 
+        classeIntituleInput.setEditable(false);
+        classeIntituleInput.setFocusable(false);
         classeIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Student->salleId->code->Salle->classeId->intitule", classeIntituleInput);
 

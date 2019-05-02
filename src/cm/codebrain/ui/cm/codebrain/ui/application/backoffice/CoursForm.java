@@ -225,6 +225,7 @@ public class CoursForm extends ModelForm {
         fieldsRequired.add(classeInput);
 
         classetituleInput.setEditable(false);
+        classetituleInput.setFocusable(false);
         classetituleInput.setName("intitule"); // NOI18N
         fieldSearch.put("Cours->classeId->intitule", classetituleInput);
 
@@ -263,6 +264,7 @@ public class CoursForm extends ModelForm {
         fieldSearch.put("Cours->groupeId->code", groupeInput);
 
         groupeIntituleInput.setEditable(false);
+        groupeIntituleInput.setFocusable(false);
         groupeIntituleInput.setName("intitule"); // NOI18N
         fieldSearch.put("Cours->groupeId->intitule", groupeIntituleInput);
 
