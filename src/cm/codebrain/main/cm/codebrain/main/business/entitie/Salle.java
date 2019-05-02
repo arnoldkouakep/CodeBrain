@@ -200,5 +200,5 @@ public class Salle implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Salle[ salleId=" + salleId + " ]";
     }
-
+    
 }

@@ -1,6 +1,6 @@
 package cm.codebrain.ui.application.menu;
 
-import cm.codebrain.ui.application.administration.EtablissementForm;
+import cm.codebrain.ui.application.backoffice.TrimestreAndSequencesForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import java.awt.event.ActionEvent;
@@ -8,15 +8,15 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
-public class MenuEtablissement extends JButton {
+public class MenuTrimestreEtSequence extends JButton {
 
     private final JPanel mainPanel;
-    private EtablissementForm form;
+    private TrimestreAndSequencesForm form;
 
-    public MenuEtablissement(JPanel mainPanel, JToolBar menu) {
+    public MenuTrimestreEtSequence(JPanel mainPanel, JToolBar menu) {
         this.mainPanel = mainPanel;
         
-        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Etablissement.toString(), true));
+        setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Trimestre.toString()).concat(" & ").concat(Dictionnaire.get(EnumLibelles.Business_Libelle_Sequence.toString())));
         putClientProperty("JButton.buttonType", "bevel");
 
         setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
@@ -31,7 +31,7 @@ public class MenuEtablissement extends JButton {
     }
 
     public void addComponentPanel() {
-        form = new EtablissementForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Etablissement));
+        form = new TrimestreAndSequencesForm(Dictionnaire.get(EnumLibelles.Business_Libelle_Trimestre.toString()).concat(" & ").concat(Dictionnaire.get(EnumLibelles.Business_Libelle_Sequence.toString())));
         form.setVisible(true);
     }
 }

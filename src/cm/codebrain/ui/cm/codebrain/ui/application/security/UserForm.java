@@ -271,6 +271,7 @@ public class UserForm extends ModelForm {
         this.addFormData("levelsId", levelCodeInput);
         fieldSearch("Users->levelsId->code", levelCodeInput);
 
+        levelIntituleInput.setEditable(false);
         levelIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Users->levelsId->intitule", levelIntituleInput);
 

@@ -76,9 +76,6 @@ public class Enseignant implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false, length = 64)
     private String sexe;
-    @JoinColumn(name = "PROFESSION_ID", referencedColumnName = "PROFESSION_ID", nullable = false)
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Profession professionId;
     @Lob
     private Serializable profil;
     @Column(name = "STATE_DB", length = 64)
@@ -89,6 +86,9 @@ public class Enseignant implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
+    @JoinColumn(name = "PROFESSION_ID", referencedColumnName = "PROFESSION_ID", nullable = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Profession professionId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
@@ -105,7 +105,7 @@ public class Enseignant implements Serializable {
         this.enseignantId = enseignantId;
     }
 
-    public Enseignant(String enseignantId, String matricule, String firstName, String lastName, Date birthday, String bornLocation, String cni, Date dateDelivrance, Date dateExpire, Profession professionId, String sexe) {
+    public Enseignant(String enseignantId, String matricule, String firstName, String lastName, Date birthday, String bornLocation, String cni, Date dateDelivrance, Date dateExpire, String sexe) {
         this.enseignantId = enseignantId;
         this.matricule = matricule;
         this.firstName = firstName;
@@ -116,7 +116,6 @@ public class Enseignant implements Serializable {
         this.dateDelivrance = dateDelivrance;
         this.dateExpire = dateExpire;
         this.sexe = sexe;
-        this.professionId = professionId;
     }
 
     public String getEnseignantId() {
@@ -191,14 +190,6 @@ public class Enseignant implements Serializable {
         this.dateExpire = dateExpire;
     }
 
-    public Profession getProfessionId() {
-        return professionId;
-    }
-
-    public void setProfessionId(Profession professionId) {
-        this.professionId = professionId;
-    }
-
     public String getSexe() {
         return sexe;
     }
@@ -239,6 +230,14 @@ public class Enseignant implements Serializable {
         this.dtModified = dtModified;
     }
 
+    public Profession getProfessionId() {
+        return professionId;
+    }
+
+    public void setProfessionId(Profession professionId) {
+        this.professionId = professionId;
+    }
+
     public Users getUserModified() {
         return userModified;
     }
@@ -263,7 +262,7 @@ public class Enseignant implements Serializable {
     public void setAffectationCoursSet(Set<AffectationCours> affectationCoursSet) {
         this.affectationCoursSet = affectationCoursSet;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;

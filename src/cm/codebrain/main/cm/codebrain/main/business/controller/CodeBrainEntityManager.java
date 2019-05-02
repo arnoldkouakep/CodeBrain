@@ -6,7 +6,6 @@
 package cm.codebrain.main.business.controller;
 
 import cm.codebrain.main.business.enumerations.EnumStatus;
-import cm.codebrain.ui.application.controller.GlobalParameters;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +75,10 @@ public class CodeBrainEntityManager {
     public void setEntityManager(EntityManager em) {
         this.em = em;
     }
+    
+    public void createEntityManager(){
+        setEntityManager(getEntityManagerFactory().createEntityManager());
+    }
 
     public void persist(Object entityObject) {
 //        EntityManager em = null;
@@ -86,12 +89,17 @@ public class CodeBrainEntityManager {
 //            EntityTransaction tx = getTransaction();
             if(!getTransaction().isActive())
                 getTransaction().begin();
+//                createEntityManager();
 
             getEntityManager().persist(entityObject);
-
-            getEntityManager().flush();
+//            try{
+                getEntityManager().flush();
+//            }catch(Exception e){
+//                System.out.println(e.getMessage());
+//            }
 //          tx.commit();
         } catch (Exception ex) {
+//            getTransaction().rollback();
             throw ex;
 //        } finally {
 //            if (em != null) {
@@ -106,8 +114,10 @@ public class CodeBrainEntityManager {
 //            em = getEntityManager();
             
 //            EntityTransaction tx = getEntityManager().getTransaction();
-            if(!getTransaction().isActive())
+            if(!getTransaction().isActive()){
+                createEntityManager();
                 getTransaction().begin();
+            }
 
             entityObject = getEntityManager().merge(entityObject);
 
@@ -131,8 +141,10 @@ public class CodeBrainEntityManager {
 //            em = getEntityManager();
             
 //            EntityTransaction tx = em.getTransaction();
-            if(!getTransaction().isActive())
+            if(!getTransaction().isActive()){
+                createEntityManager();
                 getTransaction().begin();
+            }
 
             Object entityObject;
 //            try {

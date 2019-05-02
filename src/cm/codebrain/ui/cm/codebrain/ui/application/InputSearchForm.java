@@ -5,7 +5,6 @@
  */
 package cm.codebrain.ui.application;
 
-import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumError;
@@ -112,16 +111,19 @@ public class InputSearchForm extends javax.swing.JDialog {
 
         Loading.show(okButton, new Executable<List<HashMap>>() {
             @Override
-            public List<HashMap> execute() throws Exception {
+            public void execute(){
                 grid.setModel(setModelDataTable(modelFinal, parametresGrid));
                 grid.setRowSorter(sorter);
-                
-                return modelFinal;
             }
 
             @Override
-            public void error(CodeBrainExceptions ex) {
-                JOptionPane.showMessageDialog(rootPane, Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.OK_OPTION);
+            public List<HashMap> success(){
+                return modelFinal;
+            }
+            
+            @Override
+            public void error(Exception ex) {
+                MessageForm.showsError(Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getMessage(), "Message", false, null);
             }
 
         });
@@ -296,8 +298,9 @@ public class InputSearchForm extends javax.swing.JDialog {
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
 
         Loading.show(okButton, new Executable<HashMap>() {
+            HashMap result;
             @Override
-            public HashMap execute() throws Exception {
+            public void execute() throws Exception {
 
                 ListSelectionModel selectionModel = grid.getSelectionModel();
 
@@ -314,7 +317,7 @@ public class InputSearchForm extends javax.swing.JDialog {
 //                int columnIndex = grid.getSelectedRow();
 //                Object obj = model.getValueAt(x, columnIndex);
 //                System.out.println(String.valueOf(obj));
-                HashMap result = modelFinal.get(rowIndex);// tableModel.getDataVector().elementAt(grid.getSelectedRow());
+                result = modelFinal.get(rowIndex);// tableModel.getDataVector().elementAt(grid.getSelectedRow());
 
 //                Object resultEntity = modelComplet.get(grid.getSelectedRow());
                 for (Object field : imputsResultFields) {
@@ -335,16 +338,18 @@ public class InputSearchForm extends javax.swing.JDialog {
                 else
                     FormParameters.add(keyParam, result);
                 
-                doClose(RET_OK);
-                return result;
             }
 
             @Override
-            public void error(CodeBrainExceptions ex) {
-                JOptionPane.showMessageDialog(SwingUtilities.windowForComponent(okButton), Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getLocalizedMessage(), "Message", JOptionPane.ERROR_MESSAGE);
-
+            public HashMap success(){
+                doClose(RET_OK);
+                return result;
             }
-
+            
+            @Override
+            public void error(Exception ex) {
+                MessageForm.showsError(Dictionnaire.get(EnumError.BusinessLibelleError) + ": " + ex.getMessage(), "Message", false, null);
+            }
         });
 
     }//GEN-LAST:event_okButtonActionPerformed

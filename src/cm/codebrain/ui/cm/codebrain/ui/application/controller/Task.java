@@ -8,7 +8,6 @@ package cm.codebrain.ui.application.controller;
 import cm.codebrain.ui.application.implement.Executable;
 import cm.codebrain.ui.application.security.Loading;
 import java.awt.Container;
-import java.awt.Toolkit;
 import javax.swing.SwingWorker;
 
 /**
@@ -48,7 +47,7 @@ public class Task extends SwingWorker<Void, Void> {
      */
     @Override
     public void done() {
-        Toolkit.getDefaultToolkit().beep();
+//        Toolkit.getDefaultToolkit().beep();
         this.parent.setCursor(null); // turn off the wait cursor
     }
 

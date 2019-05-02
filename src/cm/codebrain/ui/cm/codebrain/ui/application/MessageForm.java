@@ -171,7 +171,7 @@ public final class MessageForm extends javax.swing.JDialog {
     
     public static void showsError(String message, String title, boolean visibleCancelButton, Action action){
         
-        MessageForm.messageForm = new MessageForm(message, title, visibleCancelButton, JOptionPane.ERROR_MESSAGE, action);
+        MessageForm.messageForm = new MessageForm(message, title, visibleCancelButton, JOptionPane.WARNING_MESSAGE, action);//ERROR_MESSAGE
     }
     /**
      * @return the return status of this dialog - one of RET_OK or RET_CANCEL

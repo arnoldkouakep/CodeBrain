@@ -59,6 +59,12 @@ public class ParametreAnneeAcademic implements Serializable {
     @JoinColumn(name = "ETABLISSEMENT_ID", referencedColumnName = "ETABLISSEMENT_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Etablissement etablissementId;
+    @JoinColumn(name = "SEQUENCE_ID", referencedColumnName = "SEQUENCE_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Sequence sequenceId;
+    @JoinColumn(name = "TRIMESTRE_ID", referencedColumnName = "TRIMESTRE_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Trimestre trimestreId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
@@ -127,6 +133,22 @@ public class ParametreAnneeAcademic implements Serializable {
 
     public void setEtablissementId(Etablissement etablissementId) {
         this.etablissementId = etablissementId;
+    }
+
+    public Sequence getSequenceId() {
+        return sequenceId;
+    }
+
+    public void setSequenceId(Sequence sequenceId) {
+        this.sequenceId = sequenceId;
+    }
+
+    public Trimestre getTrimestreId() {
+        return trimestreId;
+    }
+
+    public void setTrimestreId(Trimestre trimestreId) {
+        this.trimestreId = trimestreId;
     }
 
     public Users getUserModified() {

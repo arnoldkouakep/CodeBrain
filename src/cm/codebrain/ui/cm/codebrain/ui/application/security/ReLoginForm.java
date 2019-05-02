@@ -5,8 +5,6 @@
  */
 package cm.codebrain.ui.application.security;
 
-import ch.randelshofer.quaqua.JSheet;
-import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.ui.application.MessageForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
@@ -14,10 +12,7 @@ import cm.codebrain.ui.application.controller.Locale;
 import cm.codebrain.ui.application.enumerations.EnumError;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.implement.Executable;
-import java.sql.SQLException;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 /**
  *
@@ -102,7 +97,6 @@ public class ReLoginForm extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle(Dictionnaire.get(EnumLibelles.Business_Libelle_Login)); // NOI18N
-        setModal(true);
         setResizable(false);
 
         btnOk.setText("OK");
@@ -220,28 +214,34 @@ public class ReLoginForm extends javax.swing.JDialog {
 //        loading.show();
 //        try {
         Loading.show(btnOk, new Executable<String>() {
-
+            String response;
+            
             @Override
-            public String execute() {
+            public void execute() throws Exception{
 
                 String login = usernameInput.getText();
                 String password = String.valueOf(passwordInput.getPassword());
 
-                String res = codeBrainManager.authenticate(login, password).getLogin();
+                response = codeBrainManager.authenticate(login, password).getLogin();
 
                 /**
                  *
                  * User connected
                  */
-                System.out.println("User : " + res + " Connecté.");
-                doClose(RET_OK);
-
-                return res;
+                System.out.println("User : " + response + " Connecté.");
             }
 
             @Override
-            public void error(CodeBrainExceptions ex) {
-                MessageForm.showsError(new CodeBrainExceptions(EnumError.UserLoginException.toString()).getMessage(), "Message", false, null);
+            public String success() {
+                
+                doClose(RET_OK);
+
+                return response;
+            }
+
+            @Override
+            public void error(Exception ex) {
+                MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException.toString()), "Message", false, null);
             }
         });
     }//GEN-LAST:event_btnOkActionPerformed
@@ -250,7 +250,7 @@ public class ReLoginForm extends javax.swing.JDialog {
         Loading.show(btnOk, new Executable() {
 
             @Override
-            public Void execute() {
+            public void execute() {
 
                 String login = usernameInput.getText();
 //                String password = String.valueOf(passwordInput.getPassword());
@@ -262,13 +262,17 @@ public class ReLoginForm extends javax.swing.JDialog {
                  * User connected
                  */
                 System.out.println("User : " + login + " DéConnecté.");
+            }
+
+            @Override
+            public Void success() {
                 doClose(RET_OK);
                 return null;
             }
 
             @Override
-            public void error(CodeBrainExceptions ex) {
-                MessageForm.showsError(ex.getMessage(), "Message", false, null);
+            public void error(Exception ex) {
+                MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException), "Message", false, null);
             }
 
         });

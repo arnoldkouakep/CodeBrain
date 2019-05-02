@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,6 +25,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.UniqueConstraint;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -32,24 +34,29 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author KSA-INET
  */
 @Entity
-@Table(catalog = "", schema = "BRAIN")
+@Table(catalog = "", schema = "BRAIN", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"CODE", "ANNEE_ACADEMIC_ID"})})
 @XmlRootElement
 @NamedQueries({
-    @NamedQuery(name = "Groupe.findAll", query = "SELECT g FROM Groupe g")})
-@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@groupe", scope = Groupe.class, resolver = ObjectIdResolver.class)
-public class Groupe implements Serializable {
+    @NamedQuery(name = "Trimestre.findAll", query = "SELECT t FROM Trimestre t")})
+@JsonIdentityInfo(generator=ObjectIdGenerators.UUIDGenerator.class, property="@trimestre", scope = Trimestre.class, resolver = ObjectIdResolver.class)
+public class Trimestre implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
-    @Column(name = "GROUPE_ID", nullable = false, length = 64)
-    private String groupeId;
+    @Column(name = "TRIMESTRE_ID", nullable = false, length = 64)
+    private String trimestreId;
     @Basic(optional = false)
     @Column(nullable = false, length = 64)
     private String code;
     @Basic(optional = false)
-    @Column(nullable = false, length = 64)
-    private String intitule;
+    @Column(name = "DATE_OUVERTURE", nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date dateOuverture;
+    @Column(name = "DATE_FERMETURE")
+    @Temporal(TemporalType.DATE)
+    private Date dateFermeture;
     @Column(name = "STATE_DB", length = 64)
     private String stateDb;
     @Column(name = "DT_CREATED")
@@ -58,39 +65,39 @@ public class Groupe implements Serializable {
     @Column(name = "DT_MODIFIED")
     @Temporal(TemporalType.TIMESTAMP)
     private Date dtModified;
-    @OneToMany(mappedBy = "groupeId", fetch = FetchType.LAZY)
-    private Set<Salle> salleSet;
-    @JoinColumn(name = "CLASSE_ID", referencedColumnName = "CLASSE_ID", nullable = false)
+    @JoinColumn(name = "ANNEE_ACADEMIC_ID", referencedColumnName = "ANNEE_ACADEMIC_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Classe classeId;
+    private AnneeAcademic anneeAcademicId;
     @JoinColumn(name = "USER_MODIFIED", referencedColumnName = "USERS_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private Users userModified;
     @JoinColumn(name = "USER_CREATED", referencedColumnName = "USERS_ID", nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Users userCreated;
-    @OneToMany(mappedBy = "groupeId", fetch = FetchType.LAZY)
-    private Set<Cours> coursSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "trimestreId", fetch = FetchType.LAZY)
+    private Set<Sequence> sequenceSet;
+    @OneToMany(mappedBy = "trimestreId", fetch = FetchType.LAZY)
+    private Set<ParametreAnneeAcademic> parametreAnneeAcademicSet;
 
-    public Groupe() {
+    public Trimestre() {
     }
 
-    public Groupe(String groupeId) {
-        this.groupeId = groupeId;
+    public Trimestre(String trimestreId) {
+        this.trimestreId = trimestreId;
     }
 
-    public Groupe(String groupeId, String code, String intitule) {
-        this.groupeId = groupeId;
+    public Trimestre(String trimestreId, String code, Date dateOuverture) {
+        this.trimestreId = trimestreId;
         this.code = code;
-        this.intitule = intitule;
+        this.dateOuverture = dateOuverture;
     }
 
-    public String getGroupeId() {
-        return groupeId;
+    public String getTrimestreId() {
+        return trimestreId;
     }
 
-    public void setGroupeId(String groupeId) {
-        this.groupeId = groupeId;
+    public void setTrimestreId(String trimestreId) {
+        this.trimestreId = trimestreId;
     }
 
     public String getCode() {
@@ -101,12 +108,20 @@ public class Groupe implements Serializable {
         this.code = code;
     }
 
-    public String getIntitule() {
-        return intitule;
+    public Date getDateOuverture() {
+        return dateOuverture;
     }
 
-    public void setIntitule(String intitule) {
-        this.intitule = intitule;
+    public void setDateOuverture(Date dateOuverture) {
+        this.dateOuverture = dateOuverture;
+    }
+
+    public Date getDateFermeture() {
+        return dateFermeture;
+    }
+
+    public void setDateFermeture(Date dateFermeture) {
+        this.dateFermeture = dateFermeture;
     }
 
     public String getStateDb() {
@@ -133,21 +148,12 @@ public class Groupe implements Serializable {
         this.dtModified = dtModified;
     }
 
-    @XmlTransient
-    public Set<Salle> getSalleSet() {
-        return salleSet;
+    public AnneeAcademic getAnneeAcademicId() {
+        return anneeAcademicId;
     }
 
-    public void setSalleSet(Set<Salle> salleSet) {
-        this.salleSet = salleSet;
-    }
-
-    public Classe getClasseId() {
-        return classeId;
-    }
-
-    public void setClasseId(Classe classeId) {
-        this.classeId = classeId;
+    public void setAnneeAcademicId(AnneeAcademic anneeAcademicId) {
+        this.anneeAcademicId = anneeAcademicId;
     }
 
     public Users getUserModified() {
@@ -167,29 +173,38 @@ public class Groupe implements Serializable {
     }
 
     @XmlTransient
-    public Set<Cours> getCoursSet() {
-        return coursSet;
+    public Set<Sequence> getSequenceSet() {
+        return sequenceSet;
     }
 
-    public void setCoursSet(Set<Cours> coursSet) {
-        this.coursSet = coursSet;
+    public void setSequenceSet(Set<Sequence> sequenceSet) {
+        this.sequenceSet = sequenceSet;
+    }
+
+    @XmlTransient
+    public Set<ParametreAnneeAcademic> getParametreAnneeAcademicSet() {
+        return parametreAnneeAcademicSet;
+    }
+
+    public void setParametreAnneeAcademicSet(Set<ParametreAnneeAcademic> parametreAnneeAcademicSet) {
+        this.parametreAnneeAcademicSet = parametreAnneeAcademicSet;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (groupeId != null ? groupeId.hashCode() : 0);
+        hash += (trimestreId != null ? trimestreId.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Groupe)) {
+        if (!(object instanceof Trimestre)) {
             return false;
         }
-        Groupe other = (Groupe) object;
-        if ((this.groupeId == null && other.groupeId != null) || (this.groupeId != null && !this.groupeId.equals(other.groupeId))) {
+        Trimestre other = (Trimestre) object;
+        if ((this.trimestreId == null && other.trimestreId != null) || (this.trimestreId != null && !this.trimestreId.equals(other.trimestreId))) {
             return false;
         }
         return true;
@@ -197,7 +212,7 @@ public class Groupe implements Serializable {
 
     @Override
     public String toString() {
-        return "cm.codebrain.main.business.entitie.Groupe[ groupeId=" + groupeId + " ]";
+        return "cm.codebrain.main.business.entitie.Trimestre[ trimestreId=" + trimestreId + " ]";
     }
     
 }

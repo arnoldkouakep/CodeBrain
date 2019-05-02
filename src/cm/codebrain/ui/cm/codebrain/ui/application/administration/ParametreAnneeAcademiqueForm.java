@@ -59,7 +59,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
     public void makeModelData() {
         if (etatAction != CREATE) {
             super.makeModelData();
-        }
+        }//etablissementId
         modelFinal.put(entityEtablissement.toLowerCase() + "Id", FormParameters.get(entityEtablissement.toLowerCase() + "Id"));
         modelFinal.put("session", FormParameters.get("session"));
         modelFinal.put("statut", (statusInput.getSelectedIndex() == 0) ? EnumStatus.Business_Statut_NonActif.toString() : EnumStatus.Business_Statut_Actif.toString());
@@ -75,7 +75,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         super.actionBtnValider(evt); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
+//    @Override
     public void addActionComplement() {
         if (etatAction != CREATE) {
 
@@ -180,8 +180,14 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         fieldSearch("nameAbrege", nomAbregeInput);
         fieldsRequired.add(nomAbregeInput);
 
+        nomCompletInput.setEditable(false);
         nomCompletInput.setName("fullName"); // NOI18N
         fieldSearch("fullName", nomCompletInput);
+        nomCompletInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nomCompletInputActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelCategorieLayout = new javax.swing.GroupLayout(panelCategorie);
         panelCategorie.setLayout(panelCategorieLayout);
@@ -267,6 +273,11 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
 
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void nomCompletInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nomCompletInputActionPerformed
+        // TODO add your handling code here:
+        addActionComplement();
+    }//GEN-LAST:event_nomCompletInputActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

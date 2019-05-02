@@ -160,6 +160,7 @@ public class SectionForm extends ModelForm {
         fieldSearch("Section->etablissementId->nameAbrege", etablissementCodeInput);
         fieldsRequired.add(etablissementCodeInput);
 
+        etablissementIntituleInput.setEditable(false);
         etablissementIntituleInput.setName("fullName"); // NOI18N
         fieldSearch("Etablissement->etablissementId->fullName", etablissementIntituleInput);
 

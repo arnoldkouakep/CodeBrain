@@ -211,5 +211,5 @@ public class Classe implements Serializable {
     public String toString() {
         return "cm.codebrain.main.business.entitie.Classe[ classeId=" + classeId + " ]";
     }
-
+    
 }

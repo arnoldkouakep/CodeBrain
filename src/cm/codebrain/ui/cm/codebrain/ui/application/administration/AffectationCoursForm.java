@@ -5,13 +5,17 @@
  */
 package cm.codebrain.ui.application.administration;
 
-import cm.codebrain.main.business.controller.CodeBrainExceptions;
 import cm.codebrain.ui.application.MessageForm;
 import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.backoffice.GroupSalleForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
+import cm.codebrain.ui.application.enumerations.EnumVariable;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Entity;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Model;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Type;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Value;
 import cm.codebrain.ui.application.implement.Executable;
 import cm.codebrain.ui.application.security.Loading;
 import java.util.ArrayList;
@@ -32,9 +36,10 @@ public class AffectationCoursForm extends ModelForm {
 
     private final String entityEnseignant = "Enseignant";
     private final String entityCours = "Cours";
-    private List<HashMap> listModelsOriginal;
+    private List<HashMap> listCours;
+    private List<HashMap> listAffectationOriginal;
     private DefaultTableModel modelList;
-    private final List<HashMap> listCours = new ArrayList<>();
+    private final List<HashMap> listAffectionCours = new ArrayList<>();
 
     /**
      * Creates new form CategorieForm
@@ -45,6 +50,7 @@ public class AffectationCoursForm extends ModelForm {
         super(title, 950, 500, true, true);
 
         createList(true);
+        setAction(EnumVariable.List);
         this.showMenuBar();
     }
 
@@ -52,7 +58,7 @@ public class AffectationCoursForm extends ModelForm {
 
         this.entity = "AffectationCours";
         initComponents();
-        setAllComponents(matriculeInput, firstNameInput, lastNameInput);
+        setAllComponents(matriculeInput, firstNameInput, lastNameInput, coursInputsTable);
     }
 
     public void addActionSupplementaire() {
@@ -61,51 +67,103 @@ public class AffectationCoursForm extends ModelForm {
     }
 
     public void makeModelData() {
-        super.makeModelData();
-        modelFinal.put(entityEnseignant.toLowerCase() + "Id", FormParameters.get(entityEnseignant.toLowerCase() + "Id"));
-        modelFinal.put(entityCours.toLowerCase() + "Id", FormParameters.get(entityCours.toLowerCase() + "Id"));
+//        super.makeModelData();
+        final Object modelEnseignement = FormParameters.get(entityEnseignant.toLowerCase() + "Id");
+        
+//        List<HashMap> listModelsAdd = new ArrayList<>();
+        
+        List<HashMap> listModelsAdd = filterModel(this.listAffectationOriginal, "AffectationCours->coursId->code", this.listAffectionCours, "AffectationCours->coursId->code", false);
+        List<HashMap> listModelsSub = filterModel(this.listAffectionCours, "AffectationCours->coursId->code", this.listAffectationOriginal, "AffectationCours->coursId->code", false);
+        
+        if(listModelsAdd != null && listModelsAdd.size() > 0){
+            listModelsAdd.forEach((model) -> {
+                model.put(entityEnseignant.toLowerCase() + "Id", modelEnseignement);
+//                modelFinal.put(entityCours.toLowerCase()+"Id", model);
+//                listModelsAdd.add(modelFinal);
+            });
+        }
+        
+        setActionModel(listModelsAdd, listModelsSub);
+    }
+
+    protected void eventActionRef() {
     }
 
 //    @Override
-//    public void makeModelDatas() {
-//        super.makeModelDatas(); //To change body of generated methods, choose Tools | Templates.
-//    }
-    
-    
+    public void addActionComplement() {
+        
+//        if (etatAction != CREATE) {
 
-    protected void eventActionRef() {
+        HashMap[] args = new HashMap[1];
+
+        String filter = "entity.enseignantId=:arg0";
+
+        HashMap arg = new HashMap();
+
+        arg.put(Type, Entity);
+        arg.put(Entity, entityEnseignant);
+        arg.put(Model, "enseignantId");
+        arg.put(Value, matriculeInput);
+
+        args[0] = arg;
+
+        try {
+            listAffectationOriginal = getListModelForSelect(null, entity, null, filter, args);
+
+            if (this.listAffectationOriginal != null && this.listAffectationOriginal.size() > 0) {
+                
+                List<HashMap> tmp = new ArrayList<>();
+                
+                ((DefaultTableModel) coursInputsTable.getModel()).setRowCount(0);
+                coursInputsTable.repaint();
+                
+                listAffectionCours.clear();
+                listAffectationOriginal.forEach((model)->{
+                    getValueModelFromKey("AffectationCours->coursId->code", model);
+                    tmp.add((HashMap) FormParameters.get("coursId"));
+                });
+                
+                addModelToTable(coursInputsTable, tmp);
+                listAffectionCours.addAll(listAffectationOriginal);
+            }
+        } catch (Exception ex) {
+            listAffectationOriginal = null;
+        }
     }
 
     private void loadGrid() {
         Loading.show(null, new Executable() {
             @Override
-            public List<HashMap> execute() throws Exception {
+            public void execute() throws Exception{
 
                 HashMap[] args = null;
 
-                listModelsOriginal = null;
+                listCours = null;
                 try {
-                    listModelsOriginal = getListModelForSelect(null, entityCours, null, null, args);
+                    listCours = getListModelForSelect(null, entityCours, null, null, args);
                 } catch (Exception ex) {
                     Logger.getLogger(GroupSalleForm.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
-                listModelsOriginal.stream().map((model) -> {
+                listCours.stream().map((model) -> {
                     Object[] newRow = {false, model.get("code"), model.get("libelleFr"), model.get("libelleEn")};
                     return newRow;
                 }).forEachOrdered((newRow) -> {
                     ((DefaultTableModel) ((JTable) coursListTable).getModel()).addRow(newRow);
                 });
 
-                return listModelsOriginal;
             }
 
             @Override
-            public void error(CodeBrainExceptions ex) {
-                MessageForm.showsError(new CodeBrainExceptions(ex).getMessage(), "Message", false, null);
+            public List<HashMap> success(){
+                return listCours;
+            }
+
+            @Override
+            public void error(Exception ex) {
+                MessageForm.showsError(ex.getMessage(), "Message", false, null);
             }
         });
-
     }
 
     protected void eventEnseignant() {
@@ -119,21 +177,24 @@ public class AffectationCoursForm extends ModelForm {
         addAction(matriculeInput, entityEnseignant, entityEnseignant.toLowerCase() + "Id", parametresGrid, null, null, matriculeInput, firstNameInput, lastNameInput);
     }
 
-    private List<HashMap> filterModel(List<HashMap> listModelsOriginal, String value, List<HashMap> listTmp) {
+    private List<HashMap> filterModel(List<HashMap> listModelsOriginal, String value1, List<HashMap> listTmp, String value2, boolean equal) {
         List<HashMap> lst = new ArrayList<>();
-        for (HashMap modelFind : listTmp) {
-            Boolean find = false;
-            for (HashMap model : listModelsOriginal) {
-                if (modelFind.get(value).equals(model.get(value))) {
-                    find = true;
-                    break;
+        if(listTmp != null && listTmp.size()>0)
+            for (HashMap modelFind : listTmp) {
+                Boolean find = false;
+                if(listModelsOriginal != null && listModelsOriginal.size()>0)
+                    for (HashMap model : listModelsOriginal) {
+                        
+                        if (getValueModelFromKey(value2, modelFind).equals(getValueModelFromKey(value1, model))) {
+                            find = true;
+                            break;
+                        }
+                    }
+
+                if (find == equal) {
+                    lst.add(modelFind);
                 }
             }
-
-            if (!find) {
-                lst.add(modelFind);
-            }
-        }
 
         return lst;
     }
@@ -148,8 +209,6 @@ public class AffectationCoursForm extends ModelForm {
         }
         grid.repaint();
     }
-
-    
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -194,6 +253,11 @@ public class AffectationCoursForm extends ModelForm {
         firstNameInput.setName("firstName"); // NOI18N
         this.setRef(firstNameInput);
         fieldSearch("AffectationCours->EnseignantId->firstName", firstNameInput);
+        firstNameInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                firstNameInputActionPerformed(evt);
+            }
+        });
 
         lastNameInput.setEditable(false);
         lastNameInput.setName("lastName"); // NOI18N
@@ -361,25 +425,29 @@ jPanel2Layout.setHorizontalGroup(
 
     private void inButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inButtonActionPerformed
         // TODO add your handling code here:
-        if (this.listModelsOriginal != null && this.listModelsOriginal.size() > 0) {
+        if (this.listCours != null && this.listCours.size() > 0) {
             this.modelList = (DefaultTableModel) coursListTable.getModel();
             List<HashMap> listTmp = new ArrayList<>();
             for (int row = 0; row < this.modelList.getRowCount(); row++) {
                 Boolean selected = (Boolean) this.modelList.getValueAt(row, 0);
 
                 if (selected) {
-                    listTmp.add(this.listModelsOriginal.get(row));
+                    listTmp.add(this.listCours.get(row));
                 }
             }
             if (listTmp.size() > 0) {
-                listTmp = filterModel(this.listCours, "code", listTmp);
+                listTmp = filterModel(this.listAffectionCours, "AffectationCours->coursId->code", listTmp, "code", false);
             }
             if (listTmp.size() > 0) {
                 try {
                     addModelToTable(coursInputsTable, listTmp);
 
-                    this.listCours.addAll(listTmp);
-                } catch (Exception ee) {
+                    listTmp.forEach((model)->{
+                        HashMap m = new HashMap();
+                        m.put(entityCours.toLowerCase()+"Id", model);
+                        this.listAffectionCours.add(m);
+                    });
+                } catch (Exception ex) {
                 }
             }
         }
@@ -387,20 +455,25 @@ jPanel2Layout.setHorizontalGroup(
 
     private void outButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_outButtonActionPerformed
         // TODO add your handling code here:
-        if (this.listCours.size() > 0) {
+        if (this.listAffectionCours.size() > 0) {
             this.modelList = (DefaultTableModel) coursInputsTable.getModel();
             for (int row = 0; row < this.modelList.getRowCount(); row++) {
                 Boolean selected = (Boolean) this.modelList.getValueAt(row, 0);
                 if (selected) {
                     try {
                         ((DefaultTableModel) coursInputsTable.getModel()).removeRow(row);
-                        this.listCours.remove(row);
+                        this.listAffectionCours.remove(row);
                     } catch (Exception e) {
                     }
                 }
             }
         }
     }//GEN-LAST:event_outButtonActionPerformed
+
+    private void firstNameInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstNameInputActionPerformed
+        // TODO add your handling code here:
+        addActionComplement();
+    }//GEN-LAST:event_firstNameInputActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

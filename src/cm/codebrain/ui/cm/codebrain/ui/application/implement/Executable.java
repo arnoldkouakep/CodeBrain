@@ -5,8 +5,6 @@
  */
 package cm.codebrain.ui.application.implement;
 
-import cm.codebrain.main.business.controller.CodeBrainExceptions;
-
 /**
  *
  * @author KSA-INET
@@ -17,7 +15,9 @@ public interface Executable<T> {
      *
      * 
      */
-    public abstract T execute() throws Exception;
+    public abstract void execute() throws Exception;
     
-    public void error(CodeBrainExceptions ex);
+    public T success();
+    
+    public void error(Exception ex);
 }

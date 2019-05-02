@@ -51,7 +51,8 @@ public class MenuConfigAnnuelle extends JButton {
          * Panel Home
          */
         addPanel(this.mainPanel,
-                new MenuCreateAnneeAcademique(mainPanel, menu),
+                new MenuCreateAnneeAcademique(this.mainPanel, this.menu),
+                new MenuTrimestreEtSequence(this.mainPanel, this.menu),
                 new MenuEtablissement(this.mainPanel, this.menu),
                 new MenuCategorie(this.mainPanel, this.menu),
                 new MenuClasse(this.mainPanel, this.menu),
