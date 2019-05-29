@@ -66,7 +66,7 @@ public class CodeBrainEntityManager {
 
     public EntityManager getEntityManager() {
         if(this.em==null){
-            setEntityManager(emf.createEntityManager());
+            setEntityManager(this.emf.createEntityManager());
 //            this.emf = (EntityManagerFactory) GlobalParameters.get("emf");
         }
         

@@ -96,7 +96,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
     private boolean hideActionMenuTitle = true;
     private boolean confirmExit = false;
 
-//    public CodeBrainManager cbManager = new CodeBrainManager();           Commenté pour les test.
+//    public CodeBrainManager cbManager = new CodeBrainManager();
     private SearchForm searchForm;
     private Object key;
     private List<HashMap> allComponents;
@@ -705,9 +705,8 @@ public abstract class ModelForm extends javax.swing.JDialog {
                             }
 
                             makeModelData();
-                            getAdministrationService().crud(entity, formDatas, etatAction, etatActionList, listModelDelete, listModelDelete);
+                            getAdministrationService().crud(entity, modelFinal, etatAction, etatActionList, listModelCreateUpdate, listModelDelete);
 //                            cbManager.crud(entity, modelFinal, etatAction, etatActionList, listModelCreateUpdate, listModelDelete);
-                            
                         }
                     }
                 }
@@ -780,8 +779,8 @@ public abstract class ModelForm extends javax.swing.JDialog {
             if (((JPasswordField) val).getText().isEmpty()) {
                 modelFinal.put(this.key.toString(), FormParameters.get(this.key.toString()));
             } else {
-                modelFinal.put(this.key.toString(), getAdministrationService().MD5(((JPasswordField) val).getText()));
-//                modelFinal.put(this.key.toString(), cbManager.MD5(((JPasswordField) val).getText()));
+                String valueMD5 = getAdministrationService().MD5(((JPasswordField) val).getText());
+                modelFinal.put(this.key.toString(), valueMD5);//cbManager.MD5(((JPasswordField) val).getText()));
             }
         });
         /**
@@ -1177,7 +1176,6 @@ public abstract class ModelForm extends javax.swing.JDialog {
                     HashMap data = (HashMap) FormParameters.get(arg.get(Model).toString());
 
                     Object dataObject = getAdministrationService().convertToObject(data, tmpEntity);
-//                    Object dataObject = cbManager.convertToObject(data, tmpEntity);
                     parameterArgs.add(dataObject);
                 } else {
                     parameterArgs.add(arg.get(Value));
@@ -1185,10 +1183,8 @@ public abstract class ModelForm extends javax.swing.JDialog {
             }
         }
         modelResult = getAdministrationService().getListEntity(entity, clause, parameterArgs.toArray());
-//        modelResult = cbManager.getListEntity(entity, clause, parameterArgs.toArray());
 
         List<HashMap> modelComplet = getAdministrationService().convertToListObject(modelResult, HashMap.class);
-//        List<HashMap> modelComplet = cbManager.convertToListObject(modelResult, HashMap.class);
 
         if (filtre != null && !filtre.equals("*")) {
             modelComplet = modelComplet.stream().map((mapper) -> {
@@ -1305,12 +1301,10 @@ public abstract class ModelForm extends javax.swing.JDialog {
 
                     if (objectConverted != null) {
                         Object objectReslut = getAdministrationService().getObjectInvoke(objectConverted, indentKey[i - 1], indentKey[i]);
-//                        Object objectReslut = cbManager.getObjectInvoke(objectConverted, indentKey[i - 1], indentKey[i]);
 
                         if (objectReslut != null) {
 
                             object = getAdministrationService().convertToObject(objectReslut, HashMap.class);
-//                            object = cbManager.convertToObject(objectReslut, HashMap.class);
 
                             FormParameters.add(indentKey[indentKey.length - 2], object);
 
@@ -1510,18 +1504,13 @@ public abstract class ModelForm extends javax.swing.JDialog {
         return valid;
     }
 
-    private CodeBrainServiceAsync getAdministrationService() {
+    protected CodeBrainServiceAsync getAdministrationService() {
         CodeBrainServiceAsync svc = null;
         try{
             svc = CodeBrainServiceAsync.class.newInstance();
         }catch(IllegalAccessException | InstantiationException ex){
+            ex.printStackTrace();
         }
-//        CodeBrainService svc = new CodeBrainService() {
-//            @Override
-//            public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, EnumVariable etatActionList, List<HashMap> listCreUp, List<HashMap> listDel) throws Exception {
-//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//            }
-//        };
         return svc;
     }
 // </editor-fold>

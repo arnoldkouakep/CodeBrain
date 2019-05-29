@@ -5,11 +5,11 @@
  */
 package cm.codebrain.ui.application.security;
 
-import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.main.business.entitie.Levels;
 import cm.codebrain.main.business.entitie.Users;
 import cm.codebrain.ui.application.CodeBrainAccess;
 import cm.codebrain.ui.application.MessageForm;
+import cm.codebrain.ui.application.controller.CodeBrainAcces;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.Locale;
@@ -49,7 +49,7 @@ public class MainForm extends JFrame{
     private final int height = 18;
 
     private final ImageIcon image = new ImageIcon(getClass().getResource(logoImg));
-    private final CodeBrainAccess codeBrainAccess;
+    private final CodeBrainAcces codeBrainAcces;
     private JLabel hourStatusLabel;
     private JLabel userStatusLabel;
     private Users userConnected;
@@ -68,9 +68,9 @@ public class MainForm extends JFrame{
     private static Timer timer;
     private JPanel mainPanel;
 
-    public MainForm(CodeBrainAccess codeBrainManager) {
+    public MainForm(CodeBrainAcces codeBrainAcces) {
 
-        this.codeBrainAccess = codeBrainManager;
+        this.codeBrainAcces = codeBrainAcces;
 
         userConnected = (GlobalParameters.get(User) == null ? null : ((Users) GlobalParameters.get(User)));
 
@@ -246,7 +246,7 @@ public class MainForm extends JFrame{
             *Restart Application
             *Lock user Identification
             */
-            codeBrainAccess.restart();
+            codeBrainAcces.restart();
         });
         statusBarRight.add(languageButton);
 
@@ -260,7 +260,7 @@ public class MainForm extends JFrame{
         logoutButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource(logoutImg)).getImage().getScaledInstance(width, height, 0)));        
         logoutButton.putClientProperty("JButton.buttonType", "bevel");
         logoutButton.addActionListener((ActionEvent e) -> {
-            codeBrainAccess.logout();
+            codeBrainAcces.logout();
         });
         statusBarRight.add(logoutButton);
 
@@ -279,7 +279,7 @@ public class MainForm extends JFrame{
             MessageForm.shows(Dictionnaire.get(EnumLibelles.Business_ConfirmExit), "Message", true, new Action() {
                 @Override
                 public void Ok() {
-                    codeBrainAccess.quit();
+                    codeBrainAcces.quit();
                 }
 
                 @Override

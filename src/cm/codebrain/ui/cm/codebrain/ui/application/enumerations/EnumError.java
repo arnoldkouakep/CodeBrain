@@ -20,4 +20,5 @@ public enum EnumError {
     ConstraintViolationException,
     NullValueException,
     LoseConnexionException,
+    DupplicateDatasException,
 }

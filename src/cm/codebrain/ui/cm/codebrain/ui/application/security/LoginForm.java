@@ -5,13 +5,14 @@
  */
 package cm.codebrain.ui.application.security;
 
-import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.ui.application.MessageForm;
+import cm.codebrain.ui.application.controller.CodeBrainAcces;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.Locale;
 import cm.codebrain.ui.application.enumerations.EnumError;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.implement.Executable;
+import cm.codebrain.ui.application.services.CodeBrainServiceAsync;
 import javax.swing.ImageIcon;
 
 /**
@@ -28,18 +29,18 @@ public class LoginForm extends javax.swing.JDialog {
      * A return status code - returned if OK button has been pressed
      */
     public static final int RET_OK = 1;
-    private final CodeBrainManager codeBrainManager;
+    private final CodeBrainAcces codeBrainAcces;
 
     /**
      * Creates new form LoginForm
      *
-     * @param codeBrainManager
+     * @param codeBrainAcces
      * @param parent
      * @param modal
      */
-    public LoginForm(CodeBrainManager codeBrainManager, java.awt.Frame parent, boolean modal) {
+    public LoginForm(CodeBrainAcces codeBrainAcces, java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        this.codeBrainManager = codeBrainManager;
+        this.codeBrainAcces = codeBrainAcces;
 
 //        Locale.initBundle();
 
@@ -208,13 +209,13 @@ public class LoginForm extends javax.swing.JDialog {
                 String login = usernameInput.getText();
                 String password = String.valueOf(passwordInput.getPassword());
 
-                response = codeBrainManager.authenticate(login, password).getLogin();
-
+                response = getAdministrationService().authenticate(login, password);
+                        
                 /**
                  *
                  * User connected
                  */
-                codeBrainManager.load();
+                codeBrainAcces.load();
             }
 
             @Override
@@ -245,7 +246,7 @@ public class LoginForm extends javax.swing.JDialog {
             btnLocal.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/images/fr_fr.png")).getImage().getScaledInstance(btnLocal.getWidth(), btnLocal.getHeight(), 0)));
         }
 
-        this.codeBrainManager.restart();
+        this.codeBrainAcces.restart();
     }//GEN-LAST:event_btnLocalActionPerformed
 
     private void doClose(int retStatus) {
@@ -268,4 +269,13 @@ public class LoginForm extends javax.swing.JDialog {
 
     private int returnStatus = RET_CANCEL;
 
+    private CodeBrainServiceAsync getAdministrationService() {
+        CodeBrainServiceAsync svc = null;
+        try{
+            svc = CodeBrainServiceAsync.class.newInstance();
+        }catch(IllegalAccessException | InstantiationException ex){
+            ex.printStackTrace();
+        }
+        return svc;
+    }
 }

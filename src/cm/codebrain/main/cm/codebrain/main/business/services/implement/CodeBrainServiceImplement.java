@@ -6,7 +6,10 @@
 package cm.codebrain.main.business.services.implement;
 
 import cm.codebrain.main.business.controller.CodeBrainManager;
+import cm.codebrain.ui.application.enumerations.EnumVariable;
 import cm.codebrain.ui.application.services.CodeBrainService;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -16,37 +19,55 @@ public class CodeBrainServiceImplement implements CodeBrainService{
 
     private CodeBrainManager codeBrainManager;
 
-    @Override
-    public Boolean connexion() throws Exception {
-        codeBrainManager = new CodeBrainManager();
-        return codeBrainManager.connexion();
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public CodeBrainServiceImplement() {
+        this.codeBrainManager = new CodeBrainManager();
     }
-    
+
+    public CodeBrainServiceImplement(CodeBrainManager codeBrainManager) {
+        this.codeBrainManager = codeBrainManager;
+    }
+
     @Override
     public String authenticate(String login, String password) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return codeBrainManager.authenticate(login, password);
+    }
+
+    @Override
+    public boolean connexion() {
+        return codeBrainManager.connexion();
+    }
+
+    @Override
+    public boolean disConnexion() {
+        return codeBrainManager.disConnexion();
+    }
+
+    public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, EnumVariable etatActionList, List<HashMap> listCreUp, List<HashMap> listDel) throws Exception {
+        codeBrainManager.crud(entity, modelFinal, etatAction, etatActionList, listCreUp, listDel);
+    }
+
+    public String MD5(String text) {
+        return codeBrainManager.MD5(text);
+    }
+
+    public Object convertToObject(Object data, String tmpEntity) throws ClassNotFoundException {
+        return codeBrainManager.convertToObject(data, tmpEntity);
+    }
+
+    public List getListEntity(String entity, String clause, Object[] toArray) throws Exception {
+        return codeBrainManager.getListEntity(entity, clause, toArray);
+    }
+
+    public Object getObjectInvoke(Object objectConverted, String string, String string0) {
+        return codeBrainManager.getObjectInvoke(objectConverted, string, string0);
+    }
+
+    public List<HashMap> convertToListObject(List modelResult, Class<HashMap> aClass) {
+        return codeBrainManager.convertToListObject(modelResult, aClass);
+    }
+
+    public Object convertToObject(Object objectReslut, Class<HashMap> aClass) {
+        return codeBrainManager.convertToObject(objectReslut, aClass);
     }
     
-//    
-//    public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, EnumVariable etatActionList, List<HashMap> listCreUp, List<HashMap> listDel) throws Exception;
-//
-//    public String MD5(String text);
-//
-//    public Object convertToObject(Object data, String tmpEntity) throws ClassNotFoundException;
-//
-//    public List getListEntity(String entity, String clause, Object[] toArray) throws Exception;
-//
-//    public List<HashMap> convertToListObject(List modelResult, Class aClass);
-//
-//    public Object getObjectInvoke(Object objectConverted, String string, String string0);
-//
-//    public Object convertToObject(Object objectReslut, Class aClass);
-//
-//    public String authenticate(String login, String password, Executable asynchronousExe);
-//
-//    public void load();
-//
-//    public void restart();
-
 }

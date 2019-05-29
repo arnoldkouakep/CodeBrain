@@ -100,7 +100,10 @@ public class CoursForm extends ModelForm {
     public void makeModelData() {
         super.makeModelData();
         modelFinal.put(entityClasse.toLowerCase() + "Id", FormParameters.get(entityClasse.toLowerCase() + "Id"));
-        modelFinal.put(entityGroupe.toLowerCase() + "Id", FormParameters.get(entityGroupe.toLowerCase() + "Id"));
+        if(groupeInput.getText().isEmpty())
+            modelFinal.put(entityGroupe.toLowerCase() + "Id", null);
+        else
+            modelFinal.put(entityGroupe.toLowerCase() + "Id", FormParameters.get(entityGroupe.toLowerCase() + "Id"));
     }
 
     /**
@@ -262,6 +265,11 @@ public class CoursForm extends ModelForm {
         groupeInput.setName("code"); // NOI18N
         this.addFormData("groupeId", groupeInput);
         fieldSearch.put("Cours->groupeId->code", groupeInput);
+        groupeInput.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                groupeInputFocusLost(evt);
+            }
+        });
 
         groupeIntituleInput.setEditable(false);
         groupeIntituleInput.setFocusable(false);
@@ -338,6 +346,13 @@ public class CoursForm extends ModelForm {
 
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void groupeInputFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_groupeInputFocusLost
+        // TODO add your handling code here:
+        if(groupeInput.getText().isEmpty()){
+            reset(groupeInput, groupeIntituleInput);
+        }
+    }//GEN-LAST:event_groupeInputFocusLost
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

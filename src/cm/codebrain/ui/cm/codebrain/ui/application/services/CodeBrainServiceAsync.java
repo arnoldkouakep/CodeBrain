@@ -5,85 +5,68 @@
  */
 package cm.codebrain.ui.application.services;
 
-import cm.codebrain.ui.application.implement.Executable;
+import cm.codebrain.main.business.services.implement.CodeBrainServiceImplement;
+import cm.codebrain.ui.application.enumerations.EnumVariable;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  *
  * @author KSA-INET
  */
-public interface CodeBrainServiceAsync{
+public class CodeBrainServiceAsync extends CodeBrainServiceImplement implements CodeBrainService {
 
-    void authenticate(String login, String password, Executable<String> callback);
-    
-    void connexion(Executable<String> callback);
-    
-    
-//
-//    @Override
-//    public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, EnumVariable etatActionList, List<HashMap> listCreUp, List<HashMap> listDel) throws Exception {
-//        super.crud(entity, modelFinal, etatAction, etatActionList, listCreUp, listDel);
-//    }
-//
-//    @Override
-//    public String MD5(String text) {
-//        return super.MD5(text);
-////        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public Object convertToObject(Object data, String tmpEntity) throws ClassNotFoundException {
-//        return super.convertToObject(data, tmpEntity);
-////        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public List getListEntity(String entity, String clause, Object[] toArray) throws Exception {
-//        return super.getListEntity(entity, clause, toArray);
-////        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public List<HashMap> convertToListObject(List modelResult, Class aClass) {
-//        return super.convertToListObject(modelResult, aClass);
-////        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public Object getObjectInvoke(Object objectConverted, String string, String string0) {
-//        return super.getObjectInvoke(objectConverted, string, string0);
-////        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public Object convertToObject(Object objectReslut, Class aClass) {
-//        return super.convertToObject(objectReslut, aClass);
-////        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public void authenticate(String login, String password, Executable<String> asynchronousExe) {
-//        super.authenticate(login, password, asynchronousExe);
-////        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public void load() {
-//        super.load();
-////        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    @Override
-//    public void restart() {
-//        super.restart();
-////        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//
-//    public void start() {
-//        super.start();
-////        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//    }
-//    
+    public CodeBrainServiceAsync() {
+    }
 
-    
-    
+    @Override
+    public String authenticate(String login, String password) {
+        return super.authenticate(login, password); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean connexion() {
+        return super.connexion();
+    }
+
+    @Override
+    public boolean disConnexion() {
+        return super.disConnexion();
+    }
+
+    @Override
+    public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, EnumVariable etatActionList, List<HashMap> listCreUp, List<HashMap> listDel) throws Exception {
+        super.crud(entity, modelFinal, etatAction, etatActionList, listCreUp, listDel);
+    }
+
+    @Override
+    public String MD5(String text) {
+        return super.MD5(text);
+    }
+
+    @Override
+    public Object convertToObject(Object data, String tmpEntity) throws ClassNotFoundException {
+        try {
+            return super.convertToObject(data, tmpEntity);
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    public List getListEntity(String entity, String clause, Object[] toArray) throws Exception {
+        return super.getListEntity(entity, clause, toArray);
+    }
+
+    public List<HashMap> convertToListObject(List modelResult, Class<HashMap> aClass) {
+        return super.convertToListObject(modelResult, aClass);
+    }
+
+    public Object getObjectInvoke(Object objectConverted, String string, String string0) {
+        return super.getObjectInvoke(objectConverted, string, string0);
+    }
+
+    public Object convertToObject(Object objectReslut, Class<HashMap> aClass) {
+        return super.convertToObject(objectReslut, aClass);
+    }
+
 }

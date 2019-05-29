@@ -6,8 +6,7 @@
 package cm.codebrain.ui.application;
 
 import ch.randelshofer.quaqua.QuaquaManager;
-import cm.codebrain.ui.application.services.CodeBrainServiceAsync;
-//import cm.codebrain.main.business.controller.CodeBrainManager;
+import cm.codebrain.ui.application.controller.CodeBrainAcces;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -52,8 +51,9 @@ public class CodeBrain {
 
         // Launch the Main program
         SwingUtilities.invokeLater(new Runnable() {
-            private CodeBrainAccess codeBrainAccess;
-//            private CodeBrainManager codeBrainManager;
+//            private MainForm mainForm;
+//            private LoginForm login;
+            private CodeBrainAcces codeBrainAcces;
 
             public void run() {
                 int index;
@@ -93,9 +93,8 @@ public class CodeBrain {
                         e.printStackTrace();
                     }
                 }
-                codeBrainAccess = new CodeBrainAccess();
-                codeBrainAccess.start();
-//                getAdministrationService().start();
+                codeBrainAcces = new CodeBrainAcces();
+                codeBrainAcces.start();
             }
         });
     }
