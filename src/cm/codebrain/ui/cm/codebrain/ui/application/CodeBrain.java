@@ -99,12 +99,4 @@ public class CodeBrain {
         });
     }
 
-    private static CodeBrainServiceAsync getAdministrationService() {
-        CodeBrainServiceAsync svc = null;
-        try{
-            svc = CodeBrainServiceAsync.class.newInstance();
-        }catch(IllegalAccessException | InstantiationException ex){
-        }
-        return svc;
-    }
 }

@@ -16,6 +16,8 @@ import cm.codebrain.ui.application.security.LoginForm;
 import cm.codebrain.ui.application.security.MainForm;
 import cm.codebrain.ui.application.security.ReLoginForm;
 import cm.codebrain.ui.application.services.CodeBrainServiceAsync;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -39,6 +41,8 @@ public class CodeBrainAcces {
         Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Connexion), new Executable<Boolean>() {
             @Override
             public void execute() throws Exception {
+//                CodeBrainServiceAsync svc = new CodeBrainServiceAsync();
+//                connexion = svc.connexion();
                 connexion = getAdministrationService().connexion();
             }
 
@@ -54,6 +58,9 @@ public class CodeBrainAcces {
             }
         });
         
+        CodeBrainServiceAsync svc = new CodeBrainServiceAsync();
+        connexion = svc.connexion();
+//connexion=true;
         if(connexion){
             mainForm = new MainForm(this);
 
@@ -127,10 +134,10 @@ public class CodeBrainAcces {
 
     private CodeBrainServiceAsync getAdministrationService() {
         CodeBrainServiceAsync svc = null;
-        try{
+        try {
             svc = CodeBrainServiceAsync.class.newInstance();
-        }catch(IllegalAccessException | InstantiationException ex){
-            ex.printStackTrace();
+        } catch (InstantiationException | IllegalAccessException ex) {
+            Logger.getLogger(CodeBrainAcces.class.getName()).log(Level.SEVERE, null, ex);
         }
         return svc;
     }

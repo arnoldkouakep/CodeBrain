@@ -17,7 +17,7 @@ public interface CodeBrainService {
 
     public String authenticate(String login, String password);
 
-    public boolean connexion();
+    public boolean connexion() ;
 
     public boolean disConnexion();
 
