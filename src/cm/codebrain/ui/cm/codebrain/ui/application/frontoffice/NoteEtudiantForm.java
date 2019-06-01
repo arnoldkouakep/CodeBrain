@@ -5,6 +5,7 @@
  */
 package cm.codebrain.ui.application.frontoffice;
 
+import cm.codebrain.ui.application.MessageForm;
 import cm.codebrain.ui.application.ModelForm;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.FormParameters;
@@ -16,13 +17,12 @@ import static cm.codebrain.ui.application.enumerations.EnumVariable.Field;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Model;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Type;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Value;
+import cm.codebrain.ui.application.implement.Executable;
+import cm.codebrain.ui.application.security.Loading;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.table.DefaultTableModel;
@@ -83,6 +83,7 @@ public class NoteEtudiantForm extends ModelForm {
         eventSections();
         eventClasse();
         eventSalle();
+        loadGrid();
         
         grid.getSelectionModel().addListSelectionListener((ListSelectionEvent e) -> {
             int rowNumber = grid.getSelectedRow();
@@ -256,6 +257,41 @@ public class NoteEtudiantForm extends ModelForm {
         return modelFind;
     }
 
+    private void loadGrid() {
+//        Loading.show(null, new Executable() {
+//            @Override
+//            public void execute() throws Exception{
+//
+//                HashMap[] args = null;
+//
+//                listCours = null;
+////                try {
+//                    listCours = getListModelForSelect(null, entityCours, null, null, args);
+////                } catch (Exception ex) {
+////                    Logger.getLogger(GroupSalleForm.class.getName()).log(Level.SEVERE, null, ex);
+////                }
+//
+//            }
+//
+//            @Override
+//            public List<HashMap> success(){
+//                listCours.stream().map((model) -> {
+//                    Object[] newRow = {false, model.get("code"), model.get("libelleFr"), model.get("libelleEn")};
+//                    return newRow;
+//                }).forEachOrdered((newRow) -> {
+//                    ((DefaultTableModel) ((JTable) coursListTable).getModel()).addRow(newRow);
+//                });
+//
+//                return listCours;
+//            }
+//
+//            @Override
+//            public void error(Exception ex) {
+//                MessageForm.showsError(ex.getMessage(), "Message", false, null);
+//            }
+//        });
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -339,6 +375,8 @@ public class NoteEtudiantForm extends ModelForm {
             Dictionnaire.get(EnumLibelles.Business_Libelle_Credits),
             Dictionnaire.get(EnumLibelles.Business_Libelle_Total)
         ));
+        grid.setFocusable(false);
+        grid.setRequestFocusEnabled(false);
         grid.setShowHorizontalLines(true);
         grid.setShowVerticalLines(true);
         grid.getTableHeader().setReorderingAllowed(false);
@@ -355,6 +393,7 @@ public class NoteEtudiantForm extends ModelForm {
         classeInput.setName("code"); // NOI18N
 
         classeIntituleInput.setEditable(false);
+        classeIntituleInput.setFocusable(false);
         classeIntituleInput.setName("intitule"); // NOI18N
 
         javax.swing.GroupLayout panelClasseLayout = new javax.swing.GroupLayout(panelClasse);
@@ -398,6 +437,7 @@ public class NoteEtudiantForm extends ModelForm {
         sectionCodeInput.setName("code"); // NOI18N
 
         sectionLibelleInput.setEditable(false);
+        sectionLibelleInput.setFocusable(false);
         sectionLibelleInput.setName("intitule"); // NOI18N
 
         javax.swing.GroupLayout panelSectionLayout = new javax.swing.GroupLayout(panelSection);

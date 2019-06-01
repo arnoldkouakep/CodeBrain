@@ -6,7 +6,6 @@
 package cm.codebrain.ui.application;
 
 import cm.codebrain.main.business.controller.CodeBrainException;
-import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.controller.Locale;
@@ -27,11 +26,12 @@ import static cm.codebrain.ui.application.enumerations.EnumVariable.Panel;
 import cm.codebrain.ui.application.implement.Action;
 import cm.codebrain.ui.application.implement.Executable;
 import cm.codebrain.ui.application.security.Loading;
+import cm.codebrain.ui.application.services.CodeBrainServiceAsync;
 import java.awt.Color;
+import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -94,8 +94,12 @@ public abstract class ModelForm extends javax.swing.JDialog {
     private final String title;
     private boolean hideActionMenuTitle = true;
     private boolean confirmExit = false;
+    private final Color colorDefault = new Color(255, 255, 255);
+    private final Color colorRef = new Color(200, 255, 255);
+    private final Color colorSearch = new Color(223, 246, 238);
+    private final Color colorResult = new Color(255, 253, 235);
 
-    public CodeBrainManager cbManager = new CodeBrainManager();
+//    public CodeBrainManager cbManager = new CodeBrainManager();
     private SearchForm searchForm;
     private Object key;
     private List<HashMap> allComponents;
@@ -151,7 +155,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         super();
 
         init();
-        
+
         Locale.initBundle();
 
         setSize(wi, he);
@@ -178,7 +182,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         addActionSupplementaire();
 
         loadRequiredFields();
-        FormParameters.add(Panel.toString()+this.getClass().getSimpleName(), this);
+        FormParameters.add(Panel.toString() + this.getClass().getSimpleName(), this);
     }
 
     public ModelForm(String title, int width, int height) {
@@ -195,7 +199,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         hideActionMenuTitle = false;
 
         showTitle();
-        
+
         this.wi = width;
         this.he = height;
 
@@ -221,7 +225,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         eventActionRef();
 
         loadRequiredFields();
-        FormParameters.add(Panel.toString()+this.getClass().getSimpleName(), this);
+        FormParameters.add(Panel.toString() + this.getClass().getSimpleName(), this);
     }
 
     public ModelForm(String title, int width, int height, boolean hideActionMenuTitle) {
@@ -262,7 +266,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         eventActionRef();
 
         loadRequiredFields();
-        FormParameters.add(Panel.toString()+this.getClass().getSimpleName(), this);
+        FormParameters.add(Panel.toString() + this.getClass().getSimpleName(), this);
     }
 
     public ModelForm(String title, int width, int height, boolean hideActionMenuTitle, boolean confirmExit) {
@@ -278,7 +282,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         this.hideActionMenuTitle = hideActionMenuTitle;
 
         showTitle();
-        
+
         this.wi = width;
         this.he = height;
 
@@ -306,9 +310,9 @@ public abstract class ModelForm extends javax.swing.JDialog {
         eventActionRef();
 
         loadRequiredFields();
-        FormParameters.add(Panel.toString()+this.getClass().getSimpleName(), this);
+        FormParameters.add(Panel.toString() + this.getClass().getSimpleName(), this);
     }
-    
+
     public ModelForm(String title, int width, int height, boolean hideActionMenuTitle, boolean confirmExit, Object... variablesInit) {
 
         super();
@@ -322,7 +326,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         this.hideActionMenuTitle = hideActionMenuTitle;
 
         showTitle();
-        
+
         this.wi = width;
         this.he = height;
 
@@ -350,7 +354,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         eventActionRef();
 
         loadRequiredFields();
-        FormParameters.add(Panel.toString()+this.getClass().getSimpleName(), this);
+        FormParameters.add(Panel.toString() + this.getClass().getSimpleName(), this);
     }
 // </editor-fold>
 
@@ -366,17 +370,18 @@ public abstract class ModelForm extends javax.swing.JDialog {
 
 // </editor-fold>
 // <editor-fold desc="Void Methods">
-    
-    public void init(Object... var){
-        
+    public void init(Object... var) {
+
         FormParameters.init();
     }
-    
+
     public void addAction(Object input, String entity, String[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
         /**
          * TextFields
          */
         if (input.getClass().equals(JTextField.class)) {
+            //((JTextField) input).setBackground(colorSearch);//68, 127, 255));
+            setColor(input, imputsResult);
             ((JTextField) input).addActionListener((ActionEvent e) -> {
                 if (!((JTextField) input).getText().isEmpty()) {
                     inputActionListener(e, input, entity, null, parametresGrid, filter, args, imputsResult);
@@ -402,6 +407,8 @@ public abstract class ModelForm extends javax.swing.JDialog {
          * TextFields
          */
         if (input.getClass().equals(JTextField.class)) {
+//            ((JTextField) input).setBackground(colorSearch);//68, 127, 255));
+            setColor(input, imputsResult);
             ((JTextField) input).addActionListener((ActionEvent e) -> {
                 if (!((JTextField) input).getText().isEmpty()) {
                     inputActionListener(e, input, entity, keyParam, parametresGrid, filter, args, imputsResult);
@@ -427,12 +434,12 @@ public abstract class ModelForm extends javax.swing.JDialog {
 
             Loading.show(btnValider, new Executable<List<HashMap>>() {
                 List<HashMap> modelComplet;
-                
+
                 @Override
                 public void execute() throws Exception {
 
                     modelComplet = getListModelForSelect(input, entity, parametresGrid, filter, args);
-                    
+
                     searchForm = new SearchForm(entity, keyParam, modelComplet, parametresGrid, imputsResult);
 
                     searchForm.setVisible(true);
@@ -446,18 +453,20 @@ public abstract class ModelForm extends javax.swing.JDialog {
 //                        }
                     }
                 }
-                
+
                 @Override
                 public List<HashMap> success() {
-                    
-                    if(imputsResult.length > 1){
-                        if(imputsResult[1].getClass() == JTextField.class){
+
+                    if (imputsResult.length > 1) {
+                        if (imputsResult[1].getClass() == JTextField.class) {
                             ((JTextField) imputsResult[1]).postActionEvent();
-                        }else if(imputsResult[1].getClass() == JFormattedTextField.class){
+                        } else if (imputsResult[1].getClass() == JFormattedTextField.class) {
                             ((JFormattedTextField) imputsResult[1]).postActionEvent();
+                        } else if (imputsResult[1].getClass() == JComboBox.class) {
+                            ((JComboBox) imputsResult[1]).postEvent(new Event(imputsResult, Event.ENTER, null));//actionPerformed(new ActionEvent(imputsResult, 0, ((JComboBox) imputsResult[1]).getActionCommand()));
                         }
                     }
-                    
+
                     return modelComplet;
                 }
 
@@ -479,10 +488,10 @@ public abstract class ModelForm extends javax.swing.JDialog {
         this.fieldSearch.putIfAbsent(key, value);
     }
 
-    public void showTitle(){
+    public void showTitle() {
         setTitle(stateMenuLabel(title, hideActionMenuTitle));
     }
-    
+
     public void showActionBar() {
 
         setActionMenu();
@@ -684,14 +693,14 @@ public abstract class ModelForm extends javax.swing.JDialog {
 
     public void actionBtnValider(java.awt.event.ActionEvent evt) {
         if (requiredFieldsValidation()) {
-            
-            Loading.show(btnValider, new Executable<HashMap>(){
+
+            Loading.show(btnValider, new Executable<HashMap>() {
                 @Override
                 public void execute() throws Exception {
-                    if(etatAction == Default){
+                    if (etatAction == Default) {
                         reset();
                         doClose(RET_CANCEL);
-                    }else{
+                    } else {
                         if (createList) {
 
                         } else {
@@ -702,17 +711,17 @@ public abstract class ModelForm extends javax.swing.JDialog {
                             }
 
                             makeModelData();
-
-                            cbManager.crud(entity, modelFinal, etatAction, etatActionList, listModelCreateUpdate, listModelDelete);
+                            getAdministrationService().crud(entity, modelFinal, etatAction, etatActionList, listModelCreateUpdate, listModelDelete);
+//                            cbManager.crud(entity, modelFinal, etatAction, etatActionList, listModelCreateUpdate, listModelDelete);
                         }
                     }
                 }
 
                 @Override
                 public HashMap success() {
-                    if(etatAction != Default){
+                    if (etatAction != Default) {
                         MessageForm.shows(Dictionnaire.get(EnumLibelles.Business_Libelle_Message_Sucess.toString()), "Message", false, null);
-                    
+
                         reset();
                     }
 
@@ -741,7 +750,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
     }
 
 //    public void makeModelDatas() {
-        /*
+    /*
         modelFinal = new HashMap<>();
         makeModelData();
 
@@ -751,10 +760,8 @@ public abstract class ModelForm extends javax.swing.JDialog {
         }).forEachOrdered((Object val) -> {
             modelFinal.putIfAbsent(this.key.toString(), model.get(val));
         });
-         */
-
+     */
 //    }
-
     public void makeModelData() {
 //        if (!createList) {
         /**
@@ -776,7 +783,8 @@ public abstract class ModelForm extends javax.swing.JDialog {
             if (((JPasswordField) val).getText().isEmpty()) {
                 modelFinal.put(this.key.toString(), FormParameters.get(this.key.toString()));
             } else {
-                modelFinal.put(this.key.toString(), cbManager.MD5(((JPasswordField) val).getText()));
+                String valueMD5 = getAdministrationService().MD5(((JPasswordField) val).getText());
+                modelFinal.put(this.key.toString(), valueMD5);//cbManager.MD5(((JPasswordField) val).getText()));
             }
         });
         /**
@@ -817,10 +825,10 @@ public abstract class ModelForm extends javax.swing.JDialog {
         /**
          * JPasswordField.class
          */
-        formDatas.keySet().stream().map((ky) -> {
+        fieldSearch.keySet().stream().map((ky) -> {
             this.key = ky;
             return ky;
-        }).filter((ky) -> (formDatas.get(ky).getClass() == JPasswordField.class)).map((ky) -> (JPasswordField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+        }).filter((ky) -> (fieldSearch.get(ky).getClass() == JPasswordField.class)).map((ky) -> (JPasswordField) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
             try {
                 getValueModelFromKey(this.key.toString(), model);
                 ((JPasswordField) val).setText(null);
@@ -830,10 +838,10 @@ public abstract class ModelForm extends javax.swing.JDialog {
         /**
          * JTextPane.class
          */
-        formDatas.keySet().stream().map((ky) -> {
+        fieldSearch.keySet().stream().map((ky) -> {
             this.key = ky;
             return ky;
-        }).filter((ky) -> (formDatas.get(ky).getClass() == JTextPane.class)).map((ky) -> (JTextPane) formDatas.get(ky)).forEachOrdered((Object val) -> {
+        }).filter((ky) -> (fieldSearch.get(ky).getClass() == JTextPane.class)).map((ky) -> (JTextPane) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
             try {
                 ((JTextPane) val).setText(model.get(this.key.toString()).toString());
             } catch (Exception e) {
@@ -842,10 +850,10 @@ public abstract class ModelForm extends javax.swing.JDialog {
         /**
          * ButtonGroup.class
          */
-        formDatas.keySet().stream().map((ky) -> {
+        fieldSearch.keySet().stream().map((ky) -> {
             this.key = ky;
             return ky;
-        }).filter((ky) -> (formDatas.get(ky).getClass() == ButtonGroup.class)).map((ky) -> (ButtonGroup) formDatas.get(ky)).forEachOrdered((Object val) -> {
+        }).filter((ky) -> (fieldSearch.get(ky).getClass() == ButtonGroup.class)).map((ky) -> (ButtonGroup) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
             try {
                 Enumeration<AbstractButton> buttons = ((ButtonGroup) val).getElements();
                 while (buttons.hasMoreElements()) {
@@ -860,13 +868,13 @@ public abstract class ModelForm extends javax.swing.JDialog {
         /**
          * JFormattedTextField.class
          */
-        formDatas.keySet().stream().map((ky) -> {
+        fieldSearch.keySet().stream().map((ky) -> {
             this.key = ky;
             return ky;
-        }).filter((ky) -> (formDatas.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) formDatas.get(ky)).forEachOrdered((Object val) -> {
+        }).filter((ky) -> (fieldSearch.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
             try {
-                String strTime = new SimpleDateFormat("").format(model.get(this.key.toString()));
-                ((JFormattedTextField) val).setValue(model.get(this.key.toString()));
+//                String strTime = new SimpleDateFormat("").format(model.get(this.key.toString()));
+                ((JFormattedTextField) val).setValue(getValueModelFromKey(this.key.toString(), model));//model.get(this.key.toString()));
             } catch (Exception e) {
             }
         });
@@ -914,7 +922,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
         }
     }
 
-    private void doClose(int retStatus) {
+    protected void doClose(int retStatus) {
         returnStatus = retStatus;
         setVisible(false);
         dispose();
@@ -948,12 +956,12 @@ public abstract class ModelForm extends javax.swing.JDialog {
     }
 
     public void setActionRef() {
-        this.inputRef.setBackground(new Color(223, 246, 238));//68, 127, 255));
+        this.inputRef.setBackground(colorRef);//new Color(200, 255, 255));//68, 127, 255));
         this.inputRef.requestFocus();
     }
 
     public void setDefaultActionRef() {
-        this.inputRef.setBackground(new Color(255, 255, 255));
+        this.inputRef.setBackground(colorDefault);//new Color(255, 255, 255));
         this.inputRef.setFocusable(true);
     }
 
@@ -1025,8 +1033,9 @@ public abstract class ModelForm extends javax.swing.JDialog {
                      */
                 } else if (component.get(Type) == JFormattedTextField.class) {
                     ((JFormattedTextField) component.get(Value)).setText(null);
+                    ((JFormattedTextField) component.get(Value)).setValue(null);
                     /**
-                     * JFormattedTextField.class
+                     * JTable.class
                      */
                 } else if (component.get(Type) == JTable.class) {
                     try {
@@ -1070,6 +1079,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
                      */
                 } else if (component.getClass() == JFormattedTextField.class) {
                     ((JFormattedTextField) component).setText(null);
+                    ((JFormattedTextField) component).setValue(null);
                 } else if (component.getClass() == JTable.class) {
                     ((DefaultTableModel) ((JTable) component).getModel()).setRowCount(0);
                 } else {
@@ -1169,16 +1179,16 @@ public abstract class ModelForm extends javax.swing.JDialog {
                     String tmpEntity = arg.get(Entity).toString();
                     HashMap data = (HashMap) FormParameters.get(arg.get(Model).toString());
 
-                    Object dataObject = cbManager.convertToObject(data, tmpEntity);
+                    Object dataObject = getAdministrationService().convertToObject(data, tmpEntity);
                     parameterArgs.add(dataObject);
                 } else {
                     parameterArgs.add(arg.get(Value));
                 }
             }
         }
-        modelResult = cbManager.getListEntity(entity, clause, parameterArgs.toArray());
+        modelResult = getAdministrationService().getListEntity(entity, clause, parameterArgs.toArray());
 
-        List<HashMap> modelComplet = cbManager.convertToListObject(modelResult, HashMap.class);
+        List<HashMap> modelComplet = getAdministrationService().convertToListObject(modelResult, HashMap.class);
 
         if (filtre != null && !filtre.equals("*")) {
             modelComplet = modelComplet.stream().map((mapper) -> {
@@ -1289,16 +1299,16 @@ public abstract class ModelForm extends javax.swing.JDialog {
                 } else if (object.getClass().equals(String.class)) {
                     Object objectConverted = null;
                     try {
-                        objectConverted = cbManager.convertToObject(modelTmp, indentKey[i - 1]);
+                        objectConverted = getAdministrationService().convertToObject(modelTmp, indentKey[i - 1]);
                     } catch (ClassNotFoundException ex) {
                     }
 
                     if (objectConverted != null) {
-                        Object objectReslut = cbManager.getObjectInvoke(objectConverted, indentKey[i - 1], indentKey[i]);
+                        Object objectReslut = getAdministrationService().getObjectInvoke(objectConverted, indentKey[i - 1], indentKey[i]);
 
                         if (objectReslut != null) {
 
-                            object = cbManager.convertToObject(objectReslut, HashMap.class);
+                            object = getAdministrationService().convertToObject(objectReslut, HashMap.class);
 
                             FormParameters.add(indentKey[indentKey.length - 2], object);
 
@@ -1346,21 +1356,21 @@ public abstract class ModelForm extends javax.swing.JDialog {
                 columnsName
         ) {
             public Class getColumnClass(int columnIndex) {
-                return (classArray.get(columnIndex)==null) ? Object.class : classArray.get(columnIndex);
+                return (classArray.get(columnIndex) == null) ? Object.class : classArray.get(columnIndex);
             }
         };
-        
+
         return this.tableModel;
     }
 
     public DefaultTableModel setModelDataTable(Object[]... parameters) {
-        
+
         Class[] columnClasses = new Class[parameters.length];
         String[] columnNames = new String[parameters.length];
 //        int[] columnSizes = new int[parameters.length];
         boolean[] columnEditables = new boolean[parameters.length];
-        
-        for(int i=0; i < parameters.length; i++){
+
+        for (int i = 0; i < parameters.length; i++) {
             columnNames[i] = (String) parameters[i][0];
             columnClasses[i] = (Class) parameters[i][1];
 //            columnSizes[i] = (int) parameters[i][2];
@@ -1403,11 +1413,11 @@ public abstract class ModelForm extends javax.swing.JDialog {
                 super.setValueAt(aValue, rowIndex, columnIndex);
             }
         };
-    
+
         return this.tableModel;
-        
+
     }
-    
+
     public DefaultTableModel setModelDataTable(String... columnsName) {
 
         this.tableModel = new DefaultTableModel() {
@@ -1449,10 +1459,10 @@ public abstract class ModelForm extends javax.swing.JDialog {
 
         return tableModel;
     }
-    
-    protected void resizeTableColumnModel(JTable table, int... size){
+
+    protected void resizeTableColumnModel(JTable table, int... size) {
         final TableColumnModel colmunModel = table.getColumnModel();
-        for(int column=0; column <table.getColumnCount(); column++){
+        for (int column = 0; column < table.getColumnCount(); column++) {
             colmunModel.getColumn(column).setPreferredWidth(size[column]);
         }
     }
@@ -1498,5 +1508,45 @@ public abstract class ModelForm extends javax.swing.JDialog {
         return valid;
     }
 
+    protected CodeBrainServiceAsync getAdministrationService() {
+        CodeBrainServiceAsync svc = null;
+        try {
+            svc = CodeBrainServiceAsync.class.newInstance();
+        } catch (IllegalAccessException | InstantiationException ex) {
+            ex.printStackTrace();
+        }
+        return svc;
+    }
 // </editor-fold>
+
+    private void setColor(Object input, Object... imputsResult) {
+//        ((JTextField) input).setBackground(colorSearch);//68, 127, 255));
+        for (Object obj : imputsResult) {
+            if (obj.equals(input)) {
+                setColor(colorSearch, true, input);
+            }else{
+                setColor(colorResult, false, obj);
+            }
+        }
+    }
+
+    private void setColor(Color color, boolean editable, Object input) {
+        if (input instanceof JTextField) {
+            if(editable || (!editable && !((JTextField) input).isEditable())) ((JTextField) input).setBackground(color);
+        } else if (input instanceof JFormattedTextField) {
+            if(editable || (!editable && !((JTextField) input).isEditable())) ((JFormattedTextField) input).setBackground(color);
+        }
+    }
+
+    private void setColor(Color color, Object input0, Object... inputs) {
+        for (Object input : inputs) {
+            if (!input0.equals(input)) {
+                if (input instanceof JTextField) {
+                    ((JTextField) input).setBackground(color);
+                } else if (input instanceof JFormattedTextField) {
+                    ((JFormattedTextField) input).setBackground(color);
+                }
+            }
+        }
+    }
 }

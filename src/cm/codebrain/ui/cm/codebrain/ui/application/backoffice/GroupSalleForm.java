@@ -327,6 +327,7 @@ public class GroupSalleForm extends ModelForm {
         fieldSearch("Salle->code", salleInput);
 
         salleIntituleInput.setEditable(false);
+        salleIntituleInput.setFocusable(false);
         salleIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Salle->intitule", salleIntituleInput);
         salleIntituleInput.addActionListener(new java.awt.event.ActionListener() {
@@ -411,6 +412,7 @@ public class GroupSalleForm extends ModelForm {
         fieldsRequired.add(classeInput);
 
         classeIntituleInput.setEditable(false);
+        classeIntituleInput.setFocusable(false);
         classeIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Groupe->classeId->intitule", classeIntituleInput);
 

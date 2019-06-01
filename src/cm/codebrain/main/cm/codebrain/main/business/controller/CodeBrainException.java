@@ -6,7 +6,7 @@
 package cm.codebrain.main.business.controller;
 
 import cm.codebrain.ui.application.controller.Dictionnaire;
-import cm.codebrain.ui.application.enumerations.EnumError;
+import cm.codebrain.main.business.enumerations.EnumError;
 
 /**
  *
@@ -22,6 +22,10 @@ public class CodeBrainException extends Exception{
             cbException.initCause(new NullPointerException(Dictionnaire.get(EnumError.Business_Libelle_No_Result_Found)));
         }else if(cbException.getCause() instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException){
             cbException = new Exception(Dictionnaire.get(EnumError.NumberArgumentException), cbException.getCause());
+        }else if(cbException.getCause() instanceof java.sql.SQLIntegrityConstraintViolationException){
+            cbException = new Exception(Dictionnaire.get(EnumError.ConstraintViolationException), cbException.getCause());
+        }else if(cbException.getCause() instanceof cm.codebrain.main.business.manager.exceptions.PreexistingEntityException){
+            cbException = new Exception(Dictionnaire.get(EnumError.DupplicateDatasException), cbException.getCause());
         }else{
             cbException = new Exception(Dictionnaire.get(EnumError.WorkFlowException), cbException.getCause());
         }

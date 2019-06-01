@@ -232,6 +232,8 @@
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                       <Connection code="setModelDataTable(&#xd;&#xa;    Dictionnaire.get(EnumLibelles.Business_Libelle_code),&#xd;&#xa;    Dictionnaire.get(EnumLibelles.Business_Libelle_IntituleFr),&#xd;&#xa;    Dictionnaire.get(EnumLibelles.Business_Libelle_IntituleEn),&#xd;&#xa;    Dictionnaire.get(EnumLibelles.Business_Libelle_Note),&#xd;&#xa;    Dictionnaire.get(EnumLibelles.Business_Libelle_Credits),&#xd;&#xa;    Dictionnaire.get(EnumLibelles.Business_Libelle_Total)&#xd;&#xa;    )" type="code"/>
                     </Property>
+                    <Property name="focusable" type="boolean" value="false"/>
+                    <Property name="requestFocusEnabled" type="boolean" value="false"/>
                     <Property name="showHorizontalLines" type="boolean" value="true"/>
                     <Property name="showVerticalLines" type="boolean" value="true"/>
                     <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
@@ -313,6 +315,7 @@
                 <Component class="javax.swing.JTextField" name="classeIntituleInput">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
+                    <Property name="focusable" type="boolean" value="false"/>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
                 </Component>
@@ -427,6 +430,7 @@
                 <Component class="javax.swing.JTextField" name="sectionLibelleInput">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
+                    <Property name="focusable" type="boolean" value="false"/>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
                 </Component>

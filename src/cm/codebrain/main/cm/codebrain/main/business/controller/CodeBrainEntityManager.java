@@ -65,9 +65,10 @@ public class CodeBrainEntityManager {
     }
 
     public EntityManager getEntityManager() {
-//        if(this.emf==null){
+        if(this.em==null){
+            setEntityManager(this.emf.createEntityManager());
 //            this.emf = (EntityManagerFactory) GlobalParameters.get("emf");
-//        }
+        }
         
         return this.em;
     }
@@ -79,7 +80,7 @@ public class CodeBrainEntityManager {
     public void createEntityManager(){
         setEntityManager(getEntityManagerFactory().createEntityManager());
     }
-
+    
     public void persist(Object entityObject) {
 //        EntityManager em = null;
 
@@ -99,12 +100,15 @@ public class CodeBrainEntityManager {
 //            }
 //          tx.commit();
         } catch (Exception ex) {
-//            getTransaction().rollback();
+            System.out.println("Erreur Persist : " + ex.getMessage());
+            getTransaction().setRollbackOnly();//rollback();
             throw ex;
 //        } finally {
 //            if (em != null) {
 //                em.close();
 //            }
+        }finally{
+            getEntityManager().flush();
         }
     }
 
@@ -121,14 +125,18 @@ public class CodeBrainEntityManager {
 
             entityObject = getEntityManager().merge(entityObject);
 
-            getEntityManager().flush();
+//            getEntityManager().flush();
 //            tx.commit();
         } catch (Exception ex) {
+            System.out.println("Erreur Merge : " + ex.getMessage());
+            getTransaction().rollback();
             throw ex;
 //        } finally {
 //            if (em != null) {
 //                em.close();
 //            }
+        }finally{
+            getEntityManager().flush();
         }
 
         return entityObject;
@@ -155,14 +163,17 @@ public class CodeBrainEntityManager {
 //            }
             getEntityManager().remove(entityObject);
 
-            getEntityManager().flush();
+//            getEntityManager().flush();
 //            tx.commit();
         } catch (Exception ex) {
+//            getTransaction().rollback();
             throw ex;
 //        } finally {
 //            if (em != null) {
 //                em.close();
 //            }
+        }finally{
+            getEntityManager().flush();
         }
 
     }

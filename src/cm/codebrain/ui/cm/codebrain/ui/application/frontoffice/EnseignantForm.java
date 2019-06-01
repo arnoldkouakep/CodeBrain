@@ -27,7 +27,7 @@ public class EnseignantForm extends ModelForm {
      */
     public EnseignantForm(String title){
 //            , int width, int height, boolean hideActionMenuTitle, boolean confirmExit) {
-        super(title, 960, 530, false, true);
+        super(title, 820, 530, false, true);
 
         this.showActionBar();
         etatAction = CREATE;
@@ -358,6 +358,7 @@ public class EnseignantForm extends ModelForm {
         fieldsRequired.add(professionInput);
 
         professionIntituleInput.setEditable(false);
+        professionIntituleInput.setFocusable(false);
         professionIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Profession->professionId->intitule", professionIntituleInput);
 

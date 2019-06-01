@@ -7,7 +7,7 @@ package cm.codebrain.ui.application.administration;
 
 import cm.codebrain.ui.application.MessageForm;
 import cm.codebrain.ui.application.ModelForm;
-import cm.codebrain.ui.application.backoffice.GroupSalleForm;
+import static cm.codebrain.ui.application.ModelForm.RET_CANCEL;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
@@ -22,8 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
@@ -49,7 +47,7 @@ public class AffectationCoursForm extends ModelForm {
     public AffectationCoursForm(String title) {
         super(title, 950, 500, true, true);
 
-        createList(true);
+        createList(false);
         setAction(EnumVariable.List);
         this.showMenuBar();
     }
@@ -66,6 +64,7 @@ public class AffectationCoursForm extends ModelForm {
         loadGrid();
     }
 
+    @Override
     public void makeModelData() {
 //        super.makeModelData();
         final Object modelEnseignement = FormParameters.get(entityEnseignant.toLowerCase() + "Id");
@@ -139,12 +138,16 @@ public class AffectationCoursForm extends ModelForm {
                 HashMap[] args = null;
 
                 listCours = null;
-                try {
+//                try {
                     listCours = getListModelForSelect(null, entityCours, null, null, args);
-                } catch (Exception ex) {
-                    Logger.getLogger(GroupSalleForm.class.getName()).log(Level.SEVERE, null, ex);
-                }
+//                } catch (Exception ex) {
+//                    Logger.getLogger(GroupSalleForm.class.getName()).log(Level.SEVERE, null, ex);
+//                }
 
+            }
+
+            @Override
+            public List<HashMap> success(){
                 listCours.stream().map((model) -> {
                     Object[] newRow = {false, model.get("code"), model.get("libelleFr"), model.get("libelleEn")};
                     return newRow;
@@ -152,16 +155,14 @@ public class AffectationCoursForm extends ModelForm {
                     ((DefaultTableModel) ((JTable) coursListTable).getModel()).addRow(newRow);
                 });
 
-            }
-
-            @Override
-            public List<HashMap> success(){
                 return listCours;
             }
 
             @Override
             public void error(Exception ex) {
                 MessageForm.showsError(ex.getMessage(), "Message", false, null);
+                doClose(RET_CANCEL);
+                dispose();
             }
         });
     }
@@ -250,6 +251,7 @@ public class AffectationCoursForm extends ModelForm {
         fieldsRequired.add(matriculeInput);
 
         firstNameInput.setEditable(false);
+        firstNameInput.setFocusable(false);
         firstNameInput.setName("firstName"); // NOI18N
         this.setRef(firstNameInput);
         fieldSearch("AffectationCours->EnseignantId->firstName", firstNameInput);
@@ -260,6 +262,7 @@ public class AffectationCoursForm extends ModelForm {
         });
 
         lastNameInput.setEditable(false);
+        lastNameInput.setFocusable(false);
         lastNameInput.setName("lastName"); // NOI18N
         fieldSearch("AffectationCours->EnseignantId->lastName", lastNameInput);
 

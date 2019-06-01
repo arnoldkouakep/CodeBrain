@@ -47,11 +47,11 @@ public class SearchForm extends ModelForm {
     private List<String> columnValues;
     
     public SearchForm() {
-        super(Dictionnaire.get(EnumLibelles.Business_Libelle_Search), 520, 320, true, false);
+        super(Dictionnaire.get(EnumLibelles.Business_Libelle_Search), 400, 320, true, false);
     }
     
     public SearchForm(String entityName, String keyParam, List<HashMap> listModelResult, Object[][] parametresGrid, Object... imputsResultFields) {
-        super(Dictionnaire.get(EnumLibelles.Business_Libelle_Search), 520, 320, true, false, listModelResult, imputsResultFields, entityName, keyParam, parametresGrid);
+        super(Dictionnaire.get(EnumLibelles.Business_Libelle_Search), 400, 320, true, false, listModelResult, imputsResultFields, entityName, keyParam, parametresGrid);
         btnValider.setText("Ok");
     }
 
@@ -164,7 +164,7 @@ public class SearchForm extends ModelForm {
 
             @Override
             public Object getValueAt(int row, int column) {
-                return listModelResult.get(row).get(columnValues.get(column));
+                return Dictionnaire.get(listModelResult.get(row).get(columnValues.get(column)));
             }
 
             @Override
@@ -282,8 +282,8 @@ public class SearchForm extends ModelForm {
         stripedTableScrollPane = new javax.swing.JScrollPane();
         grid = new javax.swing.JTable();
 
-        setMinimumSize(new java.awt.Dimension(400, 234));
-        setPreferredSize(new java.awt.Dimension(400, 234));
+        setMinimumSize(new java.awt.Dimension(300, 234));
+        setPreferredSize(new java.awt.Dimension(300, 234));
 
         labelSearch.setFont(new java.awt.Font("sansserif", 1, 14)); // NOI18N
         labelSearch.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Filtre)); // NOI18N

@@ -5,10 +5,10 @@
  */
 package cm.codebrain.ui.application.security;
 
-import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.main.business.entitie.Levels;
 import cm.codebrain.main.business.entitie.Users;
 import cm.codebrain.ui.application.MessageForm;
+import cm.codebrain.ui.application.controller.CodeBrainAcces;
 import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.GlobalParameters;
 import cm.codebrain.ui.application.controller.Locale;
@@ -35,7 +35,7 @@ import javax.swing.Timer;
  *
  * @author KSA-INET
  */
-public class MainForm extends JFrame{
+public class MainForm extends JFrame {
 
     private final String logoTxtImg = "/images/logo.png";
     private final String logoImg = "/images/logo2.png";
@@ -48,7 +48,7 @@ public class MainForm extends JFrame{
     private final int height = 18;
 
     private final ImageIcon image = new ImageIcon(getClass().getResource(logoImg));
-    private final CodeBrainManager codeBrainManager;
+    private final CodeBrainAcces codeBrainAcces;
     private JLabel hourStatusLabel;
     private JLabel userStatusLabel;
     private Users userConnected;
@@ -67,9 +67,9 @@ public class MainForm extends JFrame{
     private static Timer timer;
     private JPanel mainPanel;
 
-    public MainForm(CodeBrainManager codeBrainManager) {
+    public MainForm(CodeBrainAcces codeBrainAcces) {
 
-        this.codeBrainManager = codeBrainManager;
+        this.codeBrainAcces = codeBrainAcces;
 
         userConnected = (GlobalParameters.get(User) == null ? null : ((Users) GlobalParameters.get(User)));
 
@@ -93,7 +93,7 @@ public class MainForm extends JFrame{
         setName("mainFrame"); // NOI18N
         setIconImage(image.getImage());
         setLayout(new BorderLayout());
-        
+
         setLocationRelativeTo(null);
         /*
         *
@@ -110,7 +110,7 @@ public class MainForm extends JFrame{
          */
         JPanel logoPanel = new JPanel();
         logoPanel.setLayout(new CardLayout());
-        
+
         /*
          *
          *Logo Label
@@ -123,13 +123,12 @@ public class MainForm extends JFrame{
         logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         logoPanel.add(logoLabel);
-        
+
         /*
          *
          *Main Container Panel
          *
          */
-        
         mainPanel = new JPanel();
         mainPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEADING, 100, 50));
 
@@ -138,7 +137,7 @@ public class MainForm extends JFrame{
         centerPanel.add(logoPanel);
 
         add(centerPanel, BorderLayout.CENTER);
-        
+
         /*
         *
         *MenuBar
@@ -147,7 +146,7 @@ public class MainForm extends JFrame{
         menuBar = new JToolBar();
         menuBar.setFloatable(false);
         menuBar.setMargin(new Insets(3, 10, 3, 10));
-        
+
         menuBar.putClientProperty("Quaqua.ToolBar.style", "bottom");
 
         add(menuBar, BorderLayout.NORTH);
@@ -219,7 +218,7 @@ public class MainForm extends JFrame{
         copyrightLabel.setFont(new java.awt.Font("sansserif", 3, 8));
         copyrightLabel.setEnabled(false);
         statusBarLeft.add(copyrightLabel);
-        
+
         /*
         *
         *Footer Menu : Language
@@ -244,8 +243,8 @@ public class MainForm extends JFrame{
             /*
             *Restart Application
             *Lock user Identification
-            */
-            codeBrainManager.restart();
+             */
+            codeBrainAcces.restart();
         });
         statusBarRight.add(languageButton);
 
@@ -256,10 +255,10 @@ public class MainForm extends JFrame{
          */
         logoutButton = new JButton();
         logoutButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Logout));
-        logoutButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource(logoutImg)).getImage().getScaledInstance(width, height, 0)));        
+        logoutButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource(logoutImg)).getImage().getScaledInstance(width, height, 0)));
         logoutButton.putClientProperty("JButton.buttonType", "bevel");
         logoutButton.addActionListener((ActionEvent e) -> {
-            codeBrainManager.logout();
+            codeBrainAcces.logout();
         });
         statusBarRight.add(logoutButton);
 
@@ -270,15 +269,15 @@ public class MainForm extends JFrame{
          */
         exitButton = new JButton();
         exitButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Exit));
-        exitButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource(exitImg)).getImage().getScaledInstance(width, height, 0)));        
+        exitButton.setIcon(new ImageIcon(new ImageIcon(getClass().getResource(exitImg)).getImage().getScaledInstance(width, height, 0)));
         exitButton.setFont(new java.awt.Font("sansserif", 1, 12));
         exitButton.putClientProperty("JButton.buttonType", "bevel");
         exitButton.addActionListener((ActionEvent e) -> {
-            
+
             MessageForm.shows(Dictionnaire.get(EnumLibelles.Business_ConfirmExit), "Message", true, new Action() {
                 @Override
                 public void Ok() {
-                    codeBrainManager.quit();
+                    codeBrainAcces.quit();
                 }
 
                 @Override
@@ -296,7 +295,7 @@ public class MainForm extends JFrame{
 //        add(mainPanel);
         refresh();
         pack();
-        
+
     }
 
     private void statusBarAncestorAdded(javax.swing.event.AncestorEvent evt) {
@@ -335,17 +334,37 @@ public class MainForm extends JFrame{
 
         levelGroup = (userConnected == null) ? null : userConnected.getLevelsId();
 
-        userStatusLabel.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Identifiant) + ": " + (userConnected == null ? "" : userConnected.getLogin()));
+        userStatusLabel.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Identifiant) + ": " + (userConnected == null ? "" : toString(userConnected.getFirstName(), userConnected.getLastName())));
         levelLabel.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Group) + ": " + (levelGroup == null ? "" : Dictionnaire.get(levelGroup.getIntitule())));
         statusBar.revalidate();
         statusBar.repaint();
     }
-    
-    public void  loadMenu(){
+
+    public void loadMenu() {
         new MenuHome(mainPanel, menuBar);
     }
-    
-    public void  initStatus(Boolean state){
+
+    public void initStatus(Boolean state) {
         statusBarRight.setVisible(state);
+    }
+
+    private String toString(String firstName, String lastName) {
+        String fn = "";
+        String ln = "";
+        if (firstName != null) {
+            if (firstName.length() > 12) {
+                fn = String.valueOf(firstName.toCharArray(), 0, 12) + "...";
+            } else {
+                fn = firstName;
+            }
+        }
+        if (lastName != null) {
+            if (lastName.length() > 12) {
+                ln = String.valueOf(lastName.toCharArray(), 0, 12) + "...";
+            } else {
+                ln = lastName;
+            }
+        }
+        return fn + " " + ln;
     }
 }

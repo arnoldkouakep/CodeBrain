@@ -190,6 +190,7 @@ public class SalleForm extends ModelForm {
         fieldsRequired.add(sectionInput);
 
         sectionIntituleInput.setEditable(false);
+        sectionIntituleInput.setFocusable(false);
         sectionIntituleInput.setName("intitule"); // NOI18N
         fieldSearch.put("Salle->classeId->code->Classe->sectionId->intitule", sectionIntituleInput);
 
@@ -229,6 +230,7 @@ public class SalleForm extends ModelForm {
         fieldsRequired.add(classeInput);
 
         classeIntituleInput.setEditable(false);
+        classeIntituleInput.setFocusable(false);
         classeIntituleInput.setName("intitule"); // NOI18N
         fieldSearch.put("Salle->classeId->intitule", classeIntituleInput);
 

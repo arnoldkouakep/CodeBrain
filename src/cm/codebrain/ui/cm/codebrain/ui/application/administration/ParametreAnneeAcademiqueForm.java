@@ -27,8 +27,10 @@ import java.util.List;
  */
 public class ParametreAnneeAcademiqueForm extends ModelForm {
 
-    private final String entityEtablissement = "Etablissement";
     private final String entityAnneeAcademic = "AnneeAcademic";
+    private final String entityEtablissement = "Etablissement";
+    private final String entityTrimestre = "Trimestre";
+    private final String entitySequence = "Sequence";
     private List<HashMap> listModelsOriginal;
     private EnumVariable tmpEtatAction = MODIF;
 
@@ -38,7 +40,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
      * @param title
      */
     public ParametreAnneeAcademiqueForm(String title) {
-        super(title, 400, 300);
+        super(title, 480, 390);
 
         etatAction = MODIF;
         setActionMenu();
@@ -49,11 +51,13 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
 
         this.entity = "ParametreAnneeAcademic";
         initComponents();
-        setAllComponents(nomAbregeInput, nomCompletInput, sessionInput);
+        setAllComponents(nomAbregeInput, nomCompletInput, sessionInput, sessionDateOuvertureInput, trimestreInput, trimestreDateOuvertureInput, sequenceInput, sequenceDateOuvertureInput);
     }
 
     public void addActionSupplementaire() {
         eventAnneeAcademic();
+        eventTrimestre();
+        eventSequence();
     }
 
     public void makeModelData() {
@@ -62,7 +66,17 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         }//etablissementId
         modelFinal.put(entityEtablissement.toLowerCase() + "Id", FormParameters.get(entityEtablissement.toLowerCase() + "Id"));
         modelFinal.put("session", FormParameters.get("session"));
-        modelFinal.put("statut", (statusInput.getSelectedIndex() == 0) ? EnumStatus.Business_Statut_NonActif.toString() : EnumStatus.Business_Statut_Actif.toString());
+//        modelFinal.put("statut", (statusInput.getSelectedIndex() == 0) ? EnumStatus.Business_Statut_NonActif.toString() : EnumStatus.Business_Statut_Actif.toString());
+        
+        if(statusInput.getSelectedIndex() == 0){
+            modelFinal.put(entityTrimestre.toLowerCase()+"Id", null);
+            modelFinal.put(entitySequence.toLowerCase()+"Id", null);
+            modelFinal.put("statut", EnumStatus.Business_Statut_NonActif.toString());
+        }else{
+            modelFinal.put(entityTrimestre.toLowerCase()+"Id", FormParameters.get(entityTrimestre.toLowerCase()+"Id"));
+            modelFinal.put(entitySequence.toLowerCase()+"Id", FormParameters.get(entitySequence.toLowerCase()+"Id"));
+            modelFinal.put("statut", EnumStatus.Business_Statut_Actif.toString());
+        }
     }
 
     protected void eventActionRef() {
@@ -77,7 +91,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
 
 //    @Override
     public void addActionComplement() {
-        if (etatAction != CREATE) {
+//        if (etatAction != CREATE) {
 
             HashMap[] args = new HashMap[2];
 
@@ -109,6 +123,9 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
 
                 if (listModelsOriginal != null && listModelsOriginal.size() > 0) {
                     tmpEtatAction = MODIF;
+                    
+                    getModelData(listModelsOriginal.get(0));
+                    
                     FormParameters.add(Model, listModelsOriginal.get(0));
 
                     if (listModelsOriginal.get(0).get("statut").equals(EnumStatus.Business_Statut_NonActif.toString())) {
@@ -123,7 +140,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
             } catch (Exception ex) {
             }
 
-        }
+//        }
     }
 
     protected void eventEtablissement() {
@@ -143,7 +160,58 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         String[][] parametresGrid = {
             {"session", Dictionnaire.get(EnumLibelles.Business_Libelle_Session)}};
 
-        addAction(sessionInput, entityAnneeAcademic, "session", parametresGrid, null, args, sessionInput);
+        addAction(sessionInput, entityAnneeAcademic, "session", parametresGrid, null, args, sessionInput, sessionDateOuvertureInput);
+    }
+
+    private void eventTrimestre() {
+
+        HashMap[] args = new HashMap[1];
+
+        String filter = "entity.anneeAcademicId=:arg0";
+
+        HashMap arg = new HashMap();
+
+        arg.put(Type, Entity);
+        arg.put(Entity, entityAnneeAcademic);
+        arg.put(Model, "session");
+        arg.put(Value, sessionInput);
+
+        args[0] = arg;
+
+        String[][] parametresGrid = {
+            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)}};
+
+        addAction(trimestreInput, entityTrimestre, entityTrimestre.toLowerCase() + "Id", parametresGrid, filter, args, trimestreInput, trimestreDateOuvertureInput);
+    }
+
+    private void eventSequence() {
+
+        HashMap[] args = new HashMap[2];
+
+        String filter = "entity.anneeAcademicId=:arg0 and entity.trimestreId=:arg1";
+
+        HashMap arg = new HashMap();
+
+        arg.put(Type, Entity);
+        arg.put(Entity, entityAnneeAcademic);
+        arg.put(Model, "session");
+        arg.put(Value, sessionInput);
+
+        args[0] = arg;
+
+        arg = new HashMap();
+
+        arg.put(Type, Entity);
+        arg.put(Entity, entityTrimestre);
+        arg.put(Model, "trimestreId");
+        arg.put(Value, trimestreInput);
+
+        args[1] = arg;
+
+        String[][] parametresGrid = {
+            {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)}};
+
+        addAction(sequenceInput, entitySequence, entitySequence.toLowerCase() + "Id", parametresGrid, filter, args, sequenceInput, sequenceDateOuvertureInput);
     }
 
     /**
@@ -164,6 +232,13 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         javax.swing.JLabel labelAnneeAcademic = new javax.swing.JLabel();
         sessionInput = new javax.swing.JTextField();
         statusInput = new javax.swing.JComboBox<>();
+        javax.swing.JLabel labelAnneeAcademic1 = new javax.swing.JLabel();
+        trimestreInput = new javax.swing.JTextField();
+        javax.swing.JLabel labelAnneeAcademic2 = new javax.swing.JLabel();
+        sequenceInput = new javax.swing.JTextField();
+        sequenceDateOuvertureInput = new javax.swing.JFormattedTextField();
+        trimestreDateOuvertureInput = new javax.swing.JFormattedTextField();
+        sessionDateOuvertureInput = new javax.swing.JFormattedTextField();
 
         mainPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
 
@@ -181,6 +256,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         fieldsRequired.add(nomAbregeInput);
 
         nomCompletInput.setEditable(false);
+        nomCompletInput.setFocusable(false);
         nomCompletInput.setName("fullName"); // NOI18N
         fieldSearch("fullName", nomCompletInput);
         nomCompletInput.addActionListener(new java.awt.event.ActionListener() {
@@ -197,9 +273,9 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
                 .addContainerGap()
                 .addComponent(labelLevel, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nomAbregeInput, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nomCompletInput, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                .addComponent(nomAbregeInput, javax.swing.GroupLayout.DEFAULT_SIZE, 139, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(nomCompletInput, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         panelCategorieLayout.setVerticalGroup(
@@ -223,6 +299,49 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         statusInput.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
         statusInput.setModel(setModelDataComboBox(Dictionnaire.get(EnumStatus.Business_Statut_NonActif), Dictionnaire.get(EnumStatus.Business_Statut_Actif))
         );
+        statusInput.setActionCommand("status");
+        statusInput.setName("status"); // NOI18N
+        statusInput.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                statusInputItemStateChanged(evt);
+            }
+        });
+
+        labelAnneeAcademic1.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Trimestre)); // NOI18N
+        labelAnneeAcademic1.setName("usernameLabel"); // NOI18N
+
+        trimestreInput.setName("code"); // NOI18N
+        fieldSearch("ParametreAnneeAcademic->trimestreId->code", trimestreInput);
+
+        labelAnneeAcademic2.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Sequence)); // NOI18N
+        labelAnneeAcademic2.setName("usernameLabel"); // NOI18N
+
+        sequenceInput.setName("code"); // NOI18N
+        fieldSearch("ParametreAnneeAcademic->sequenceId->code", sequenceInput);
+
+        sequenceDateOuvertureInput.setEditable(false);
+        sequenceDateOuvertureInput.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd/MM/yyyy"))));
+        sequenceDateOuvertureInput.setFocusable(false);
+        sequenceDateOuvertureInput.setName("dateOuverture"); // NOI18N
+        fieldSearch("ParametreAnneeAcademic->sequenceId->dateOuverture", sequenceDateOuvertureInput);
+
+        trimestreDateOuvertureInput.setEditable(false);
+        trimestreDateOuvertureInput.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd/MM/yyyy"))));
+        trimestreDateOuvertureInput.setFocusable(false);
+        trimestreDateOuvertureInput.setName("dateOuverture"); // NOI18N
+        fieldSearch("ParametreAnneeAcademic->trimestreId->dateOuverture", trimestreDateOuvertureInput);
+
+        sessionDateOuvertureInput.setEditable(false);
+        sessionDateOuvertureInput.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd/MM/yyyy"))));
+        sessionDateOuvertureInput.setFocusable(false);
+        sessionDateOuvertureInput.setName("dateFermeture"); // NOI18N
+        fieldSearch("ParametreAnneeAcademic->session->dateOuverture", sessionDateOuvertureInput);
+        fieldsRequired.add(sessionDateOuvertureInput);
+        sessionDateOuvertureInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sessionDateOuvertureInputActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelContentLayout = new javax.swing.GroupLayout(panelContent);
         panelContent.setLayout(panelContentLayout);
@@ -230,14 +349,31 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
             panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelContentLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelCategorie, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(statusInput, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(panelContentLayout.createSequentialGroup()
-                            .addComponent(labelAnneeAcademic, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(sessionInput, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(panelCategorie, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelContentLayout.createSequentialGroup()
+                        .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelContentLayout.createSequentialGroup()
+                                .addComponent(labelAnneeAcademic2, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sequenceInput))
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelContentLayout.createSequentialGroup()
+                                .addComponent(labelAnneeAcademic1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(trimestreInput, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(18, 18, 18)
+                        .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(sequenceDateOuvertureInput, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                            .addComponent(trimestreDateOuvertureInput)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, panelContentLayout.createSequentialGroup()
+                        .addComponent(labelAnneeAcademic, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(statusInput, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panelContentLayout.createSequentialGroup()
+                                .addComponent(sessionInput, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(sessionDateOuvertureInput, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         panelContentLayout.setVerticalGroup(
@@ -248,10 +384,21 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelAnneeAcademic)
-                    .addComponent(sessionInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(sessionInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sessionDateOuvertureInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addGap(12, 12, 12)
+                .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelAnneeAcademic1)
+                    .addComponent(trimestreInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(trimestreDateOuvertureInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(panelContentLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(labelAnneeAcademic2)
+                    .addComponent(sequenceInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sequenceDateOuvertureInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
@@ -279,12 +426,34 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         addActionComplement();
     }//GEN-LAST:event_nomCompletInputActionPerformed
 
+    private void sessionDateOuvertureInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sessionDateOuvertureInputActionPerformed
+        // TODO add your handling code here:
+        addActionComplement();
+    }//GEN-LAST:event_sessionDateOuvertureInputActionPerformed
+
+    private void statusInputItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_statusInputItemStateChanged
+        // TODO add your handling code here:
+        if(statusInput.getSelectedIndex() == 0){
+            reset(trimestreInput, trimestreDateOuvertureInput, sequenceInput, sequenceDateOuvertureInput);
+            fieldsRequired.remove(trimestreInput);
+            fieldsRequired.remove(sequenceInput);
+        }else{
+            fieldsRequired.add(trimestreInput);
+            fieldsRequired.add(sequenceInput);
+        }
+    }//GEN-LAST:event_statusInputItemStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField nomAbregeInput;
     private javax.swing.JTextField nomCompletInput;
+    private javax.swing.JFormattedTextField sequenceDateOuvertureInput;
+    private javax.swing.JTextField sequenceInput;
+    private javax.swing.JFormattedTextField sessionDateOuvertureInput;
     private javax.swing.JTextField sessionInput;
     private javax.swing.JComboBox<String> statusInput;
+    private javax.swing.JFormattedTextField trimestreDateOuvertureInput;
+    private javax.swing.JTextField trimestreInput;
     // End of variables declaration//GEN-END:variables
 
 }

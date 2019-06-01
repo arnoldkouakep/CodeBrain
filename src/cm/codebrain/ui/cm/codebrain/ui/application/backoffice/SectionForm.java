@@ -161,8 +161,9 @@ public class SectionForm extends ModelForm {
         fieldsRequired.add(etablissementCodeInput);
 
         etablissementIntituleInput.setEditable(false);
+        etablissementIntituleInput.setFocusable(false);
         etablissementIntituleInput.setName("fullName"); // NOI18N
-        fieldSearch("Etablissement->etablissementId->fullName", etablissementIntituleInput);
+        fieldSearch("Section->etablissementId->fullName", etablissementIntituleInput);
 
         javax.swing.GroupLayout panelCategorieLayout = new javax.swing.GroupLayout(panelCategorie);
         panelCategorie.setLayout(panelCategorieLayout);

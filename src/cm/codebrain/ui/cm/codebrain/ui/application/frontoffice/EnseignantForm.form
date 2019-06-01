@@ -676,6 +676,7 @@
                 <Component class="javax.swing.JTextField" name="professionIntituleInput">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
+                    <Property name="focusable" type="boolean" value="false"/>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
                   <AuxValues>

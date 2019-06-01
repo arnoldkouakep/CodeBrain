@@ -514,6 +514,7 @@
                 <Component class="javax.swing.JTextField" name="sectionsIntituleInput">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
+                    <Property name="focusable" type="boolean" value="false"/>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
                   <AuxValues>
@@ -713,6 +714,7 @@
                 <Component class="javax.swing.JTextField" name="salleIntituleInput">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
+                    <Property name="focusable" type="boolean" value="false"/>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
                   <AuxValues>
@@ -795,6 +797,7 @@
                 <Component class="javax.swing.JTextField" name="classeIntituleInput">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
+                    <Property name="focusable" type="boolean" value="false"/>
                     <Property name="name" type="java.lang.String" value="intitule" noResource="true"/>
                   </Properties>
                   <AuxValues>

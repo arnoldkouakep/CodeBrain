@@ -165,6 +165,7 @@ public class ClasseForm extends ModelForm {
         fieldsRequired.add(sectionsInput);
 
         sectionsIntituleInput.setEditable(false);
+        sectionsIntituleInput.setFocusable(false);
         sectionsIntituleInput.setName("intitule"); // NOI18N
         fieldSearch.put("Classe->sectionId->intitule", sectionsIntituleInput);
 

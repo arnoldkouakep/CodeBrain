@@ -17,4 +17,8 @@ public enum EnumError {
     UserLoginException,
     BadSyntaxException,
     NumberArgumentException,
+    ConstraintViolationException,
+    NullValueException,
+    LoseConnexionException,
+    DupplicateDatasException,
 }

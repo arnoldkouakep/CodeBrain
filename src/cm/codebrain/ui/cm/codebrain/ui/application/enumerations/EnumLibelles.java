@@ -120,4 +120,5 @@ public enum EnumLibelles {
     Business_Libelle_Total,
     Business_Libelle_And,
     Business_Libelle_TrimestreAndSequence,
+    Business_Libelle_Active,
 }

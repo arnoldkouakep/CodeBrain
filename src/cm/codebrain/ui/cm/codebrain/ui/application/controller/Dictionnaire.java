@@ -47,6 +47,13 @@ public class Dictionnaire {
         }
     }
 
+    public static Object get(Object value) {
+        if(value instanceof String)
+            return get(value.toString(), false, false);
+        else
+            return value;
+    }
+    
     public static Image getResource(Enum value) {
         try {
             String resourcePath = StringUtils.UTF8Encode(Locale.i18n.getString(value.toString()));
@@ -63,4 +70,5 @@ public class Dictionnaire {
             return null;
         }
     }
+
 }

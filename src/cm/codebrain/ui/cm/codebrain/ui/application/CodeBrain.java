@@ -6,7 +6,7 @@
 package cm.codebrain.ui.application;
 
 import ch.randelshofer.quaqua.QuaquaManager;
-import cm.codebrain.main.business.controller.CodeBrainManager;
+import cm.codebrain.ui.application.controller.CodeBrainAcces;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -53,7 +53,7 @@ public class CodeBrain {
         SwingUtilities.invokeLater(new Runnable() {
 //            private MainForm mainForm;
 //            private LoginForm login;
-            private CodeBrainManager codeBrainManager;
+            private CodeBrainAcces codeBrainAcces;
 
             public void run() {
                 int index;
@@ -87,16 +87,14 @@ public class CodeBrain {
                     }
 
                     try {
-//                        System.out.println("   CREATING LAF   " + lafName);
-
                         LookAndFeel laf = (LookAndFeel) Class.forName(lafName).newInstance();
                         UIManager.setLookAndFeel(laf);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                codeBrainManager = new CodeBrainManager();
-                codeBrainManager.start();
+                codeBrainAcces = new CodeBrainAcces();
+                codeBrainAcces.start();
             }
         });
     }

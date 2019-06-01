@@ -26,6 +26,7 @@ import cm.codebrain.ui.application.security.Loading;
 import cm.codebrain.ui.application.security.LoginForm;
 import cm.codebrain.ui.application.security.MainForm;
 import cm.codebrain.ui.application.security.ReLoginForm;
+import cm.codebrain.main.business.services.implement.CodeBrainServiceImplement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.server.UID;
@@ -52,16 +53,17 @@ import javax.persistence.criteria.Root;
  *
  * @author KSA-INET
  */
-public class CodeBrainManager {
+public class CodeBrainManager extends CodeBrainServiceImplement {
 
-    private MainForm mainForm;
-    private LoginForm login;
-    private ReLoginForm reLogin;
+//    private MainForm mainForm;
+//    private LoginForm login;
+//    private ReLoginForm reLogin;
     private final EntityManagerFactory emfManager = Persistence.createEntityManagerFactory("Brain");
     private List<Widget> widgetSecurity;
     private final CodeBrainMapper cbMapper = new CodeBrainMapper();
     private final CodeBrainEntityManager entityManager;
     private String entity;
+    private boolean connexion;
 
     public CodeBrainManager() {
         this.entityManager = new CodeBrainEntityManager();
@@ -71,7 +73,14 @@ public class CodeBrainManager {
     public static void CodeBrainManager() {
     }
 
-    public Users authenticate(String login, String password) {
+    @Override
+    public boolean connexion() {
+        entityManager.setEntityManager(entityManager.getEntityManagerFactory().createEntityManager());
+        return true;
+    }
+
+    @Override
+    public String authenticate(String login, String password) {
         CriteriaBuilder cb = entityManager.getEntityManager().getCriteriaBuilder();
 
         CriteriaQuery cq = cb.createQuery();
@@ -88,94 +97,49 @@ public class CodeBrainManager {
 
         getWidgetSecurity(user);
 
-        mainForm.loadMenu();
-        mainForm.initStatus(Boolean.TRUE);
-
         System.out.println("User : " + user.getLogin() + " Connecté.");
-        return user;
+        return user.getLogin();
     }
 
     public void getWidgetSecurity(Users userConnected) {
 
-            Levels level = userConnected.getLevelsId();
-            if (level != null) {
-                CriteriaBuilder cb = entityManager.getEntityManager().getCriteriaBuilder();
+        Levels level = userConnected.getLevelsId();
+        if (level != null) {
+            CriteriaBuilder cb = entityManager.getEntityManager().getCriteriaBuilder();
 
-                CriteriaQuery cq = cb.createQuery();
+            CriteriaQuery cq = cb.createQuery();
 
-                Root<Widget> rt = cq.from(Widget.class);
+            Root<Widget> rt = cq.from(Widget.class);
 
-                Query q = entityManager.getEntityManager().createQuery(cq);
+            Query q = entityManager.getEntityManager().createQuery(cq);
 
-                List<Widget> listTmp = q.getResultList();
+            List<Widget> listTmp = q.getResultList();
 
-                widgetSecurity = listTmp.stream().filter(w -> w.getLevelsId().getCode() >= level.getCode()).collect(Collectors.toList());
+            widgetSecurity = listTmp.stream().filter(w -> w.getLevelsId().getCode() >= level.getCode()).collect(Collectors.toList());
 
-                widgetSecurity.forEach((w) -> {
-                    System.out.println(w.toString());
-                });
-
-                GlobalParameters.add("widgets", widgetSecurity);
-            }
-    }
-
-    public void logout() {
-        if(!disConnexion()){
-            GlobalParameters.init();
-            restart();
-        }
-    }
-
-    public Boolean disConnexion(){
-        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Deconnexion), new Executable<Boolean>() {
-                @Override
-                public void execute() throws Exception {
-                    connexion = true;
-                    if(entityManager.getEntityManager().isOpen()) entityManager.getEntityManager().close();
-
-                    Users user = (Users) GlobalParameters.get(User);
-
-                    System.out.println("User : " + user.getLogin() + " Deconnecté.");
-                    connexion = false;
-                }
-
-                @Override
-                public Boolean success() {
-                    return connexion;
-                }
-
-                @Override
-                public void error(Exception ex) {
-                    System.out.println(ex.getMessage());
-                    MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException), "Message", false, null);
-                }
+            widgetSecurity.forEach((w) -> {
+                System.out.println(w.toString());
             });
-        return connexion;
-    }
-    
-    public void quit() {
-        if(!disConnexion()){
-            GlobalParameters.init();
-            System.exit(0);
+
+            GlobalParameters.add("widgets", widgetSecurity);
         }
     }
 
-    public String MD5(String md5) {
-        return StringUtils.MD5encode(md5);
-    }
+    @Override
+    public boolean disConnexion() {
+        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Deconnexion), new Executable<Boolean>() {
 
-    private boolean connexion;
-    
-    public void start() {
-        
-        Locale.initBundle();
-
-        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Connexion), new Executable<Boolean>() {
             @Override
             public void execute() throws Exception {
-                connexion = false;
-                entityManager.setEntityManager(entityManager.getEntityManagerFactory().createEntityManager());
                 connexion = true;
+                if (entityManager.getEntityManager().isOpen()) {
+                    entityManager.getEntityManager().close();
+                }
+
+                Users user = (Users) GlobalParameters.get(User);
+
+                System.out.println("User : " + user.getLogin() + " Deconnecté.");
+                connexion = false;
             }
 
             @Override
@@ -186,40 +150,21 @@ public class CodeBrainManager {
             @Override
             public void error(Exception ex) {
                 System.out.println(ex.getMessage());
-                MessageForm.showsError(Dictionnaire.get(EnumError.LoseConnexionException), "Message", false, null);
+                MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException), "Message", false, null);
             }
         });
-        
-        if(connexion){
-            mainForm = new MainForm(this);
+        return connexion;
+    }
 
-            mainForm.setVisible(true);
-            if (GlobalParameters.get(User) == null) {
-                login = new LoginForm(this, mainForm, false);
-                login.setVisible(true);
-            } else {
-                reLogin = new ReLoginForm(this, mainForm, false, ((Users) GlobalParameters.get(User)).getLogin());
-                reLogin.setVisible(true);
-            }
+    public void quit() {
+        if (!disConnexion()) {
+            GlobalParameters.init();
+            System.exit(0);
         }
     }
 
-    public void restart() {
-        if (mainForm == null) {
-            start();
-        } else {
-            reset();
-            start();
-        }
-    }
-
-    public void reset() {
-        mainForm.dispose();
-        mainForm.revalidate();
-    }
-
-    public void load() {
-        mainForm.refresh();
+    public String MD5(String md5) {
+        return StringUtils.MD5encode(md5);
     }
 
     public static String generateUIDPrimaryKey() {
@@ -357,7 +302,7 @@ public class CodeBrainManager {
         Class<?> controllerClass = Class.forName(className); // convert string classname to class
 
         Constructor<?> constructor = controllerClass.getConstructor(EntityManager.class);
-        
+
         Object instance = constructor.newInstance(entityManager.getEntityManager());
 
         java.lang.reflect.Method[] methods = controllerClass.getMethods();
@@ -455,10 +400,10 @@ public class CodeBrainManager {
                 + value.substring(1, value.length());
     }
 
-    public String getIdOfEntity(String entity){
+    public String getIdOfEntity(String entity) {
         return getLowerValue(entity) + "Id";
     }
-    
+
     public List getListEntity(String entity, String criteria,
             Object... args) throws Exception {
 
@@ -543,114 +488,128 @@ public class CodeBrainManager {
 
     public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, EnumVariable etatActionList, List<HashMap> listCreUp, List<HashMap> listDel) throws Exception {
         if (null != etatActionList) {
-            
-            entityManager.createEntityManager();//entityManager.getEntityManagerFactory().createEntityManager());
-            entityManager.getTransaction().begin();
-            
-            switch (etatActionList) {
-                case List:
-                    createListEntity(entity, listCreUp.stream().filter((model)-> (getIdValueObject(model, entity) == null)).collect(Collectors.toList()));
-                    updateListEntity(entity, listCreUp.stream().filter((model)-> (getIdValueObject(model, entity) != null)).collect(Collectors.toList()));
-                    deleteListEntity(entity, listDel);
-                    break;
-                case Master_Detail:
-                    if (null != etatAction) {
-                        switch (etatAction) {
-                            case CREATE:
-                                createEntity(entity, modelFinal);
+            try {
+                entityManager.createEntityManager();//entityManager.getEntityManagerFactory().createEntityManager());
+                entityManager.getTransaction().begin();
 
-                                for(HashMap modelMD2 : listCreUp){
-                                    String tmpEntity = modelMD2.get(Entity).toString();
-                                    String field = modelMD2.get(Field).toString();
-                                    List<HashMap> CrUpList = (List<HashMap>) modelMD2.get(Model);
-                                    
-                                    for(HashMap modelCU : CrUpList){
-                                        modelCU.put(field, modelFinal);
-                                        if (getIdValueObject(modelCU, tmpEntity) == null) {
-                                            try{createEntity(tmpEntity, modelCU);}
-                                            catch(Exception ee){}
-                                        } else {
-                                            try{updateEntity(tmpEntity, modelCU);}
-                                            catch(Exception ee){}
+                switch (etatActionList) {
+                    case List:
+                        createListEntity(entity, listCreUp.stream().filter((model) -> (getIdValueObject(model, entity) == null)).collect(Collectors.toList()));
+                        updateListEntity(entity, listCreUp.stream().filter((model) -> (getIdValueObject(model, entity) != null)).collect(Collectors.toList()));
+                        deleteListEntity(entity, listDel);
+                        break;
+                    case Master_Detail:
+                        if (null != etatAction) {
+                            switch (etatAction) {
+                                case CREATE:
+                                    createEntity(entity, modelFinal);
+
+                                    for (HashMap modelMD2 : listCreUp) {
+                                        String tmpEntity = modelMD2.get(Entity).toString();
+                                        String field = modelMD2.get(Field).toString();
+                                        List<HashMap> CrUpList = (List<HashMap>) modelMD2.get(Model);
+
+                                        for (HashMap modelCU : CrUpList) {
+                                            modelCU.put(field, modelFinal);
+                                            if (getIdValueObject(modelCU, tmpEntity) == null) {
+                                                try {
+                                                    createEntity(tmpEntity, modelCU);
+                                                } catch (Exception ee) {
+                                                }
+                                            } else {
+                                                try {
+                                                    updateEntity(tmpEntity, modelCU);
+                                                } catch (Exception ee) {
+                                                }
+                                            }
                                         }
                                     }
-                                }
-                                
-                                for(HashMap modelMD2 : listDel){
-                                    String tmpEntity = modelMD2.get(Entity).toString();
-                                    String field = modelMD2.get(Field).toString();
-                                    List<HashMap> DelList = (List<HashMap>) modelMD2.get(Model);
-                                    
-                                    for(HashMap modelDel : DelList){
-                                        modelDel.put(field, null);
-                                        
-                                        try{updateEntity(tmpEntity, modelDel);}
-                                        catch(Exception ee){}
-                                    }
-                                }
-                                
-                                break;
-                            case MODIF:
-                                updateEntity(entity, modelFinal);
 
-                                for(HashMap modelMD2 : listCreUp){
-                                    String tmpEntity = modelMD2.get(Entity).toString();
-                                    String field = modelMD2.get(Field).toString();
-                                    List<HashMap> CrUpList = (List<HashMap>) modelMD2.get(Model);
-                                    
-                                    for(HashMap modelCU : CrUpList){
-                                        modelCU.put(field, modelFinal);
-                                        if (getIdValueObject(modelCU, tmpEntity) == null) {
-                                            try{createEntity(tmpEntity, modelCU);}
-                                            catch(Exception ee){}
-                                        } else {
-                                            try{updateEntity(tmpEntity, modelCU);}
-                                            catch(Exception ee){}
+                                    for (HashMap modelMD2 : listDel) {
+                                        String tmpEntity = modelMD2.get(Entity).toString();
+                                        String field = modelMD2.get(Field).toString();
+                                        List<HashMap> DelList = (List<HashMap>) modelMD2.get(Model);
+
+                                        for (HashMap modelDel : DelList) {
+                                            modelDel.put(field, null);
+
+                                            try {
+                                                updateEntity(tmpEntity, modelDel);
+                                            } catch (Exception ee) {
+                                            }
                                         }
                                     }
-                                }
-                                
-                                for(HashMap modelMD2 : listDel){
-                                    String tmpEntity = modelMD2.get(Entity).toString();
-                                    String field = modelMD2.get(Field).toString();
-                                    List<HashMap> DelList = (List<HashMap>) modelMD2.get(Model);
-                                    
-                                    for(HashMap modelDel : DelList){
-                                        modelDel.put(field, null);
-                                        
-                                        try{updateEntity(tmpEntity, modelDel);}
-                                        catch(Exception ee){}
-                                    }
-                                }
-                                
-                                break;
-                            case DUPPLICATE:
-                                dupplicateEntity(entity, modelFinal);
 
-                                break;
-                            case DELETE:
-                                deleteEntity(entity, modelFinal);
+                                    break;
+                                case MODIF:
+                                    updateEntity(entity, modelFinal);
 
-                                for(HashMap modelMD2 : listDel){
-                                    String tmpEntity = modelMD2.get(Entity).toString();
-                                    String field = modelMD2.get(Field).toString();
-                                    List<HashMap> DelList = (List<HashMap>) modelMD2.get(Model);
-                                    
-                                    for(HashMap modelDel : DelList){
-                                        modelDel.put(field, null);
-                                        
-                                        try{deleteEntity(tmpEntity, modelDel);}
-                                        catch(Exception ee){}
+                                    for (HashMap modelMD2 : listCreUp) {
+                                        String tmpEntity = modelMD2.get(Entity).toString();
+                                        String field = modelMD2.get(Field).toString();
+                                        List<HashMap> CrUpList = (List<HashMap>) modelMD2.get(Model);
+
+                                        for (HashMap modelCU : CrUpList) {
+                                            modelCU.put(field, modelFinal);
+                                            if (getIdValueObject(modelCU, tmpEntity) == null) {
+                                                try {
+                                                    createEntity(tmpEntity, modelCU);
+                                                } catch (Exception ee) {
+                                                }
+                                            } else {
+                                                try {
+                                                    updateEntity(tmpEntity, modelCU);
+                                                } catch (Exception ee) {
+                                                }
+                                            }
+                                        }
                                     }
-                                }
-                                
-                                break;
-                            default:
-                                break;
+
+                                    for (HashMap modelMD2 : listDel) {
+                                        String tmpEntity = modelMD2.get(Entity).toString();
+                                        String field = modelMD2.get(Field).toString();
+                                        List<HashMap> DelList = (List<HashMap>) modelMD2.get(Model);
+
+                                        for (HashMap modelDel : DelList) {
+                                            modelDel.put(field, null);
+
+                                            try {
+                                                updateEntity(tmpEntity, modelDel);
+                                            } catch (Exception ee) {
+                                            }
+                                        }
+                                    }
+
+                                    break;
+                                case DUPPLICATE:
+                                    dupplicateEntity(entity, modelFinal);
+
+                                    break;
+                                case DELETE:
+                                    deleteEntity(entity, modelFinal);
+
+                                    for (HashMap modelMD2 : listDel) {
+                                        String tmpEntity = modelMD2.get(Entity).toString();
+                                        String field = modelMD2.get(Field).toString();
+                                        List<HashMap> DelList = (List<HashMap>) modelMD2.get(Model);
+
+                                        for (HashMap modelDel : DelList) {
+                                            modelDel.put(field, null);
+
+                                            try {
+                                                deleteEntity(tmpEntity, modelDel);
+                                            } catch (Exception ee) {
+                                            }
+                                        }
+                                    }
+
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-                    }
-                    
-                    break;
+
+                        break;
 //                if (createList) {
 //                    makeModelDatas();
 //
@@ -720,45 +679,48 @@ public class CodeBrainManager {
 //                    }
 //                }
 //        }
-                case Detail_Master:
-                    break;
-                default:
-                    if (null != etatAction) {
-                        switch (etatAction) {
-                            case CREATE:
-                                createEntity(entity, modelFinal);
-                                break;
-                            case MODIF:
-                                updateEntity(entity, modelFinal);
-                                break;
-                            case DUPPLICATE:
-                                dupplicateEntity(entity, modelFinal);
-                                break;
-                            case DELETE:
-                                deleteEntity(entity, modelFinal);
-                                break;
-                            default:
-                                break;
+                    case Detail_Master:
+                        break;
+                    default:
+                        if (null != etatAction) {
+                            switch (etatAction) {
+                                case CREATE:
+                                    createEntity(entity, modelFinal);
+                                    break;
+                                case MODIF:
+                                    updateEntity(entity, modelFinal);
+                                    break;
+                                case DUPPLICATE:
+                                    dupplicateEntity(entity, modelFinal);
+                                    break;
+                                case DELETE:
+                                    deleteEntity(entity, modelFinal);
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-                    }
-                    break;
-            }
+                        break;
+                }
 //            try{//(EntityTransaction currentTx = entityManager.getTransaction()){
-                
-//                EntityTransaction currentTx = entityManager.getTransaction();
 
-            if (entityManager.getTransaction().getRollbackOnly())
-                entityManager.getTransaction().rollback();
-            else
-                entityManager.getTransaction().commit();
-            
-//            } catch(Exception ex){
+//                EntityTransaction currentTx = entityManager.getTransaction();
+            } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | NullPointerException | InvocationTargetException ex) {
+                throw ex;
 //                System.out.println("111 : " + ex.getMessage());
-//            }
-            try{
+            } finally {
+
+                if (entityManager.getTransaction().getRollbackOnly()) {
+                    entityManager.getTransaction().rollback();
+                } else {
+                    entityManager.getTransaction().commit();
+                }
+
+                //            } catch(Exception ex){
+                //                System.out.println("111 : " + ex.getMessage());
+                //            }
+                //            try{
                 entityManager.getEntityManager().close();
-            }catch(Exception ex){
-                System.out.println("111 : " + ex.getMessage());
             }
         }
     }
