@@ -73,7 +73,7 @@ public class SectionForm extends ModelForm {
             {"fullName",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_nom)}};
 
-        addAction(etablissementCodeInput, entityEtablissement, entityEtablissement.toLowerCase()+"Id", parametresGrid, null, args, etablissementCodeInput, etablissementIntituleInput);
+        addAction(etablissementCodeInput, entityEtablissement, parametresGrid, null, args, etablissementCodeInput, etablissementIntituleInput);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -161,7 +161,6 @@ public class SectionForm extends ModelForm {
         fieldsRequired.add(etablissementCodeInput);
 
         etablissementIntituleInput.setEditable(false);
-        etablissementIntituleInput.setFocusable(false);
         etablissementIntituleInput.setName("fullName"); // NOI18N
         fieldSearch("Section->etablissementId->fullName", etablissementIntituleInput);
 
@@ -188,6 +187,8 @@ public class SectionForm extends ModelForm {
                     .addComponent(etablissementIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        etablissementCodeInput.getAccessibleContext().setAccessibleName(entityEtablissement.toLowerCase()+"Id");
 
         javax.swing.GroupLayout panelContentLayout = new javax.swing.GroupLayout(panelContent);
         panelContent.setLayout(panelContentLayout);

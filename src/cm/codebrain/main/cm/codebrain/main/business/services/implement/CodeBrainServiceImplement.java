@@ -27,13 +27,13 @@ public class CodeBrainServiceImplement implements CodeBrainService {
     }
 
     @Override
-    public boolean connexion(){
+    public boolean connexion() throws Exception{
         CodeBrainManager codeBrainManager = new CodeBrainManager();
         return codeBrainManager.connexion();
     }
 
     @Override
-    public boolean disConnexion() {
+    public boolean disConnexion() throws Exception{
         CodeBrainManager codeBrainManager = new CodeBrainManager();
         return codeBrainManager.disConnexion();
     }

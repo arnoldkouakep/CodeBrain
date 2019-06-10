@@ -65,7 +65,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
             super.makeModelData();
         }//etablissementId
         modelFinal.put(entityEtablissement.toLowerCase() + "Id", FormParameters.get(entityEtablissement.toLowerCase() + "Id"));
-        modelFinal.put("session", FormParameters.get("session"));
+        modelFinal.put("session", FormParameters.get("anneeAcademicId"));
 //        modelFinal.put("statut", (statusInput.getSelectedIndex() == 0) ? EnumStatus.Business_Statut_NonActif.toString() : EnumStatus.Business_Statut_Actif.toString());
         
         if(statusInput.getSelectedIndex() == 0){
@@ -90,7 +90,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
     }
 
 //    @Override
-    public void addActionComplement() {
+    public void eventParametrageAnneeAcademic() {
 //        if (etatAction != CREATE) {
 
             HashMap[] args = new HashMap[2];
@@ -110,7 +110,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
 
             arg.put(Type, Entity);
             arg.put(Entity, entityAnneeAcademic);
-            arg.put(Model, "session");
+            arg.put(Model, "anneeAcademicId");
             arg.put(Value, sessionInput);
 
             args[1] = arg;
@@ -128,11 +128,11 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
                     
                     FormParameters.add(Model, listModelsOriginal.get(0));
 
-                    if (listModelsOriginal.get(0).get("statut").equals(EnumStatus.Business_Statut_NonActif.toString())) {
-                        statusInput.setSelectedIndex(0);
-                    } else {
-                        statusInput.setSelectedIndex(1);
-                    }
+//                    if (listModelsOriginal.get(0).get("statut").equals(EnumStatus.Business_Statut_NonActif.toString())) {
+//                        statusInput.setSelectedIndex(0);
+//                    } else {
+//                        statusInput.setSelectedIndex(1);
+//                    }
 
                 } else {
                     tmpEtatAction = CREATE;
@@ -150,7 +150,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
             {"fullName",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Nom_Complet)}};
 
-        addAction(nomAbregeInput, entityEtablissement, entityEtablissement.toLowerCase() + "Id", parametresGrid, null, null, nomAbregeInput, nomCompletInput);
+        addAction(nomAbregeInput, entityEtablissement, parametresGrid, null, null, nomAbregeInput, nomCompletInput);
     }
 
     private void eventAnneeAcademic() {
@@ -160,7 +160,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         String[][] parametresGrid = {
             {"session", Dictionnaire.get(EnumLibelles.Business_Libelle_Session)}};
 
-        addAction(sessionInput, entityAnneeAcademic, "session", parametresGrid, null, args, sessionInput, sessionDateOuvertureInput);
+        addAction(sessionInput, entityAnneeAcademic, parametresGrid, null, args, sessionInput, sessionDateOuvertureInput);
     }
 
     private void eventTrimestre() {
@@ -173,7 +173,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
 
         arg.put(Type, Entity);
         arg.put(Entity, entityAnneeAcademic);
-        arg.put(Model, "session");
+        arg.put(Model, "anneeAcademicId");
         arg.put(Value, sessionInput);
 
         args[0] = arg;
@@ -181,7 +181,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         String[][] parametresGrid = {
             {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)}};
 
-        addAction(trimestreInput, entityTrimestre, entityTrimestre.toLowerCase() + "Id", parametresGrid, filter, args, trimestreInput, trimestreDateOuvertureInput);
+        addAction(trimestreInput, entityTrimestre, parametresGrid, filter, args, trimestreInput, trimestreDateOuvertureInput);
     }
 
     private void eventSequence() {
@@ -194,7 +194,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
 
         arg.put(Type, Entity);
         arg.put(Entity, entityAnneeAcademic);
-        arg.put(Model, "session");
+        arg.put(Model, "anneeAcademicId");
         arg.put(Value, sessionInput);
 
         args[0] = arg;
@@ -211,7 +211,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         String[][] parametresGrid = {
             {"code", Dictionnaire.get(EnumLibelles.Business_Libelle_code)}};
 
-        addAction(sequenceInput, entitySequence, entitySequence.toLowerCase() + "Id", parametresGrid, filter, args, sequenceInput, sequenceDateOuvertureInput);
+        addAction(sequenceInput, entitySequence, parametresGrid, filter, args, sequenceInput, sequenceDateOuvertureInput);
     }
 
     /**
@@ -252,13 +252,13 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
 
         nomAbregeInput.setName("nameAbrege"); // NOI18N
         this.setRef(nomAbregeInput);
-        fieldSearch("nameAbrege", nomAbregeInput);
+        fieldSearch("ParametreAnneeAcademic->etablissementId->nameAbrege", nomAbregeInput);
         fieldsRequired.add(nomAbregeInput);
 
         nomCompletInput.setEditable(false);
         nomCompletInput.setFocusable(false);
         nomCompletInput.setName("fullName"); // NOI18N
-        fieldSearch("fullName", nomCompletInput);
+        fieldSearch("ParametreAnneeAcademic->etablissementId->fullName", nomCompletInput);
         nomCompletInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 nomCompletInputActionPerformed(evt);
@@ -289,6 +289,8 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        nomAbregeInput.getAccessibleContext().setAccessibleName(entityEtablissement.toLowerCase() + "Id");
+
         labelAnneeAcademic.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_AnneeAcademique, true)); // NOI18N
         labelAnneeAcademic.setName("usernameLabel"); // NOI18N
 
@@ -301,6 +303,7 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         );
         statusInput.setActionCommand("status");
         statusInput.setName("status"); // NOI18N
+        fieldSearch("statut", statusInput);
         statusInput.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 statusInputItemStateChanged(evt);
@@ -330,6 +333,11 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
         trimestreDateOuvertureInput.setFocusable(false);
         trimestreDateOuvertureInput.setName("dateOuverture"); // NOI18N
         fieldSearch("ParametreAnneeAcademic->trimestreId->dateOuverture", trimestreDateOuvertureInput);
+        trimestreDateOuvertureInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                trimestreDateOuvertureInputActionPerformed(evt);
+            }
+        });
 
         sessionDateOuvertureInput.setEditable(false);
         sessionDateOuvertureInput.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd/MM/yyyy"))));
@@ -401,6 +409,10 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        sessionInput.getAccessibleContext().setAccessibleName("anneeAcademicId");
+        trimestreInput.getAccessibleContext().setAccessibleName(entityTrimestre.toLowerCase() + "Id");
+        sequenceInput.getAccessibleContext().setAccessibleName(entitySequence.toLowerCase() + "Id");
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
@@ -423,12 +435,14 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
 
     private void nomCompletInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nomCompletInputActionPerformed
         // TODO add your handling code here:
-        addActionComplement();
+        if(nomCompletInput.getText().isEmpty()) reset(sessionInput, sessionDateOuvertureInput, trimestreInput, trimestreDateOuvertureInput, sequenceInput, sequenceDateOuvertureInput);
+        else eventParametrageAnneeAcademic();
     }//GEN-LAST:event_nomCompletInputActionPerformed
 
     private void sessionDateOuvertureInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sessionDateOuvertureInputActionPerformed
         // TODO add your handling code here:
-        addActionComplement();
+        if(sessionDateOuvertureInput.getText().isEmpty()) reset(sessionInput, sessionDateOuvertureInput, trimestreInput, trimestreDateOuvertureInput, sequenceInput, sequenceDateOuvertureInput);
+        else eventParametrageAnneeAcademic();
     }//GEN-LAST:event_sessionDateOuvertureInputActionPerformed
 
     private void statusInputItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_statusInputItemStateChanged
@@ -442,6 +456,12 @@ public class ParametreAnneeAcademiqueForm extends ModelForm {
             fieldsRequired.add(sequenceInput);
         }
     }//GEN-LAST:event_statusInputItemStateChanged
+
+    private void trimestreDateOuvertureInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trimestreDateOuvertureInputActionPerformed
+        // TODO add your handling code here:
+        if(trimestreInput.getText().isEmpty()) reset(trimestreInput, trimestreDateOuvertureInput, sequenceInput, sequenceDateOuvertureInput);
+        else eventParametrageAnneeAcademic();
+    }//GEN-LAST:event_trimestreDateOuvertureInputActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -61,7 +61,7 @@ public class AffectationCoursForm extends ModelForm {
 
     public void addActionSupplementaire() {
         eventEnseignant();
-        loadGrid();
+        loadGridCoursDisponible();
     }
 
     @Override
@@ -89,7 +89,7 @@ public class AffectationCoursForm extends ModelForm {
     }
 
 //    @Override
-    public void addActionComplement() {
+    public void loadGridCoursOfEnseignant() {
         
 //        if (etatAction != CREATE) {
 
@@ -130,7 +130,7 @@ public class AffectationCoursForm extends ModelForm {
         }
     }
 
-    private void loadGrid() {
+    private void loadGridCoursDisponible() {
         Loading.show(null, new Executable() {
             @Override
             public void execute() throws Exception{
@@ -138,12 +138,7 @@ public class AffectationCoursForm extends ModelForm {
                 HashMap[] args = null;
 
                 listCours = null;
-//                try {
                     listCours = getListModelForSelect(null, entityCours, null, null, args);
-//                } catch (Exception ex) {
-//                    Logger.getLogger(GroupSalleForm.class.getName()).log(Level.SEVERE, null, ex);
-//                }
-
             }
 
             @Override
@@ -175,7 +170,7 @@ public class AffectationCoursForm extends ModelForm {
             {"lastName",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_prenom)}};
 
-        addAction(matriculeInput, entityEnseignant, entityEnseignant.toLowerCase() + "Id", parametresGrid, null, null, matriculeInput, firstNameInput, lastNameInput);
+        addAction(matriculeInput, entityEnseignant, parametresGrid, null, null, matriculeInput, firstNameInput, lastNameInput);
     }
 
     private List<HashMap> filterModel(List<HashMap> listModelsOriginal, String value1, List<HashMap> listTmp, String value2, boolean equal) {
@@ -294,7 +289,9 @@ public class AffectationCoursForm extends ModelForm {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Dictionnaire.get(EnumLibelles.Business_Libelle_ListeCours), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("sansserif", 1, 14))); // NOI18N
+        matriculeInput.getAccessibleContext().setAccessibleName(entityEnseignant.toLowerCase() + "Id");
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_ListeCours), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("sansserif", 1, 14))); // NOI18N
 
         jScrollPane3.setAutoscrolls(true);
 
@@ -323,7 +320,7 @@ public class AffectationCoursForm extends ModelForm {
         .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
     );
 
-    jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, Dictionnaire.get(EnumLibelles.Business_Libelle_Cours, true), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("sansserif", 1, 14))); // NOI18N
+    jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED), Dictionnaire.get(EnumLibelles.Business_Libelle_Cours, true), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("sansserif", 1, 14))); // NOI18N
 
     jScrollPane4.setAutoscrolls(true);
 
@@ -347,7 +344,7 @@ javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
 jPanel2.setLayout(jPanel2Layout);
 jPanel2Layout.setHorizontalGroup(
     jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE)
+    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
     );
     jPanel2Layout.setVerticalGroup(
         jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -475,7 +472,8 @@ jPanel2Layout.setHorizontalGroup(
 
     private void firstNameInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_firstNameInputActionPerformed
         // TODO add your handling code here:
-        addActionComplement();
+        if(firstNameInput.getText().isEmpty()) reset(coursInputsTable);
+        else loadGridCoursOfEnseignant();
     }//GEN-LAST:event_firstNameInputActionPerformed
 
 

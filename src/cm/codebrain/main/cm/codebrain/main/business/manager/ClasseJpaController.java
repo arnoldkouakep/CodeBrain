@@ -122,9 +122,9 @@ public class ClasseJpaController extends CodeBrainEntityManager implements Seria
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             Classe persistentClasse = (Classe) find(Classe.class, classe.getClasseId());
-            Section sectionIdOld = persistentClasse.getSectionId();
+//            Section sectionIdOld = persistentClasse.getSectionId();
             Section sectionIdNew = classe.getSectionId();
-            Users userModifiedOld = persistentClasse.getUserModified();
+//            Users userModifiedOld = persistentClasse.getUserModified();
             Users userModifiedNew = classe.getUserModified();
             Users userCreatedOld = persistentClasse.getUserCreated();
             Users userCreatedNew = classe.getUserCreated();
@@ -132,26 +132,26 @@ public class ClasseJpaController extends CodeBrainEntityManager implements Seria
             Set<Groupe> groupeSetNew = classe.getGroupeSet();
             Set<Salle> salleSetOld = persistentClasse.getSalleSet();
             Set<Salle> salleSetNew = classe.getSalleSet();
-            List<String> illegalOrphanMessages = null;
-            for (Groupe groupeSetOldGroupe : groupeSetOld) {
-                if (!groupeSetNew.contains(groupeSetOldGroupe)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain Groupe " + groupeSetOldGroupe + " since its classeId field is not nullable.");
-                }
-            }
-            for (Salle salleSetOldSalle : salleSetOld) {
-                if (!salleSetNew.contains(salleSetOldSalle)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain Salle " + salleSetOldSalle + " since its classeId field is not nullable.");
-                }
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
+//            List<String> illegalOrphanMessages = null;
+//            for (Groupe groupeSetOldGroupe : groupeSetOld) {
+//                if (!groupeSetNew.contains(groupeSetOldGroupe)) {
+//                    if (illegalOrphanMessages == null) {
+//                        illegalOrphanMessages = new ArrayList<String>();
+//                    }
+//                    illegalOrphanMessages.add("You must retain Groupe " + groupeSetOldGroupe + " since its classeId field is not nullable.");
+//                }
+//            }
+//            for (Salle salleSetOldSalle : salleSetOld) {
+//                if (!salleSetNew.contains(salleSetOldSalle)) {
+//                    if (illegalOrphanMessages == null) {
+//                        illegalOrphanMessages = new ArrayList<String>();
+//                    }
+//                    illegalOrphanMessages.add("You must retain Salle " + salleSetOldSalle + " since its classeId field is not nullable.");
+//                }
+//            }
+//            if (illegalOrphanMessages != null) {
+//                throw new IllegalOrphanException(illegalOrphanMessages);
+//            }
             if (sectionIdNew != null) {
                 sectionIdNew = (Section) refreshEntity(sectionIdNew.getClass(), sectionIdNew.getSectionId());
                 classe.setSectionId(sectionIdNew);

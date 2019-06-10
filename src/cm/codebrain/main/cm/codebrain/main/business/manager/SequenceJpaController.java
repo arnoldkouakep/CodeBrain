@@ -114,15 +114,15 @@ public class SequenceJpaController extends CodeBrainEntityManager implements Ser
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             Sequence persistentSequence = (Sequence) find(Sequence.class, sequence.getSequenceId());
-            AnneeAcademic anneeAcademicIdOld = persistentSequence.getAnneeAcademicId();
+//            AnneeAcademic anneeAcademicIdOld = persistentSequence.getAnneeAcademicId();
             AnneeAcademic anneeAcademicIdNew = sequence.getAnneeAcademicId();
-            Trimestre trimestreIdOld = persistentSequence.getTrimestreId();
+//            Trimestre trimestreIdOld = persistentSequence.getTrimestreId();
             Trimestre trimestreIdNew = sequence.getTrimestreId();
-            Users userModifiedOld = persistentSequence.getUserModified();
+//            Users userModifiedOld = persistentSequence.getUserModified();
             Users userModifiedNew = sequence.getUserModified();
             Users userCreatedOld = persistentSequence.getUserCreated();
             Users userCreatedNew = sequence.getUserCreated();
-            Set<ParametreAnneeAcademic> parametreAnneeAcademicSetOld = persistentSequence.getParametreAnneeAcademicSet();
+//            Set<ParametreAnneeAcademic> parametreAnneeAcademicSetOld = persistentSequence.getParametreAnneeAcademicSet();
             Set<ParametreAnneeAcademic> parametreAnneeAcademicSetNew = sequence.getParametreAnneeAcademicSet();
             if (anneeAcademicIdNew != null) {
                 anneeAcademicIdNew = (AnneeAcademic) refreshEntity(anneeAcademicIdNew.getClass(), anneeAcademicIdNew.getAnneeAcademicId());

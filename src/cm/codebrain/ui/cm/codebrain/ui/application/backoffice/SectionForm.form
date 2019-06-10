@@ -259,6 +259,11 @@
                   <Properties>
                     <Property name="name" type="java.lang.String" value="nameAbrege" noResource="true"/>
                   </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="entityEtablissement.toLowerCase()+&quot;Id&quot;" type="code"/>
+                    </Property>
+                  </AccessibilityProperties>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;etablissementId&quot;, etablissementCodeInput);&#xd;&#xa;fieldSearch(&quot;Section-&gt;etablissementId-&gt;nameAbrege&quot;, etablissementCodeInput);&#xd;&#xa;fieldsRequired.add(etablissementCodeInput);&#xd;&#xa;"/>
                   </AuxValues>

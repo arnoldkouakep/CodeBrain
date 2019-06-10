@@ -111,7 +111,7 @@ public class LevelsJpaController extends CodeBrainEntityManager implements Seria
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             Levels persistentLevels = (Levels) find(Levels.class, levels.getLevelsId());
-            Users userModifiedOld = persistentLevels.getUserModified();
+//            Users userModifiedOld = persistentLevels.getUserModified();
             Users userModifiedNew = levels.getUserModified();
             Users userCreatedOld = persistentLevels.getUserCreated();
             Users userCreatedNew = levels.getUserCreated();

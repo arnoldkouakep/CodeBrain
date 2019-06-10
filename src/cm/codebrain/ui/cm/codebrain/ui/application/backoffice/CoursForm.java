@@ -41,7 +41,7 @@ public class CoursForm extends ModelForm {
         this.entity = "Cours";
 
         initComponents();
-        setAllComponents(classeInput, classetituleInput, groupeInput, groupeIntituleInput, codeInput, intituleFrInput, intituleEnInput, creditsInput);
+        setAllComponents(classeInput, classeIntituleInput, groupeInput, groupeIntituleInput, codeInput, intituleFrInput, intituleEnInput, creditsInput);
     }
 
     public void addActionSupplementaire() {
@@ -58,7 +58,7 @@ public class CoursForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(classeInput, entityClasse, entityClasse.toLowerCase()+"Id", parametresGrid, null, args, classeInput, classetituleInput);
+        addAction(classeInput, entityClasse, parametresGrid, null, args, classeInput, classeIntituleInput);
     }
 
     private void eventGroupe() {
@@ -81,7 +81,7 @@ public class CoursForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(groupeInput, entityGroupe, entityGroupe.toLowerCase()+"Id", parametresGrid, filter, args, groupeInput, groupeIntituleInput);
+        addAction(groupeInput, entityGroupe, parametresGrid, filter, args, groupeInput, groupeIntituleInput);
     }
 
     protected void eventActionRef() {
@@ -129,7 +129,7 @@ public class CoursForm extends ModelForm {
         javax.swing.JPanel panelSections = new javax.swing.JPanel();
         javax.swing.JLabel labelClasse = new javax.swing.JLabel();
         classeInput = new javax.swing.JTextField();
-        classetituleInput = new javax.swing.JTextField();
+        classeIntituleInput = new javax.swing.JTextField();
         javax.swing.JPanel panelClasse = new javax.swing.JPanel();
         javax.swing.JLabel labelGroupeSalle = new javax.swing.JLabel();
         groupeInput = new javax.swing.JTextField();
@@ -227,10 +227,14 @@ public class CoursForm extends ModelForm {
         fieldSearch.put("Cours->classeId->code", classeInput);
         fieldsRequired.add(classeInput);
 
-        classetituleInput.setEditable(false);
-        classetituleInput.setFocusable(false);
-        classetituleInput.setName("intitule"); // NOI18N
-        fieldSearch.put("Cours->classeId->intitule", classetituleInput);
+        classeIntituleInput.setEditable(false);
+        classeIntituleInput.setName("intitule"); // NOI18N
+        fieldSearch.put("Cours->classeId->intitule", classeIntituleInput);
+        classeIntituleInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                classeIntituleInputActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelSectionsLayout = new javax.swing.GroupLayout(panelSections);
         panelSections.setLayout(panelSectionsLayout);
@@ -242,7 +246,7 @@ public class CoursForm extends ModelForm {
                 .addGap(18, 18, 18)
                 .addComponent(classeInput, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(classetituleInput, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
+                .addComponent(classeIntituleInput, javax.swing.GroupLayout.DEFAULT_SIZE, 141, Short.MAX_VALUE)
                 .addContainerGap())
         );
         panelSectionsLayout.setVerticalGroup(
@@ -252,9 +256,11 @@ public class CoursForm extends ModelForm {
                 .addGroup(panelSectionsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelClasse, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(classeInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(classetituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(classeIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        classeInput.getAccessibleContext().setAccessibleName(entityClasse.toLowerCase()+"Id");
 
         panelClasse.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_GrouperSalles))); // NOI18N
         panelClasse.setOpaque(false);
@@ -272,7 +278,6 @@ public class CoursForm extends ModelForm {
         });
 
         groupeIntituleInput.setEditable(false);
-        groupeIntituleInput.setFocusable(false);
         groupeIntituleInput.setName("intitule"); // NOI18N
         fieldSearch.put("Cours->groupeId->intitule", groupeIntituleInput);
 
@@ -299,6 +304,8 @@ public class CoursForm extends ModelForm {
                     .addComponent(groupeIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        groupeInput.getAccessibleContext().setAccessibleName(entityGroupe.toLowerCase()+"Id");
 
         javax.swing.GroupLayout panelContentLayout = new javax.swing.GroupLayout(panelContent);
         panelContent.setLayout(panelContentLayout);
@@ -354,10 +361,15 @@ public class CoursForm extends ModelForm {
         }
     }//GEN-LAST:event_groupeInputFocusLost
 
+    private void classeIntituleInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classeIntituleInputActionPerformed
+        // TODO add your handling code here:
+        if(classeIntituleInput.getText().isEmpty()) reset(groupeInput, groupeIntituleInput);
+    }//GEN-LAST:event_classeIntituleInputActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField classeInput;
-    private javax.swing.JTextField classetituleInput;
+    private javax.swing.JTextField classeIntituleInput;
     private javax.swing.JTextField codeInput;
     private javax.swing.JFormattedTextField creditsInput;
     private javax.swing.JTextField groupeInput;

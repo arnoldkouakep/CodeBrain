@@ -153,7 +153,9 @@ public class SearchForm extends ModelForm {
 
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                return (columnClasses.get(columnIndex) == null) ? listModelResult.get(0).get(columnValues.get(columnIndex)).getClass()
+//                getValueModelFromKey(columnValues.get(columnIndex), listModelResult.get(0));
+                return (columnClasses.get(columnIndex) == null) ? getValueModelFromKey(columnValues.get(columnIndex), listModelResult.get(0)).getClass()
+//                return (columnClasses.get(columnIndex) == null) ? listModelResult.get(0).get(columnValues.get(columnIndex)).getClass()
                         : columnClasses.get(columnIndex);
             }
 
@@ -164,11 +166,15 @@ public class SearchForm extends ModelForm {
 
             @Override
             public Object getValueAt(int row, int column) {
-                return Dictionnaire.get(listModelResult.get(row).get(columnValues.get(column)));
+//                getValueModelFromKey(columnValues.get(column), listModelResult.get(row))
+                return Dictionnaire.get(getValueModelFromKey(columnValues.get(column), listModelResult.get(row)));
+//                return Dictionnaire.get(listModelResult.get(row).get(columnValues.get(column)));
             }
 
             @Override
             public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+                
+//                super.setValueAt(getValueModelFromKey(columnValues.get(columnIndex), listModelResult.get(rowIndex)), rowIndex, columnIndex);
                 super.setValueAt(listModelResult.get(rowIndex).get(columnValues.get(columnIndex)), rowIndex, columnIndex);
             }
         };
@@ -188,7 +194,7 @@ public class SearchForm extends ModelForm {
         return result;
     }
     
-    private void setResult(HashMap result) {
+    public void setResult(HashMap result) {
         this.modelFinal = result;
     }
     
@@ -217,7 +223,9 @@ public class SearchForm extends ModelForm {
                     try {
                         if (field.getClass().equals(JTextField.class)) {
                             JTextField res = (JTextField) field;
-                            res.setText(Dictionnaire.get(result.get(res.getName()).toString()));
+//                            getValueModelFromKey(res.getName(), result);
+                            res.setText(Dictionnaire.get(getValueModelFromKey(res.getName(), result)).toString());
+//                            res.setText(Dictionnaire.get(result.get(res.getName()).toString()));
                         }else if(field.getClass().equals(JFormattedTextField.class)){
                             JFormattedTextField res = (JFormattedTextField) field;
                                 
@@ -229,7 +237,7 @@ public class SearchForm extends ModelForm {
 //                                SimpleDateFormat df = new java.text.SimpleDateFormat("dd/MM/yyyy");
 //                                res.setValue(df.format(result.get(res.getName())));
 //                            }else{
-                                res.setValue(result.get(res.getName()));
+                                res.setValue(getValueModelFromKey(res.getName(), result));
 //                            }
                         }
                     } catch (Exception e) {

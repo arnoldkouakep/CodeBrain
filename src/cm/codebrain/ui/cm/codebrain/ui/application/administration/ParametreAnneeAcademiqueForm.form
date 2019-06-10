@@ -209,8 +209,13 @@
                   <Properties>
                     <Property name="name" type="java.lang.String" value="nameAbrege" noResource="true"/>
                   </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="entityEtablissement.toLowerCase() + &quot;Id&quot;" type="code"/>
+                    </Property>
+                  </AccessibilityProperties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.setRef(nomAbregeInput);&#xd;&#xa;fieldSearch(&quot;nameAbrege&quot;, nomAbregeInput);&#xd;&#xa;fieldsRequired.add(nomAbregeInput);&#xd;&#xa;"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.setRef(nomAbregeInput);&#xd;&#xa;fieldSearch(&quot;ParametreAnneeAcademic-&gt;etablissementId-&gt;nameAbrege&quot;, nomAbregeInput);&#xd;&#xa;fieldsRequired.add(nomAbregeInput);&#xd;&#xa;"/>
                   </AuxValues>
                 </Component>
                 <Component class="javax.swing.JTextField" name="nomCompletInput">
@@ -223,7 +228,7 @@
                     <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="nomCompletInputActionPerformed"/>
                   </Events>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;fullName&quot;, nomCompletInput);"/>
+                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;ParametreAnneeAcademic-&gt;etablissementId-&gt;fullName&quot;, nomCompletInput);"/>
                   </AuxValues>
                 </Component>
               </SubComponents>
@@ -244,6 +249,11 @@
               <Properties>
                 <Property name="name" type="java.lang.String" value="session" noResource="true"/>
               </Properties>
+              <AccessibilityProperties>
+                <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="&quot;anneeAcademicId&quot;" type="code"/>
+                </Property>
+              </AccessibilityProperties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;ParametreAnneeAcademic-&gt;session-&gt;session&quot;, sessionInput);&#xd;&#xa;fieldsRequired.add(sessionInput);"/>
               </AuxValues>
@@ -263,6 +273,7 @@
                 <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="statusInputItemStateChanged"/>
               </Events>
               <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;statut&quot;, statusInput);"/>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
             </Component>
@@ -282,6 +293,11 @@
               <Properties>
                 <Property name="name" type="java.lang.String" value="code" noResource="true"/>
               </Properties>
+              <AccessibilityProperties>
+                <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="entityTrimestre.toLowerCase() + &quot;Id&quot;" type="code"/>
+                </Property>
+              </AccessibilityProperties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;ParametreAnneeAcademic-&gt;trimestreId-&gt;code&quot;, trimestreInput);"/>
               </AuxValues>
@@ -302,6 +318,11 @@
               <Properties>
                 <Property name="name" type="java.lang.String" value="code" noResource="true"/>
               </Properties>
+              <AccessibilityProperties>
+                <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="entitySequence.toLowerCase() + &quot;Id&quot;" type="code"/>
+                </Property>
+              </AccessibilityProperties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;ParametreAnneeAcademic-&gt;sequenceId-&gt;code&quot;, sequenceInput);"/>
               </AuxValues>
@@ -328,6 +349,9 @@
                 <Property name="focusable" type="boolean" value="false"/>
                 <Property name="name" type="java.lang.String" value="dateOuverture" noResource="true"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="trimestreDateOuvertureInputActionPerformed"/>
+              </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;ParametreAnneeAcademic-&gt;trimestreId-&gt;dateOuverture&quot;, trimestreDateOuvertureInput);"/>
               </AuxValues>

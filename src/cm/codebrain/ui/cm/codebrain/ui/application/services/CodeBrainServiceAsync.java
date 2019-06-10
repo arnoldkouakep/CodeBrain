@@ -5,7 +5,6 @@
  */
 package cm.codebrain.ui.application.services;
 
-import cm.codebrain.main.business.controller.CodeBrainManager;
 import cm.codebrain.main.business.services.implement.CodeBrainServiceImplement;
 import cm.codebrain.ui.application.enumerations.EnumVariable;
 import java.util.HashMap;
@@ -56,12 +55,12 @@ public class CodeBrainServiceAsync extends CodeBrainServiceImplement {
     }
 
     @Override
-    public boolean disConnexion() {
+    public boolean disConnexion() throws Exception{
         return super.disConnexion(); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean connexion() {
+    public boolean connexion() throws Exception{
         return super.connexion(); //To change body of generated methods, choose Tools | Templates.
     }
 

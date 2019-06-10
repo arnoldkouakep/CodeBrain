@@ -12,7 +12,9 @@ import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumError;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.enumerations.EnumVariable;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Action;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.CREATE;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Delete;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Entity;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Field;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Model;
@@ -98,13 +100,15 @@ public class TrimestreAndSequencesForm extends ModelForm {
             }
                 if(model == null){
                     model = listModelsAdd.get(rowNumber-listModelsOriginal.size());
-                    getModelData(model, codeSequenceInput, sequenceDebutInput, sequenceFinInput);
-                    modifyButton.setEnabled(true);
-                    addButton.setEnabled(false);
-                }else{
+                }
+                if(model == null){
                     modifyButton.setEnabled(false);
                     addButton.setEnabled(true);
                     reset(codeSequenceInput, sequenceDebutInput, sequenceFinInput);
+                }else{
+                    getDataFromModel(model, codeSequenceInput, sequenceDebutInput, sequenceFinInput);
+                    modifyButton.setEnabled(true);
+                    addButton.setEnabled(false);
                 }
         });
     }
@@ -131,7 +135,7 @@ public class TrimestreAndSequencesForm extends ModelForm {
             {"dateFermeture",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule), Date.class}};
 
-        addAction(codeTrimestreInput, entity, entity.toLowerCase() + "Id", parametresGrid, filter, args, codeTrimestreInput, codeSequenceInput, trimestreDebutInput, trimestreFinInput);
+        addAction(codeTrimestreInput, entity, parametresGrid, filter, args, codeTrimestreInput, trimestreDebutInput, trimestreFinInput);
     }
 
     private void eventAnneeAcademic() {
@@ -145,7 +149,7 @@ public class TrimestreAndSequencesForm extends ModelForm {
             {"dateFermeture",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule), Date.class}};
 
-        addAction(sessionInput, entityAnneeAcademic, "anneeAcademicId", parametresGrid1, null, args, sessionInput, sessionDebutInput, sessionFinInput);
+        addAction(sessionInput, entityAnneeAcademic, parametresGrid1, null, args, sessionInput, sessionDebutInput, sessionFinInput);
     }
 
     protected void eventActionRef() {
@@ -170,12 +174,13 @@ public class TrimestreAndSequencesForm extends ModelForm {
         HashMap modelSub = new HashMap();
         modelSub.put(Entity, entitySequence);
         modelSub.put(Field, entity.toLowerCase() + "Id");
+        modelSub.put(Action, Delete);
         modelSub.put(Model, listModelsSub);
 
         setActionModel(Arrays.asList(modelAdd), Arrays.asList(modelSub));
     }
 
-    public void addActionComplement() {
+    public void eventSequence() {
         if (gridIsEmpty) {
             if (etatAction != CREATE) {
 
@@ -194,18 +199,23 @@ public class TrimestreAndSequencesForm extends ModelForm {
 
                 try {
                     listModelsOriginal = getListModelForSelect(null, entitySequence, null, filter, args);
-                } catch (Exception ex) {
-                    Logger.getLogger(GroupSalleForm.class.getName()).log(Level.SEVERE, null, ex);
-                }
 
-                listModelsOriginal.stream().map((model) -> {
-                    Object[] newRow = {model.get("code"), model.get("dateOuverture"), model.get("dateFermeture")};
-                    return newRow;
-                }).forEachOrdered((newRow) -> {
-                    ((DefaultTableModel) ((JTable) grid).getModel()).addRow(newRow);
-                });
-                reset(codeSequenceInput, sequenceDebutInput, sequenceFinInput);
-                gridIsEmpty = false;
+                    listModelsOriginal.stream().map((model) -> {
+                        Object[] newRow = {model.get("code"), model.get("dateOuverture"), model.get("dateFermeture")};
+                        return newRow;
+                    }).forEachOrdered((newRow) -> {
+                        ((DefaultTableModel) ((JTable) grid).getModel()).addRow(newRow);
+                    });
+//                    reset(codeSequenceInput, sequenceDebutInput, sequenceFinInput, grid);
+                    gridIsEmpty = false;
+                } catch (Exception ex) {
+                    MessageForm.showsError(Dictionnaire.get(EnumError.Business_Libelle_No_Result_Found), "Message", false, null);
+                    gridIsEmpty=true;
+//                    Logger.getLogger(GroupSalleForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
+                reset(codeSequenceInput, sequenceDebutInput, sequenceFinInput, grid);
+
             }
         }
     }
@@ -345,6 +355,8 @@ public class TrimestreAndSequencesForm extends ModelForm {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        sessionInput.getAccessibleContext().setAccessibleName("anneeAcademicId");
+
         panelClasse.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Trimestre))); // NOI18N
         panelClasse.setOpaque(false);
 
@@ -356,6 +368,11 @@ public class TrimestreAndSequencesForm extends ModelForm {
         this.addFormData("dateOuverture", trimestreDebutInput);
         fieldSearch.put("dateOuverture", trimestreDebutInput);
         fieldsRequired.add(trimestreDebutInput);
+        trimestreDebutInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                trimestreDebutInputActionPerformed(evt);
+            }
+        });
 
         labelTrimestreFin.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_DateFin)); // NOI18N
         labelTrimestreFin.setName("usernameLabel"); // NOI18N
@@ -414,7 +431,9 @@ public class TrimestreAndSequencesForm extends ModelForm {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanelButtons.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        codeTrimestreInput.getAccessibleContext().setAccessibleName("trimestreId");
+
+        jPanelButtons.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         addButton.setIcon(new ImageIcon(Dictionnaire.getResource(ADD).getScaledInstance(width, height, 0)));
         addButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Add)); // NOI18N
@@ -444,6 +463,9 @@ public class TrimestreAndSequencesForm extends ModelForm {
         });
         jPanelButtons.add(subButton);
 
+        jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
+        grid.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         grid.setModel(setModelDataTable(
             new Object[] {Dictionnaire.get(EnumLibelles.Business_Libelle_code), String.class, false},
             new Object[] {Dictionnaire.get(EnumLibelles.Business_Libelle_DateDebut), Date.class, true},
@@ -464,20 +486,17 @@ public class TrimestreAndSequencesForm extends ModelForm {
 
         sequenceDebutInput.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd/MM/yyyy"))));
         sequenceDebutInput.setName("dateOuverture"); // NOI18N
-        fieldSearch.put("Trimestre->sequenceId->dateOuverture", trimestreDebutInput);
 
         labelSequenceFin.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_DateFin)); // NOI18N
         labelSequenceFin.setName("usernameLabel"); // NOI18N
 
         sequenceFinInput.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter(new java.text.SimpleDateFormat("dd/MM/yyyy"))));
         sequenceFinInput.setName("dateFermeture"); // NOI18N
-        fieldSearch.put("Trimestre->sequenceId->dateFermeture", trimestreFinInput);
 
         labelSequenceCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code)); // NOI18N
         labelSequenceCode.setName("usernameLabel"); // NOI18N
 
         codeSequenceInput.setName("code"); // NOI18N
-        fieldSearch.put("Trimestre->sequenceId->code", codeTrimestreInput);
 
         javax.swing.GroupLayout panelSequenceLayout = new javax.swing.GroupLayout(panelSequence);
         panelSequence.setLayout(panelSequenceLayout);
@@ -546,7 +565,7 @@ public class TrimestreAndSequencesForm extends ModelForm {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanelButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 132, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -603,35 +622,75 @@ public class TrimestreAndSequencesForm extends ModelForm {
 
     private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
         // TODO add your handling code here:
-        int rowIndex = grid.convertRowIndexToModel(grid.getSelectedRow());
-
-//        modelSequence = new HashMap<>();
-        modelSequence = (HashMap) FormParameters.get(entitySequence.toLowerCase() + "Id");
+        if(!codeSequenceInput.getText().isEmpty() && sequenceDebutInput.getValue() != null && sequenceFinInput.getValue() != null){
         
-        if (findModel(modelSequence, "code", listModelsOriginal) == null) {
-            
-            listModelsAdd.set(rowIndex, modelSequence);
-            
-            Object[] newRow = {codeSequenceInput.getText(), sequenceDebutInput.getValue(), sequenceFinInput.getValue()};
+            int rowIndex = grid.convertRowIndexToModel(grid.getSelectedRow());
+    //        try {
+    //            ((DefaultTableModel) ((JTable) grid).getModel()).removeRow(rowIndex);
+    //        } catch (Exception e) {
+    //            System.out.println(e.getMessage());
+    //        }
+    //        grid.repaint();
 
-            setTableModel(codeSequenceInput, sequenceDebutInput, sequenceFinInput);
-
-            try {
-                ((DefaultTableModel) ((JTable) grid).getModel()).setValueAt(newRow[0], rowIndex, 0);
-                ((DefaultTableModel) ((JTable) grid).getModel()).setValueAt(newRow[1], rowIndex, 1);
-                ((DefaultTableModel) ((JTable) grid).getModel()).setValueAt(newRow[2], rowIndex, 2);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
+            if (etatAction != CREATE) {
+                modelSequence = listModelsOriginal.get(rowIndex);
+                if (modelSequence == null) {
+    //                listModelsSub.add(modelSequence);
+                    modelSequence = listModelsAdd.get(rowIndex-listModelsOriginal.size());
+                }
+            }else{
+                modelSequence = listModelsAdd.get(rowIndex-listModelsOriginal.size());
             }
-            grid.repaint();
-        }
-        
-        reset(codeSequenceInput, sequenceDebutInput, sequenceFinInput);
+            
+            
+            if(modelSequence ==null){
+                modifyButton.setEnabled(false);
+                addButton.setEnabled(true);
 
-        modifyButton.setEnabled(false);
-        addButton.setEnabled(true);
-        
-        codeSequenceInput.requestFocus();
+                reset(codeSequenceInput, sequenceDebutInput, sequenceFinInput);
+                codeSequenceInput.requestFocus();
+            }else{
+                modelSequence.put("code", codeSequenceInput.getText());
+                modelSequence.put("dateOuverture", sequenceDebutInput.getValue());
+                modelSequence.put("dateFermeture", sequenceFinInput.getValue());
+
+//                if (findModel(modelSequence, "code", listModelsOriginal) == null) {
+                Object[] newRow = {codeSequenceInput.getText(), sequenceDebutInput.getValue(), sequenceFinInput.getValue()};
+
+                setTableModel(codeSequenceInput, sequenceDebutInput, sequenceFinInput);
+
+                try {
+                    ((DefaultTableModel) ((JTable) grid).getModel()).setValueAt(newRow[0], rowIndex, 0);
+                    ((DefaultTableModel) ((JTable) grid).getModel()).setValueAt(newRow[1], rowIndex, 1);
+                    ((DefaultTableModel) ((JTable) grid).getModel()).setValueAt(newRow[2], rowIndex, 2);
+
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+                grid.repaint();
+            
+                if (findModel(modelSequence, "code", listModelsAdd) == null) {
+                    listModelsAdd.add(modelSequence);
+                }else{
+                    listModelsAdd.remove(findModel(modelSequence, "code", listModelsAdd));
+                    listModelsAdd.add(modelSequence);
+                }
+//                }
+                
+                modifyButton.setEnabled(false);
+                addButton.setEnabled(true);
+                
+                codeSequenceInput.requestFocus();
+                
+                reset(codeSequenceInput, sequenceDebutInput, sequenceFinInput);
+                codeSequenceInput.requestFocus();
+            }
+
+//            reset(codeSequenceInput, sequenceDebutInput, sequenceFinInput);
+//            codeSequenceInput.requestFocus();
+        }else{
+            MessageForm.showsError(Dictionnaire.get(EnumError.Business_Error_find_required), "Message", false, null);
+        }
     }//GEN-LAST:event_modifyButtonActionPerformed
 
     private void subButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subButtonActionPerformed
@@ -660,6 +719,17 @@ public class TrimestreAndSequencesForm extends ModelForm {
         
         codeSequenceInput.requestFocus();
     }//GEN-LAST:event_subButtonActionPerformed
+
+    private void trimestreDebutInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_trimestreDebutInputActionPerformed
+        // TODO add your handling code here:
+        if(trimestreDebutInput.getText().isEmpty()){
+            reset(codeSequenceInput, sequenceDebutInput, sequenceFinInput, grid);
+            listModelsAdd.clear();
+            listModelsSub.clear();
+            listModelsSub.addAll(listModelsOriginal);
+        }
+        else eventSequence();
+    }//GEN-LAST:event_trimestreDebutInputActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;

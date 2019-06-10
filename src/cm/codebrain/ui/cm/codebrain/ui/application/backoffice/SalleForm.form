@@ -267,6 +267,11 @@
                   <Properties>
                     <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="&quot;sectionId&quot;" type="code"/>
+                    </Property>
+                  </AccessibilityProperties>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch.put(&quot;Salle-&gt;classeId-&gt;code-&gt;Classe-&gt;sectionId-&gt;code&quot;, sectionInput);&#xd;&#xa;fieldsRequired.add(sectionInput);&#xd;&#xa;"/>
                   </AuxValues>

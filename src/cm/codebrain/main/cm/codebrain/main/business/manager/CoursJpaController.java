@@ -103,11 +103,11 @@ public class CoursJpaController extends CodeBrainEntityManager implements Serial
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             Cours persistentCours = (Cours) find(Cours.class, cours.getCoursId());
-            Groupe groupeIdOld = persistentCours.getGroupeId();
+//            Groupe groupeIdOld = persistentCours.getGroupeId();
             Groupe groupeIdNew = cours.getGroupeId();
-            Classe classeIdOld = persistentCours.getClasseId();
+//            Classe classeIdOld = persistentCours.getClasseId();
             Classe classeIdNew = cours.getClasseId();
-            Users userModifiedOld = persistentCours.getUserModified();
+//            Users userModifiedOld = persistentCours.getUserModified();
             Users userModifiedNew = cours.getUserModified();
             Users userCreatedOld = persistentCours.getUserCreated();
             Users userCreatedNew = cours.getUserCreated();

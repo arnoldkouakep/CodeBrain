@@ -10,7 +10,9 @@ import cm.codebrain.ui.application.controller.Dictionnaire;
 import cm.codebrain.ui.application.controller.FormParameters;
 import cm.codebrain.ui.application.enumerations.EnumLibelles;
 import cm.codebrain.ui.application.enumerations.EnumVariable;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Action;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.CREATE;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Default;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Entity;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Field;
 import static cm.codebrain.ui.application.enumerations.EnumVariable.Model;
@@ -93,7 +95,7 @@ public class GroupSalleForm extends ModelForm {
             }
                 if(model == null){
                     model = listModelsAdd.get(rowNumber-listModelsOriginal.size());
-                    getModelData(model, salleInput, salleIntituleInput);
+                    getDataFromModel(model, salleInput, salleIntituleInput);
                     modifyButton.setEnabled(true);
                     addButton.setEnabled(false);
                 }else{
@@ -124,7 +126,7 @@ public class GroupSalleForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(salleInput, entitySalle, entitySalle.toLowerCase() + "Id", parametresGrid, filter, args, salleInput, salleIntituleInput);
+        addAction(salleInput, entitySalle, parametresGrid, filter, args, salleInput, salleIntituleInput);
     }
 
     private void eventClasse() {
@@ -136,7 +138,7 @@ public class GroupSalleForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(classeInput, entityClasse, entityClasse.toLowerCase() + "Id", parametresGrid, null, args, classeInput, classeIntituleInput);
+        addAction(classeInput, entityClasse, parametresGrid, null, args, classeInput, classeIntituleInput);
     }
 
     protected void eventActionRef() {
@@ -163,12 +165,13 @@ public class GroupSalleForm extends ModelForm {
         HashMap modelSub = new HashMap();
         modelSub.put(Entity, entitySalle);
         modelSub.put(Field, entity.toLowerCase() + "Id");
+        modelSub.put(Action, Default);
         modelSub.put(Model, listModelsSub);
 
         setActionModel(Arrays.asList(modelAdd), Arrays.asList(modelSub));
     }
 
-    public void addActionComplement() {
+    public void loadSallesGrid() {
         if (gridIsEmpty) {
             if (etatAction != CREATE) {
 
@@ -323,13 +326,10 @@ public class GroupSalleForm extends ModelForm {
         labelSalle.setName("usernameLabel"); // NOI18N
 
         salleInput.setName("code"); // NOI18N
-        this.addFormData("salleId", salleInput);
-        fieldSearch("Salle->code", salleInput);
 
         salleIntituleInput.setEditable(false);
         salleIntituleInput.setFocusable(false);
         salleIntituleInput.setName("intitule"); // NOI18N
-        fieldSearch("Salle->intitule", salleIntituleInput);
         salleIntituleInput.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 salleIntituleInputActionPerformed(evt);
@@ -360,6 +360,10 @@ public class GroupSalleForm extends ModelForm {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        salleInput.getAccessibleContext().setAccessibleName(entitySalle.toLowerCase() + "Id");
+
+        jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+
         grid.setModel(setModelDataTable(
             Dictionnaire.get(EnumLibelles.Business_Libelle_code).concat(" " + Dictionnaire.get(EnumLibelles.Business_Libelle_Salle)),
             Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule).concat(" " + Dictionnaire.get(EnumLibelles.Business_Libelle_Salle))
@@ -371,7 +375,7 @@ public class GroupSalleForm extends ModelForm {
         grid.putClientProperty("Quaqua.Table.style", "striped");
         jScrollPane1.setViewportView(grid);
 
-        jPanelButtons.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        jPanelButtons.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
         addButton.setIcon(new ImageIcon(Dictionnaire.getResource(ADD).getScaledInstance(width, height, 0)));
         addButton.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Add)); // NOI18N
@@ -415,6 +419,11 @@ public class GroupSalleForm extends ModelForm {
         classeIntituleInput.setFocusable(false);
         classeIntituleInput.setName("intitule"); // NOI18N
         fieldSearch("Groupe->classeId->intitule", classeIntituleInput);
+        classeIntituleInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                classeIntituleInputActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout panelClasseLayout = new javax.swing.GroupLayout(panelClasse);
         panelClasse.setLayout(panelClasseLayout);
@@ -439,6 +448,8 @@ public class GroupSalleForm extends ModelForm {
                     .addComponent(classeIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        classeInput.getAccessibleContext().setAccessibleName(entityClasse.toLowerCase() + "Id");
 
         javax.swing.GroupLayout panelContentLayout = new javax.swing.GroupLayout(panelContent);
         panelContent.setLayout(panelContentLayout);
@@ -474,7 +485,7 @@ public class GroupSalleForm extends ModelForm {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanelButtons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -578,8 +589,18 @@ public class GroupSalleForm extends ModelForm {
 
     private void salleIntituleInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_salleIntituleInputActionPerformed
         // TODO add your handling code here:
-        addActionComplement();
+        loadSallesGrid();
     }//GEN-LAST:event_salleIntituleInputActionPerformed
+
+    private void classeIntituleInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_classeIntituleInputActionPerformed
+        // TODO add your handling code here:
+        if(classeIntituleInput.getText().isEmpty()){
+            reset(salleInput, salleIntituleInput, grid);
+            listModelsAdd.clear();
+            listModelsSub.clear();
+            listModelsSub.addAll(listModelsOriginal);
+        }
+    }//GEN-LAST:event_classeIntituleInputActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;

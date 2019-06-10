@@ -20,6 +20,7 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Root;
+import org.eclipse.persistence.config.QueryHints;
 
 /**
  *
@@ -279,7 +280,8 @@ public class CodeBrainEntityManager {
     }
 
     public List getList(String entity, String filter, Object... paramsArgs) throws Exception {
-
+        String ejbql = "from "+entity+" entity";
+        if(!filter.isEmpty()) entity+= " where entity.anneeAcademicId=:arg0 and entity.trimestreId=:arg1";
         Class<?> classe = Class.forName(entityPackage.concat(entity));
 
         EntityManager em = getEntityManager();
@@ -314,6 +316,10 @@ public class CodeBrainEntityManager {
                 if (args[i] == null) {
                     ejbql = ejbql.replaceFirst("<>:arg" + j, " is not null");
                     ejbql = ejbql.replaceFirst("=:arg" + j, " is null");
+//                    arg = new HashMap();
+//                    arg.put(Indice, j);
+//                    arg.put(Value, '%');
+//                    lstMap.add(arg);
                     j++;
                 } else {
                     if (args[i] instanceof HashMap) {
@@ -371,16 +377,19 @@ public class CodeBrainEntityManager {
         if (lstMap.size() > 0) {
             for (Map map : lstMap) {
                 query.setParameter("arg" + map.get(Indice), map.get(Value));
+//                if(map.get(Value)==null) query.setHint(QueryHints.BIND_PARAMETERS, true);
             }
         }
         query.setParameter("arg" + nbreArgs,
                 EnumStatus.Business_Status_StateDb_Delete.toString());
+        
         try {
             list = query.getResultList();
 
             return list;
 
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return null;
         }
 

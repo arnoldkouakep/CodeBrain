@@ -110,17 +110,17 @@ public class WidgetJpaController extends CodeBrainEntityManager implements Seria
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             Widget persistentWidget = (Widget) find(Widget.class, widget.getWidgetId());
-            Levels levelsIdOld = persistentWidget.getLevelsId();
+//            Levels levelsIdOld = persistentWidget.getLevelsId();
             Levels levelsIdNew = widget.getLevelsId();
-            Users userModifiedOld = persistentWidget.getUserModified();
+//            Users userModifiedOld = persistentWidget.getUserModified();
             Users userModifiedNew = widget.getUserModified();
             Users userCreatedOld = persistentWidget.getUserCreated();
             Users userCreatedNew = widget.getUserCreated();
-            Widget parentOld = persistentWidget.getParent();
+//            Widget parentOld = persistentWidget.getParent();
             Widget parentNew = widget.getParent();
-            Set<Widget> widgetSetOld = persistentWidget.getWidgetSet();
+//            Set<Widget> widgetSetOld = persistentWidget.getWidgetSet();
             Set<Widget> widgetSetNew = widget.getWidgetSet();
-            List<String> illegalOrphanMessages = null;
+//            List<String> illegalOrphanMessages = null;
 //            for (Widget widgetSetOldWidget : widgetSetOld) {
 //                if (!widgetSetNew.contains(widgetSetOldWidget)) {
 //                    if (illegalOrphanMessages == null) {

@@ -95,9 +95,9 @@ public abstract class ModelForm extends javax.swing.JDialog {
     private boolean hideActionMenuTitle = true;
     private boolean confirmExit = false;
     private final Color colorDefault = new Color(255, 255, 255);
-    private final Color colorRef = new Color(200, 255, 255);
+    private final Color colorRef = new Color(200, 236, 255);//(200, 255, 255); 175, 215, 255
     private final Color colorSearch = new Color(223, 246, 238);
-    private final Color colorResult = new Color(255, 253, 235);
+    private final Color colorResult = new Color(180, 183, 182);//255, 253, 235);
 
 //    public CodeBrainManager cbManager = new CodeBrainManager();
     private SearchForm searchForm;
@@ -375,28 +375,50 @@ public abstract class ModelForm extends javax.swing.JDialog {
         FormParameters.init();
     }
 
-    public void addAction(Object input, String entity, String[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
+    public void addAction(Object input, String entity, Object[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
         /**
          * TextFields
          */
         if (input.getClass().equals(JTextField.class)) {
             //((JTextField) input).setBackground(colorSearch);//68, 127, 255));
             setColor(input, imputsResult);
-            ((JTextField) input).addActionListener((ActionEvent e) -> {
-                if (!((JTextField) input).getText().isEmpty()) {
-                    inputActionListener(e, input, entity, null, parametresGrid, filter, args, imputsResult);
-                }
-            });
+            ActionListener action = addActionEvent(input, entity, ((JTextField) input).getAccessibleContext().getAccessibleName(), parametresGrid, filter, args, imputsResult);
+//            ((JTextField) input).removeActionListener(action);
+
+            ActionListener[] axcc = ((JTextField) input).getActionListeners();
+            for (ActionListener a : axcc) {
+                ((JTextField) input).removeActionListener(a);
+            }
+
+            ((JTextField) input).addActionListener(action);
+//                    (ActionEvent e) -> {
+//                if (!((JTextField) input).getText().isEmpty()) {
+//                    inputActionListener(e, input, entity, ((JTextField) input).getAccessibleContext().getAccessibleName(), parametresGrid, filter, args, imputsResult);
+//                }else if(((JTextField) input).getText().isEmpty()){
+//                    reset(imputsResult);
+//                }
+//            });
 
         } /**
          * ComboBox
          */
         else if (input.getClass().equals(JComboBox.class)) {
-            ((JComboBox) input).addActionListener((ActionEvent e) -> {
-                if (!((JComboBox) input).getSelectedItem().toString().isEmpty()) {
-                    inputActionListener(e, input, entity, null, parametresGrid, filter, args, imputsResult);
-                }
-            });
+            ActionListener action = addActionEvent(input, entity, ((JComboBox) input).getAccessibleContext().getAccessibleName(), parametresGrid, filter, args, imputsResult);
+            ((JComboBox) input).removeActionListener(action);
+
+            ActionListener[] axcc = ((JComboBox) input).getActionListeners();
+            for (ActionListener a : axcc) {
+                ((JComboBox) input).removeActionListener(a);
+            }
+
+            ((JComboBox) input).addActionListener(action);
+//                    (ActionEvent e) -> {
+//                if (!((JComboBox) input).getSelectedItem().toString().isEmpty()) {
+//                    inputActionListener(input, entity, ((JComboBox) input).getAccessibleContext().getAccessibleName(), parametresGrid, filter, args, imputsResult);
+//                }else if(((JTextField) input).getText().isEmpty()){
+//                    reset(imputsResult);
+//                }
+//            });
         } else {
             System.out.println("Nothing");
         }
@@ -409,27 +431,78 @@ public abstract class ModelForm extends javax.swing.JDialog {
         if (input.getClass().equals(JTextField.class)) {
 //            ((JTextField) input).setBackground(colorSearch);//68, 127, 255));
             setColor(input, imputsResult);
-            ((JTextField) input).addActionListener((ActionEvent e) -> {
-                if (!((JTextField) input).getText().isEmpty()) {
-                    inputActionListener(e, input, entity, keyParam, parametresGrid, filter, args, imputsResult);
-                }
-            });
+            ActionListener action = addActionEvent(input, entity, keyParam, parametresGrid, filter, args, imputsResult);
+//            ((JTextField) input).removeActionListener(action);
+
+            ActionListener[] axcc = ((JTextField) input).getActionListeners();
+            for (ActionListener a : axcc) {
+                ((JTextField) input).removeActionListener(a);
+            }
+
+            ((JTextField) input).addActionListener(action);
+//                    (ActionEvent e) -> {
+//                if (!((JTextField) input).getText().isEmpty()) {
+//                    inputActionListener(e, input, entity, keyParam, parametresGrid, filter, args, imputsResult);
+//                }else if(((JTextField) input).getText().isEmpty()){
+//                    reset(imputsResult);
+//                }
+//            });
 
         } /**
          * ComboBox
          */
         else if (input.getClass().equals(JComboBox.class)) {
-            ((JComboBox) input).addActionListener((ActionEvent e) -> {
-                if (!((JComboBox) input).getSelectedItem().toString().isEmpty()) {
-                    inputActionListener(e, input, entity, keyParam, parametresGrid, filter, args, imputsResult);
-                }
-            });
+            ActionListener action = addActionEvent(input, entity, keyParam, parametresGrid, filter, args, imputsResult);
+            ((JComboBox) input).removeActionListener(action);
+
+            ActionListener[] axcc = ((JComboBox) input).getActionListeners();
+            for (ActionListener a : axcc) {
+                ((JComboBox) input).removeActionListener(a);
+            }
+            ((JComboBox) input).addActionListener(action);
+//                    (ActionEvent e) -> {
+//                if (!((JComboBox) input).getSelectedItem().toString().isEmpty()) {
+//                    inputActionListener(e, input, entity, keyParam, parametresGrid, filter, args, imputsResult);
+//                }else if(((JTextField) input).getText().isEmpty()){
+//                    reset(imputsResult);
+//                }
+//            });
         } else {
             System.out.println("Nothing");
         }
     }
 
-    private void inputActionListener(java.awt.event.ActionEvent evt, Object input, String entity, String keyParam, Object[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
+    private ActionListener addActionEvent(Object input, String entity, String keyParam, Object[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
+        return (ActionEvent e) -> {
+            /**
+             * TextFields
+             */
+            if (input.getClass().equals(JTextField.class)) {
+                //            ((JTextField) input).setBackground(colorSearch);//68, 127, 255));
+//                setColor(input, imputsResult);
+                if (!((JTextField) input).getText().isEmpty()) {
+                    inputActionListener(input, entity, keyParam, parametresGrid, filter, args, imputsResult);
+                } else if (((JTextField) input).getText().isEmpty()) {
+                    reset(imputsResult);
+                    addActionSecondaire(imputsResult);
+                }
+            } /**
+             * ComboBox
+             */
+            else if (input.getClass().equals(JComboBox.class)) {
+                if (!((JComboBox) input).getSelectedItem().toString().isEmpty()) {
+                    inputActionListener(input, entity, keyParam, parametresGrid, filter, args, imputsResult);
+                } else if (((JTextField) input).getText().isEmpty()) {
+                    reset(imputsResult);
+                    addActionSecondaire(imputsResult);
+                }
+            } else {
+                System.out.println("Nothing");
+            }
+        };
+    }
+
+    private void inputActionListener(Object input, String entity, String keyParam, Object[][] parametresGrid, String filter, HashMap[] args, Object... imputsResult) {
         if (etatAction != CREATE || (etatAction == CREATE && !input.equals(getRef()))) {
 
             Loading.show(btnValider, new Executable<List<HashMap>>() {
@@ -441,8 +514,11 @@ public abstract class ModelForm extends javax.swing.JDialog {
                     modelComplet = getListModelForSelect(input, entity, parametresGrid, filter, args);
 
                     searchForm = new SearchForm(entity, keyParam, modelComplet, parametresGrid, imputsResult);
-
-                    searchForm.setVisible(true);
+                    
+//                    if(modelComplet.size()==1) searchForm.setResult(modelComplet.get(0));
+//                    else 
+                        searchForm.setVisible(true);
+                    
                     if (etatAction != CREATE && input.equals(getRef())) {
 //                        try {
                         FormParameters.add(Model, searchForm.getResult());
@@ -456,16 +532,16 @@ public abstract class ModelForm extends javax.swing.JDialog {
 
                 @Override
                 public List<HashMap> success() {
-
-                    if (imputsResult.length > 1) {
-                        if (imputsResult[1].getClass() == JTextField.class) {
-                            ((JTextField) imputsResult[1]).postActionEvent();
-                        } else if (imputsResult[1].getClass() == JFormattedTextField.class) {
-                            ((JFormattedTextField) imputsResult[1]).postActionEvent();
-                        } else if (imputsResult[1].getClass() == JComboBox.class) {
-                            ((JComboBox) imputsResult[1]).postEvent(new Event(imputsResult, Event.ENTER, null));//actionPerformed(new ActionEvent(imputsResult, 0, ((JComboBox) imputsResult[1]).getActionCommand()));
-                        }
-                    }
+                    addActionSecondaire(imputsResult);
+//                    if (imputsResult.length > 1) {
+//                        if (imputsResult[1].getClass() == JTextField.class) {
+//                            ((JTextField) imputsResult[1]).postActionEvent();
+//                        } else if (imputsResult[1].getClass() == JFormattedTextField.class) {
+//                            ((JFormattedTextField) imputsResult[1]).postActionEvent();
+//                        } else if (imputsResult[1].getClass() == JComboBox.class) {
+//                            ((JComboBox) imputsResult[1]).postEvent(new Event(imputsResult, Event.ENTER, null));//actionPerformed(new ActionEvent(imputsResult, 0, ((JComboBox) imputsResult[1]).getActionCommand()));
+//                        }
+//                    }
 
                     return modelComplet;
                 }
@@ -476,6 +552,19 @@ public abstract class ModelForm extends javax.swing.JDialog {
                 }
 
             });
+        }
+
+    }
+
+    private void addActionSecondaire(Object... imputsResult) {
+        if (imputsResult.length > 1) {
+            if (imputsResult[1].getClass() == JTextField.class) {
+                ((JTextField) imputsResult[1]).postActionEvent();
+            } else if (imputsResult[1].getClass() == JFormattedTextField.class) {
+                ((JFormattedTextField) imputsResult[1]).postActionEvent();
+            } else if (imputsResult[1].getClass() == JComboBox.class) {
+                ((JComboBox) imputsResult[1]).postEvent(new Event(imputsResult, Event.ENTER, null));//actionPerformed(new ActionEvent(imputsResult, 0, ((JComboBox) imputsResult[1]).getActionCommand()));
+            }
         }
 
     }
@@ -818,7 +907,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
             return ky;
         }).filter((ky) -> (fieldSearch.get(ky).getClass() == JTextField.class)).map((ky) -> (JTextField) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
             try {
-                ((JTextField) val).setText(Dictionnaire.get(getValueModelFromKey(this.key.toString(), model).toString()));
+                ((JTextField) val).setText(Dictionnaire.get(getValueModelFromKey(this.key.toString(), ((JTextField) val).getAccessibleContext().getAccessibleName(), model).toString()));
             } catch (Exception e) {
             }
         });
@@ -830,7 +919,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
             return ky;
         }).filter((ky) -> (fieldSearch.get(ky).getClass() == JPasswordField.class)).map((ky) -> (JPasswordField) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
             try {
-                getValueModelFromKey(this.key.toString(), model);
+                getValueModelFromKey(this.key.toString(), ((JPasswordField) val).getAccessibleContext().getAccessibleName(), model);
                 ((JPasswordField) val).setText(null);
             } catch (Exception e) {
             }
@@ -874,7 +963,35 @@ public abstract class ModelForm extends javax.swing.JDialog {
         }).filter((ky) -> (fieldSearch.get(ky).getClass() == JFormattedTextField.class)).map((ky) -> (JFormattedTextField) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
             try {
 //                String strTime = new SimpleDateFormat("").format(model.get(this.key.toString()));
-                ((JFormattedTextField) val).setValue(getValueModelFromKey(this.key.toString(), model));//model.get(this.key.toString()));
+                ((JFormattedTextField) val).setValue(getValueModelFromKey(this.key.toString(), ((JFormattedTextField) val).getAccessibleContext().getAccessibleName(), model));//model.get(this.key.toString()));
+            } catch (Exception e) {
+            }
+        });
+        /**
+         * JComboBox.class
+         */
+        fieldSearch.keySet().stream().map((ky) -> {
+            this.key = ky;
+            return ky;
+        }).filter((ky) -> (fieldSearch.get(ky).getClass() == JComboBox.class)).map((ky) -> (JComboBox) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
+            try {
+//                String strTime = new SimpleDateFormat("").format(model.get(this.key.toString()));
+//                ((JComboBox) val).setValue();//model.get(this.key.toString()));
+                
+                Object valeur = getValueModelFromKey(this.key.toString(), ((JComboBox) val).getAccessibleContext().getAccessibleName(), model);
+                
+                int nber = ((JComboBox) val).getItemCount();
+                
+                for(int i=0; i<nber ; i++){
+                    if(Dictionnaire.get(valeur).equals(((JComboBox) val).getItemAt(i))){
+                        ((JComboBox) val).setSelectedIndex(i);
+                    }
+                }
+//                    if (listModelsOriginal.get(0).get("statut").equals(EnumStatus.Business_Statut_NonActif.toString())) {
+//                        statusInput.setSelectedIndex(0);
+//                    } else {
+//                        statusInput.setSelectedIndex(1);
+//                    }
             } catch (Exception e) {
             }
         });
@@ -886,7 +1003,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
             /**
              * JTextField.class
              */
-            if (input instanceof JTextField) {
+            if (input.getClass() == JTextField.class) {
 //                ((JTextField) input).setText(Dictionnaire.get(getValueModelFromKey(this.key.toString(), model).toString()));
 
                 fieldSearch.keySet().stream().map((ky) -> {
@@ -894,7 +1011,7 @@ public abstract class ModelForm extends javax.swing.JDialog {
                     return ky;
                 }).filter((ky) -> (fieldSearch.get(ky) == input)).map((ky) -> (JTextField) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
                     try {
-                        ((JTextField) input).setText(Dictionnaire.get(getValueModelFromKey(this.key.toString(), model).toString()));
+                        ((JTextField) input).setText(Dictionnaire.get(getValueModelFromKey(this.key.toString(), ((JTextField) input).getAccessibleContext().getAccessibleName(), model).toString()));
                     } catch (Exception e) {
                     }
                 });
@@ -902,6 +1019,31 @@ public abstract class ModelForm extends javax.swing.JDialog {
         }
     }
 
+    
+    public void getDataFromModel(HashMap model, Object... inputs) {
+
+        for (Object input : inputs) {
+            /**
+             * JTextField.class
+             */
+            if (input.getClass() == JTextField.class) {
+//                ((JTextField) input).setText(Dictionnaire.get(getValueModelFromKey(this.key.toString(), model).toString()));
+
+//                fieldSearch.keySet().stream().map((ky) -> {
+//                    this.key = ky;
+//                    return ky;
+//                }).filter((ky) -> (fieldSearch.get(ky) == input)).map((ky) -> (JTextField) fieldSearch.get(ky)).forEachOrdered((Object val) -> {
+                try {
+                    ((JTextField) input).setText(Dictionnaire.get(getValueModelFromKey(((JTextField) input).getName(), ((JTextField) input).getAccessibleContext().getAccessibleName(), model).toString()));
+                } catch (Exception e) {
+                }
+//                });
+            }else if(input.getClass() == JFormattedTextField.class){
+                ((JFormattedTextField) input).setValue(getValueModelFromKey(((JFormattedTextField) input).getName(), ((JFormattedTextField) input).getAccessibleContext().getAccessibleName(), model));
+            }
+        }
+    }
+    
     private void actionBtnCancel(java.awt.event.ActionEvent evt) {
         if (confirmExit) {
 
@@ -981,11 +1123,11 @@ public abstract class ModelForm extends javax.swing.JDialog {
 
     public void loadRequiredFields() {
         fieldsRequired.forEach((field) -> {
-            if (field instanceof JTextField) {
+            if (field.getClass() == JTextField.class) {
                 ((JTextField) field).setToolTipText(Dictionnaire.get(EnumLibelles.Business_Libelle_RequiredField));
-            } else if (field instanceof JTextPane) {
+            } else if (field.getClass() == JTextPane.class) {
                 ((JTextPane) field).setToolTipText(Dictionnaire.get(EnumLibelles.Business_Libelle_RequiredField));
-            } else if (field instanceof JFormattedTextField) {
+            } else if (field.getClass() == JFormattedTextField.class) {
                 ((JFormattedTextField) field).setToolTipText(Dictionnaire.get(EnumLibelles.Business_Libelle_RequiredField));
             }
         });
@@ -1060,6 +1202,8 @@ public abstract class ModelForm extends javax.swing.JDialog {
                     FormParameters.remove(this.key);
                 }
 
+                resetModel(component);
+
                 if (component.getClass() == JTextField.class) {
                     ((JTextField) component).setText(null);
                     ((JTextField) component).setFocusable(true);
@@ -1085,6 +1229,24 @@ public abstract class ModelForm extends javax.swing.JDialog {
                 } else {
                     System.out.println(component.toString() + " : Type non géré.");
                 }
+            }
+        }
+    }
+
+    public void resetModel(Object component) {
+        if (component.getClass() == JTextField.class) {
+            String name = ((JTextField) component).getAccessibleContext().getAccessibleName();
+            if (name != null) {
+//                String[] indentKey = name.split("->");
+
+//                if (indentKey.length > 2) {
+//                    for (int i = 1; i <= indentKey.length; i = i + 3) {
+//                        FormParameters.remove(indentKey[indentKey.length - 2]);
+//                    }
+//                } else {
+                    FormParameters.remove(name);
+//                    FormParameters.remove(indentKey[indentKey.length - 1]);
+//                }
             }
         }
     }
@@ -1337,6 +1499,70 @@ public abstract class ModelForm extends javax.swing.JDialog {
         return value;
     }
 
+    public Object getValueModelFromKey(String key, String keyUnik, HashMap model) {
+        Object value = null;
+        String[] indentKey = key.split("->");
+        HashMap modelTmp = model;
+
+        if (indentKey.length > 2) {
+            for (int i = 1; i <= indentKey.length; i = i + 3) {
+                Object object = modelTmp.get(indentKey[i]);
+
+                if (object.getClass().equals(HashMap.class) || object.getClass().equals(LinkedHashMap.class)) {
+
+
+                    if(keyUnik==null) FormParameters.add(indentKey[indentKey.length - 2], object);
+                    else FormParameters.add(keyUnik, object);
+
+                    modelTmp = (HashMap) object;
+                    value = modelTmp.get(indentKey[i + 1]);
+                } else if (object.getClass().equals(String.class)) {
+                    Object objectConverted = null;
+                    try {
+                        objectConverted = getAdministrationService().convertToObject(modelTmp, indentKey[i - 1]);
+                    } catch (ClassNotFoundException ex) {
+                    }
+
+                    if (objectConverted != null) {
+                        Object objectReslut = getAdministrationService().getObjectInvoke(objectConverted, indentKey[i - 1], indentKey[i]);
+
+                        if (objectReslut != null) {
+
+                            object = getAdministrationService().convertToObject(objectReslut, HashMap.class);
+
+                            if(keyUnik==null) FormParameters.add(indentKey[indentKey.length - 2], object);
+                            else FormParameters.add(keyUnik, object);
+
+
+                            modelTmp = (HashMap) object;
+
+                            value = modelTmp.get(indentKey[i + 1]);
+
+                        } else {
+                            if(keyUnik==null) FormParameters.remove(indentKey[indentKey.length - 2]);
+                            else FormParameters.remove(keyUnik);
+                            value = null;
+                        }
+                    } else {
+                        value = null;
+                    }
+                } else {
+//                    if(keyUnik==null) 
+                    FormParameters.add(indentKey[indentKey.length - 2], object);
+//                    else FormParameters.add(keyUnik, object);
+
+                    value = modelTmp.get(indentKey[i]);
+                }
+            }
+        } else {
+            value = modelTmp.get(indentKey[indentKey.length - 1]);
+            if(keyUnik==null) FormParameters.add(indentKey[indentKey.length - 1], value);
+            else FormParameters.add(keyUnik, value);
+        }
+
+        return value;
+    }
+
     public DefaultTableModel setModelDataTable(List<Class> classArray, String... columnsName) {
 //        List<Class> classArray = new ArrayList<>();
 //        for (Object c : typeArray) {
@@ -1467,15 +1693,24 @@ public abstract class ModelForm extends javax.swing.JDialog {
         }
     }
 
-    public DefaultComboBoxModel setModelDataComboBox(String... columnsName) {
-        return new DefaultComboBoxModel(columnsName);
+    public DefaultComboBoxModel setModelDataComboBox(Object... rowValue) {
+        return new DefaultComboBoxModel(rowValue);
+    }
+
+    public DefaultComboBoxModel setModelDataComboBox(List<HashMap> listModel, String keyParam) {
+        List<Object> obj = new ArrayList<>();
+        listModel.forEach((model) -> {
+            obj.add(Dictionnaire.get(getValueModelFromKey(keyParam, model)));
+        });
+
+        return setModelDataComboBox(obj.toArray());
     }
 
     public boolean requiredFieldsValidation() {
         boolean valid = false;
         if (fieldsRequired.size() > 0) {
             for (Object field : fieldsRequired) {
-                if (field instanceof JTextField) {
+                if (field.getClass() == JTextField.class) {
                     this.key = null;
                     formDatas.keySet().stream().map((ky) -> {
                         this.key = ky;
@@ -1489,10 +1724,12 @@ public abstract class ModelForm extends javax.swing.JDialog {
                         valid = !((JTextField) field).getText().isEmpty();
                     }
 
-                } else if (field instanceof JTextPane) {
+                } else if (field.getClass() == JTextPane.class) {
                     valid = !((JTextPane) field).getText().isEmpty();
-                } else if (field instanceof JFormattedTextField) {
+                } else if (field.getClass() == JFormattedTextField.class) {
                     valid = !((JFormattedTextField) field).getText().isEmpty();
+                } else  if (field.getClass() == JPasswordField.class) {
+                    valid = !(FormParameters.get(((JFormattedTextField) field).getAccessibleContext().getAccessibleName())==null);
                 } else {
                     valid = true;
                 }
@@ -1519,31 +1756,35 @@ public abstract class ModelForm extends javax.swing.JDialog {
     }
 // </editor-fold>
 
-    private void setColor(Object input, Object... imputsResult) {
+    protected void setColor(Object input, Object... imputsResult) {
 //        ((JTextField) input).setBackground(colorSearch);//68, 127, 255));
         for (Object obj : imputsResult) {
             if (obj.equals(input)) {
                 setColor(colorSearch, true, input);
-            }else{
+            } else {
                 setColor(colorResult, false, obj);
             }
         }
     }
 
     private void setColor(Color color, boolean editable, Object input) {
-        if (input instanceof JTextField) {
-            if(editable || (!editable && !((JTextField) input).isEditable())) ((JTextField) input).setBackground(color);
-        } else if (input instanceof JFormattedTextField) {
-            if(editable || (!editable && !((JTextField) input).isEditable())) ((JFormattedTextField) input).setBackground(color);
+        if (input.getClass() == JTextField.class) {
+            if (editable || (!editable && !((JTextField) input).isEditable())) {
+                ((JTextField) input).setBackground(color);
+            }
+        } else if (input.getClass() == JFormattedTextField.class) {
+            if (editable || (!editable && !((JTextField) input).isEditable())) {
+                ((JFormattedTextField) input).setBackground(color);
+            }
         }
     }
 
     private void setColor(Color color, Object input0, Object... inputs) {
         for (Object input : inputs) {
             if (!input0.equals(input)) {
-                if (input instanceof JTextField) {
+                if (input.getClass() == JTextField.class) {
                     ((JTextField) input).setBackground(color);
-                } else if (input instanceof JFormattedTextField) {
+                } else if (input.getClass() == JFormattedTextField.class) {
                     ((JFormattedTextField) input).setBackground(color);
                 }
             }

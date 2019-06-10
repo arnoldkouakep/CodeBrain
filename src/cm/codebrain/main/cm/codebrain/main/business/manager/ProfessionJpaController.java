@@ -93,24 +93,24 @@ public class ProfessionJpaController  extends CodeBrainEntityManager implements 
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             Profession persistentProfession = (Profession) find(Profession.class, profession.getProfessionId());
-            Users userModifiedOld = persistentProfession.getUserModified();
+//            Users userModifiedOld = persistentProfession.getUserModified();
             Users userModifiedNew = profession.getUserModified();
             Users userCreatedOld = persistentProfession.getUserCreated();
             Users userCreatedNew = profession.getUserCreated();
-            Set<Enseignant> enseignantSetOld = persistentProfession.getEnseignantSet();
+//            Set<Enseignant> enseignantSetOld = persistentProfession.getEnseignantSet();
             Set<Enseignant> enseignantSetNew = profession.getEnseignantSet();
-            List<String> illegalOrphanMessages = null;
-            for (Enseignant enseignantSetOldEnseignant : enseignantSetOld) {
-                if (!enseignantSetNew.contains(enseignantSetOldEnseignant)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain Enseignant " + enseignantSetOldEnseignant + " since its professionId field is not nullable.");
-                }
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
+//            List<String> illegalOrphanMessages = null;
+//            for (Enseignant enseignantSetOldEnseignant : enseignantSetOld) {
+//                if (!enseignantSetNew.contains(enseignantSetOldEnseignant)) {
+//                    if (illegalOrphanMessages == null) {
+//                        illegalOrphanMessages = new ArrayList<String>();
+//                    }
+//                    illegalOrphanMessages.add("You must retain Enseignant " + enseignantSetOldEnseignant + " since its professionId field is not nullable.");
+//                }
+//            }
+//            if (illegalOrphanMessages != null) {
+//                throw new IllegalOrphanException(illegalOrphanMessages);
+//            }
             if (userModifiedNew != null) {
                 userModifiedNew = (Users) refreshEntity(userModifiedNew.getClass(), userModifiedNew.getUsersId());
                 profession.setUserModified(userModifiedNew);
@@ -118,6 +118,9 @@ public class ProfessionJpaController  extends CodeBrainEntityManager implements 
             if (userCreatedNew != null) {
                 userCreatedNew = (Users) refreshEntity(userCreatedNew.getClass(), userCreatedNew.getUsersId());
                 profession.setUserCreated(userCreatedNew);
+            }else{
+                userCreatedOld = (Users) refreshEntity(userCreatedOld.getClass(), userCreatedOld.getUsersId());
+                profession.setUserCreated(userCreatedOld);
             }
             Set<Enseignant> attachedEnseignantSetNew = new HashSet<Enseignant>();
             for (Enseignant enseignantSetNewEnseignantToAttach : enseignantSetNew) {

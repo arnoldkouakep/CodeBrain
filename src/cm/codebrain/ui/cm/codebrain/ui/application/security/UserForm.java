@@ -122,17 +122,18 @@ public class UserForm extends ModelForm {
         codeInput.setName("codeInput"); // NOI18N
         this.addFormData("userCode", codeInput);
         fieldSearch("userCode", codeInput);
+        fieldsRequired.add(codeInput);
 
-        labelCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code)); // NOI18N
+        labelCode.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_code, true)); // NOI18N
         labelCode.setName("passwordLabel"); // NOI18N
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Login))); // NOI18N
         jPanel4.setOpaque(false);
 
-        labelUsername.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Username)); // NOI18N
+        labelUsername.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Username, true)); // NOI18N
         labelUsername.setName("usernameLabel"); // NOI18N
 
-        labelPassword.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Password)); // NOI18N
+        labelPassword.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Password, true)); // NOI18N
         labelPassword.setName("usernameLabel"); // NOI18N
 
         passwordInput.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
@@ -140,11 +141,13 @@ public class UserForm extends ModelForm {
         passwordInput.setName("passwordInput"); // NOI18N
         this.addFormData("password", passwordInput);
         fieldSearch("password", passwordInput);
+        fieldsRequired.add(passwordInput);
 
         userNameInput.setName("userNameInput"); // NOI18N
         this.addFormData("login", userNameInput);
         this.setRef(userNameInput);
         fieldSearch("login", userNameInput);
+        fieldsRequired.add(userNameInput);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -175,36 +178,41 @@ public class UserForm extends ModelForm {
                 .addContainerGap())
         );
 
+        passwordInput.getAccessibleContext().setAccessibleName("passwordInput");
+
         panelIdentifiant.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Identifiant))); // NOI18N
         panelIdentifiant.setOpaque(false);
 
-        labelNom.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_nom)); // NOI18N
+        labelNom.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_nom, true)); // NOI18N
         labelNom.setName("usernameLabel"); // NOI18N
 
-        labelPrenom.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_prenom)); // NOI18N
+        labelPrenom.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_prenom, true)); // NOI18N
         labelPrenom.setName("usernameLabel"); // NOI18N
 
-        labelTelephone.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_telephone)); // NOI18N
+        labelTelephone.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_telephone, true)); // NOI18N
         labelTelephone.setName("usernameLabel"); // NOI18N
 
         labelEmail.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_email)); // NOI18N
         labelEmail.setName("usernameLabel"); // NOI18N
 
-        labelCni.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_cni)); // NOI18N
+        labelCni.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_cni, true)); // NOI18N
         labelCni.setToolTipText("");
         labelCni.setName("usernameLabel"); // NOI18N
 
         nomInput.setName("nomInput"); // NOI18N
         this.addFormData("firstName", nomInput);
         fieldSearch("firstName", nomInput);
+        fieldsRequired.add(nomInput);
 
         prenomInput.setName("prenomInput"); // NOI18N
         this.addFormData("lastName", prenomInput);
         fieldSearch("lastName", prenomInput);
+        fieldsRequired.add(prenomInput);
 
         telephoneInput.setName("telephoneInput"); // NOI18N
         this.addFormData("tel", telephoneInput);
         fieldSearch("tel", telephoneInput);
+        fieldsRequired.add(telephoneInput);
 
         emailInput.setName("emailInput"); // NOI18N
         this.addFormData("email", emailInput);
@@ -213,6 +221,7 @@ public class UserForm extends ModelForm {
         cniImput.setName("cniInput"); // NOI18N
         this.addFormData("cni", cniImput);
         fieldSearch("cni", cniImput);
+        fieldsRequired.add(cniImput);
 
         javax.swing.GroupLayout panelIdentifiantLayout = new javax.swing.GroupLayout(panelIdentifiant);
         panelIdentifiant.setLayout(panelIdentifiantLayout);
@@ -264,12 +273,13 @@ public class UserForm extends ModelForm {
         jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_securityLevel))); // NOI18N
         jPanel7.setOpaque(false);
 
-        labelLevel.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level)); // NOI18N
+        labelLevel.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_level, true)); // NOI18N
         labelLevel.setName("usernameLabel"); // NOI18N
 
         levelCodeInput.setName("code"); // NOI18N
         this.addFormData("levelsId", levelCodeInput);
         fieldSearch("Users->levelsId->code", levelCodeInput);
+        fieldsRequired.add(levelCodeInput);
 
         levelIntituleInput.setEditable(false);
         levelIntituleInput.setName("intitule"); // NOI18N

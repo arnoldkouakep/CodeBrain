@@ -70,7 +70,7 @@ public class AnneeAcademicJpaController extends CodeBrainEntityManager implement
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             AnneeAcademic persistentAnneeAcademic = (AnneeAcademic) find(AnneeAcademic.class, anneeAcademic.getAnneeAcademicId());
-            Users userModifiedOld = persistentAnneeAcademic.getUserModified();
+//            Users userModifiedOld = persistentAnneeAcademic.getUserModified();
             Users userModifiedNew = anneeAcademic.getUserModified();
             Users userCreatedOld = persistentAnneeAcademic.getUserCreated();
             Users userCreatedNew = anneeAcademic.getUserCreated();

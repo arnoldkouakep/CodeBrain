@@ -132,18 +132,18 @@ public class TrimestreJpaController extends CodeBrainEntityManager implements Se
             Set<Sequence> sequenceSetNew = trimestre.getSequenceSet();
             Set<ParametreAnneeAcademic> parametreAnneeAcademicSetOld = persistentTrimestre.getParametreAnneeAcademicSet();
             Set<ParametreAnneeAcademic> parametreAnneeAcademicSetNew = trimestre.getParametreAnneeAcademicSet();
-            List<String> illegalOrphanMessages = null;
-            for (Sequence sequenceSetOldSequence : sequenceSetOld) {
-                if (!sequenceSetNew.contains(sequenceSetOldSequence)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain Sequence " + sequenceSetOldSequence + " since its trimestreId field is not nullable.");
-                }
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
+//            List<String> illegalOrphanMessages = null;
+//            for (Sequence sequenceSetOldSequence : sequenceSetOld) {
+//                if (!sequenceSetNew.contains(sequenceSetOldSequence)) {
+//                    if (illegalOrphanMessages == null) {
+//                        illegalOrphanMessages = new ArrayList<String>();
+//                    }
+//                    illegalOrphanMessages.add("You must retain Sequence " + sequenceSetOldSequence + " since its trimestreId field is not nullable.");
+//                }
+//            }
+//            if (illegalOrphanMessages != null) {
+//                throw new IllegalOrphanException(illegalOrphanMessages);
+//            }
             if (anneeAcademicIdNew != null) {
                 anneeAcademicIdNew = (AnneeAcademic) refreshEntity(anneeAcademicIdNew.getClass(), anneeAcademicIdNew.getAnneeAcademicId());
                 trimestre.setAnneeAcademicId(anneeAcademicIdNew);

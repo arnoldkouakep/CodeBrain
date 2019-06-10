@@ -17,9 +17,9 @@ public interface CodeBrainService {
 
     public String authenticate(String login, String password);
 
-    public boolean connexion() ;
+    public boolean connexion() throws Exception;
 
-    public boolean disConnexion();
+    public boolean disConnexion() throws Exception;
 
     public void crud(String entity, HashMap modelFinal, EnumVariable etatAction, EnumVariable etatActionList, List<HashMap> listCreUp, List<HashMap> listDel) throws Exception;
 

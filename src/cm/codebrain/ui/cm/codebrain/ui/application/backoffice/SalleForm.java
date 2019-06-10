@@ -58,7 +58,7 @@ public class SalleForm extends ModelForm {
             {"intitule",
                 Dictionnaire.get(EnumLibelles.Business_Libelle_Intitule)}};
 
-        addAction(sectionInput, entitySection, entitySection.toLowerCase()+"Id", parametresGrid, null, args, sectionInput, sectionIntituleInput);
+        addAction(sectionInput, entitySection, parametresGrid, null, args, sectionInput, sectionIntituleInput);
     }
 
     private void eventClasse() {
@@ -217,6 +217,8 @@ public class SalleForm extends ModelForm {
                     .addComponent(sectionIntituleInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
+
+        sectionInput.getAccessibleContext().setAccessibleName("sectionId");
 
         panelClasse.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED), Dictionnaire.get(EnumLibelles.Business_Libelle_Classe))); // NOI18N
         panelClasse.setOpaque(false);

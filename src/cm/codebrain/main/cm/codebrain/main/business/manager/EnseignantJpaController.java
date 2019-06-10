@@ -80,9 +80,9 @@ public class EnseignantJpaController extends CodeBrainEntityManager implements S
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             Enseignant persistentEnseignant = (Enseignant) find(Enseignant.class, enseignant.getEnseignantId());
-            Profession professionIdOld = persistentEnseignant.getProfessionId();
+//            Profession professionIdOld = persistentEnseignant.getProfessionId();
             Profession professionIdNew = enseignant.getProfessionId();
-            Users userModifiedOld = persistentEnseignant.getUserModified();
+//            Users userModifiedOld = persistentEnseignant.getUserModified();
             Users userModifiedNew = enseignant.getUserModified();
             Users userCreatedOld = persistentEnseignant.getUserCreated();
             Users userCreatedNew = enseignant.getUserCreated();

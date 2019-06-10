@@ -102,15 +102,15 @@ public class GroupeJpaController extends CodeBrainEntityManager implements Seria
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             Groupe persistentGroupe = (Groupe) find(Groupe.class, groupe.getGroupeId());
-            Classe classeIdOld = persistentGroupe.getClasseId();
+//            Classe classeIdOld = persistentGroupe.getClasseId();
             Classe classeIdNew = groupe.getClasseId();
-            Users userModifiedOld = persistentGroupe.getUserModified();
+//            Users userModifiedOld = persistentGroupe.getUserModified();
             Users userModifiedNew = groupe.getUserModified();
             Users userCreatedOld = persistentGroupe.getUserCreated();
             Users userCreatedNew = groupe.getUserCreated();
-            Set<Salle> salleSetOld = persistentGroupe.getSalleSet();
+//            Set<Salle> salleSetOld = persistentGroupe.getSalleSet();
             Set<Salle> salleSetNew = groupe.getSalleSet();
-            List<String> illegalOrphanMessages = null;
+//            List<String> illegalOrphanMessages = null;
 //            for (Salle salleSetOldSalle : salleSetOld) {
 //                if (!salleSetNew.contains(salleSetOldSalle)) {
 //                    if (illegalOrphanMessages == null) {

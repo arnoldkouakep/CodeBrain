@@ -41,8 +41,6 @@ public class CodeBrainAcces {
         Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Connexion), new Executable<Boolean>() {
             @Override
             public void execute() throws Exception {
-//                CodeBrainServiceAsync svc = new CodeBrainServiceAsync();
-//                connexion = svc.connexion();
                 connexion = getAdministrationService().connexion();
             }
 
@@ -58,9 +56,6 @@ public class CodeBrainAcces {
             }
         });
         
-        CodeBrainServiceAsync svc = new CodeBrainServiceAsync();
-        connexion = svc.connexion();
-//connexion=true;
         if(connexion){
             mainForm = new MainForm(this);
 

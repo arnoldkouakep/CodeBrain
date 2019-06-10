@@ -102,7 +102,7 @@
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="jPanelButtons" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="132" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="146" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -204,6 +204,11 @@
                   <Properties>
                     <Property name="name" type="java.lang.String" value="session" noResource="true"/>
                   </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="&quot;anneeAcademicId&quot;" type="code"/>
+                    </Property>
+                  </AccessibilityProperties>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch.put(&quot;Trimestre-&gt;anneeAcademicId-&gt;code&quot;, codeTrimestreInput);"/>
                   </AuxValues>
@@ -334,6 +339,9 @@
                     </Property>
                     <Property name="name" type="java.lang.String" value="dateOuverture" noResource="true"/>
                   </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="trimestreDebutInputActionPerformed"/>
+                  </Events>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;dateOuverture&quot;, trimestreDebutInput);&#xd;&#xa;fieldSearch.put(&quot;dateOuverture&quot;, trimestreDebutInput);&#xd;&#xa;fieldsRequired.add(trimestreDebutInput);"/>
                   </AuxValues>
@@ -377,6 +385,11 @@
                   <Properties>
                     <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="&quot;trimestreId&quot;" type="code"/>
+                    </Property>
+                  </AccessibilityProperties>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="this.addFormData(&quot;code&quot;, codeTrimestreInput);&#xd;&#xa;this.setRef(codeTrimestreInput);&#xd;&#xa;fieldSearch.put(&quot;code&quot;, codeTrimestreInput);&#xd;&#xa;fieldsRequired.add(codeTrimestreInput);&#xd;&#xa;"/>
                   </AuxValues>
@@ -386,8 +399,8 @@
             <Container class="javax.swing.JPanel" name="jPanelButtons">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder/>
+                  <Border info="org.netbeans.modules.form.compat2.border.SoftBevelBorderInfo">
+                    <BevelBorder/>
                   </Border>
                 </Property>
               </Properties>
@@ -441,6 +454,13 @@
               </SubComponents>
             </Container>
             <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.SoftBevelBorderInfo">
+                    <BevelBorder bevelType="1"/>
+                  </Border>
+                </Property>
+              </Properties>
               <AuxValues>
                 <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
               </AuxValues>
@@ -449,6 +469,11 @@
               <SubComponents>
                 <Component class="javax.swing.JTable" name="grid">
                   <Properties>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.SoftBevelBorderInfo">
+                        <BevelBorder bevelType="1"/>
+                      </Border>
+                    </Property>
                     <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                       <Connection code="setModelDataTable(&#xd;&#xa;    new Object[] {Dictionnaire.get(EnumLibelles.Business_Libelle_code), String.class, false},&#xd;&#xa;    new Object[] {Dictionnaire.get(EnumLibelles.Business_Libelle_DateDebut), Date.class, true},&#xd;&#xa;    new Object[] {Dictionnaire.get(EnumLibelles.Business_Libelle_DateFin), Date.class, true}&#xd;&#xa;    )" type="code"/>
                     </Property>
@@ -553,9 +578,6 @@
                     </Property>
                     <Property name="name" type="java.lang.String" value="dateOuverture" noResource="true"/>
                   </Properties>
-                  <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch.put(&quot;Trimestre-&gt;sequenceId-&gt;dateOuverture&quot;, trimestreDebutInput);"/>
-                  </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelSequenceFin">
                   <Properties>
@@ -576,9 +598,6 @@
                     </Property>
                     <Property name="name" type="java.lang.String" value="dateFermeture" noResource="true"/>
                   </Properties>
-                  <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch.put(&quot;Trimestre-&gt;sequenceId-&gt;dateFermeture&quot;, trimestreFinInput);"/>
-                  </AuxValues>
                 </Component>
                 <Component class="javax.swing.JLabel" name="labelSequenceCode">
                   <Properties>
@@ -596,9 +615,6 @@
                   <Properties>
                     <Property name="name" type="java.lang.String" value="code" noResource="true"/>
                   </Properties>
-                  <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch.put(&quot;Trimestre-&gt;sequenceId-&gt;code&quot;, codeTrimestreInput);"/>
-                  </AuxValues>
                 </Component>
               </SubComponents>
             </Container>

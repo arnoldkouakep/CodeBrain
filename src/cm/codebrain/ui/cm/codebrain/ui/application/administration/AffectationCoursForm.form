@@ -189,6 +189,11 @@
                   <Properties>
                     <Property name="name" type="java.lang.String" value="matricule" noResource="true"/>
                   </Properties>
+                  <AccessibilityProperties>
+                    <Property name="AccessibleContext.accessibleName" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                      <Connection code="entityEnseignant.toLowerCase() + &quot;Id&quot;" type="code"/>
+                    </Property>
+                  </AccessibilityProperties>
                   <AuxValues>
                     <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="fieldSearch(&quot;AffectationCours-&gt;enseignantId-&gt;matricule&quot;, matriculeInput);&#xd;&#xa;fieldsRequired.add(matriculeInput);"/>
                   </AuxValues>
@@ -223,6 +228,9 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Liste des Cours">
+                      <Border PropertyName="innerBorder" info="org.netbeans.modules.form.compat2.border.SoftBevelBorderInfo">
+                        <BevelBorder/>
+                      </Border>
                       <ResourceString PropertyName="titleX" bundle="i18n.properties" key="Business_Libelle_ListeCours" replaceFormat="Dictionnaire.get(EnumLibelles.{key})"/>
                       <Font PropertyName="font" name="sansserif" size="14" style="1"/>
                     </TitledBorder>
@@ -280,6 +288,9 @@
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                     <TitledBorder title="Cours">
+                      <Border PropertyName="innerBorder" info="org.netbeans.modules.form.compat2.border.SoftBevelBorderInfo">
+                        <BevelBorder bevelType="1"/>
+                      </Border>
                       <ResourceString PropertyName="titleX" bundle="i18n.properties" key="Business_Libelle_Cours" replaceFormat="Dictionnaire.get(EnumLibelles.{key}, true)"/>
                       <Font PropertyName="font" name="sansserif" size="14" style="1"/>
                     </TitledBorder>
@@ -294,7 +305,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="jScrollPane4" alignment="0" pref="400" max="32767" attributes="0"/>
+                      <Component id="jScrollPane4" alignment="0" pref="428" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">

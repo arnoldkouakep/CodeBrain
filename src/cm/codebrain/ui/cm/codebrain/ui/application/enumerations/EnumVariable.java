@@ -30,4 +30,6 @@ public enum EnumVariable {
     Detail_Master,
     List,
     Default,
+    Update,
+    Delete,
 }

@@ -100,7 +100,7 @@ public class LoginForm extends javax.swing.JDialog {
             }
         });
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED));
+        jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, null, new java.awt.Color(204, 204, 204), null, null));
 
         labelUsername.setText(Dictionnaire.get(EnumLibelles.Business_Libelle_Username)); // NOI18N
         labelUsername.setName("usernameLabel"); // NOI18N

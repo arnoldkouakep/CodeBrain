@@ -113,28 +113,28 @@ public class SalleJpaController extends CodeBrainEntityManager implements Serial
 //            em = getEntityManager();
 //            getTransaction().begin();
             Salle persistentSalle = (Salle) find(Salle.class, salle.getSalleId());
-            Classe classeIdOld = persistentSalle.getClasseId();
+//            Classe classeIdOld = persistentSalle.getClasseId();
             Classe classeIdNew = salle.getClasseId();
-            Groupe groupeIdOld = persistentSalle.getGroupeId();
+//            Groupe groupeIdOld = persistentSalle.getGroupeId();
             Groupe groupeIdNew = salle.getGroupeId();
-            Users userModifiedOld = persistentSalle.getUserModified();
+//            Users userModifiedOld = persistentSalle.getUserModified();
             Users userModifiedNew = salle.getUserModified();
             Users userCreatedOld = persistentSalle.getUserCreated();
             Users userCreatedNew = salle.getUserCreated();
-            Set<Student> studentSetOld = persistentSalle.getStudentSet();
+//            Set<Student> studentSetOld = persistentSalle.getStudentSet();
             Set<Student> studentSetNew = salle.getStudentSet();
-            List<String> illegalOrphanMessages = null;
-            for (Student studentSetOldStudent : studentSetOld) {
-                if (!studentSetNew.contains(studentSetOldStudent)) {
-                    if (illegalOrphanMessages == null) {
-                        illegalOrphanMessages = new ArrayList<String>();
-                    }
-                    illegalOrphanMessages.add("You must retain Student " + studentSetOldStudent + " since its salleId field is not nullable.");
-                }
-            }
-            if (illegalOrphanMessages != null) {
-                throw new IllegalOrphanException(illegalOrphanMessages);
-            }
+//            List<String> illegalOrphanMessages = null;
+//            for (Student studentSetOldStudent : studentSetOld) {
+//                if (!studentSetNew.contains(studentSetOldStudent)) {
+//                    if (illegalOrphanMessages == null) {
+//                        illegalOrphanMessages = new ArrayList<String>();
+//                    }
+//                    illegalOrphanMessages.add("You must retain Student " + studentSetOldStudent + " since its salleId field is not nullable.");
+//                }
+//            }
+//            if (illegalOrphanMessages != null) {
+//                throw new IllegalOrphanException(illegalOrphanMessages);
+//            }
             if (classeIdNew != null) {
                 classeIdNew = (Classe) refreshEntity(classeIdNew.getClass(), classeIdNew.getClasseId());
                 salle.setClasseId(classeIdNew);

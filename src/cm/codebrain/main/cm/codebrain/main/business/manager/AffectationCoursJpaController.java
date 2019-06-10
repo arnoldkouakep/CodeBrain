@@ -90,11 +90,11 @@ public class AffectationCoursJpaController extends CodeBrainEntityManager implem
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             AffectationCours persistentAffectationCours = (AffectationCours) find(AffectationCours.class, affectationCours.getAffectationCoursId());
-            Cours coursIdOld = persistentAffectationCours.getCoursId();
+//            Cours coursIdOld = persistentAffectationCours.getCoursId();
             Cours coursIdNew = affectationCours.getCoursId();
-            Enseignant enseignantIdOld = persistentAffectationCours.getEnseignantId();
+//            Enseignant enseignantIdOld = persistentAffectationCours.getEnseignantId();
             Enseignant enseignantIdNew = affectationCours.getEnseignantId();
-            Users userModifiedOld = persistentAffectationCours.getUserModified();
+//            Users userModifiedOld = persistentAffectationCours.getUserModified();
             Users userModifiedNew = affectationCours.getUserModified();
             Users userCreatedOld = persistentAffectationCours.getUserCreated();
             Users userCreatedNew = affectationCours.getUserCreated();

@@ -102,15 +102,15 @@ public class SectionJpaController extends CodeBrainEntityManager implements Seri
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             Section persistentSection = (Section) find(Section.class, section.getSectionId());
-            Etablissement etablissementIdOld = persistentSection.getEtablissementId();
+//            Etablissement etablissementIdOld = persistentSection.getEtablissementId();
             Etablissement etablissementIdNew = section.getEtablissementId();
-            Users userModifiedOld = persistentSection.getUserModified();
+//            Users userModifiedOld = persistentSection.getUserModified();
             Users userModifiedNew = section.getUserModified();
             Users userCreatedOld = persistentSection.getUserCreated();
             Users userCreatedNew = section.getUserCreated();
-            Set<Classe> classeSetOld = persistentSection.getClasseSet();
+//            Set<Classe> classeSetOld = persistentSection.getClasseSet();
             Set<Classe> classeSetNew = section.getClasseSet();
-            List<String> illegalOrphanMessages = null;
+//            List<String> illegalOrphanMessages = null;
 //            for (Classe classeSetOldClasse : classeSetOld) {
 //                if (!classeSetNew.contains(classeSetOldClasse)) {
 //                    if (illegalOrphanMessages == null) {

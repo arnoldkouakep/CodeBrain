@@ -27,6 +27,10 @@ import cm.codebrain.ui.application.security.LoginForm;
 import cm.codebrain.ui.application.security.MainForm;
 import cm.codebrain.ui.application.security.ReLoginForm;
 import cm.codebrain.main.business.services.implement.CodeBrainServiceImplement;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Action;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Default;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Delete;
+import static cm.codebrain.ui.application.enumerations.EnumVariable.Update;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.rmi.server.UID;
@@ -74,7 +78,7 @@ public class CodeBrainManager extends CodeBrainServiceImplement {
     }
 
     @Override
-    public boolean connexion() {
+    public boolean connexion() throws Exception{
         entityManager.setEntityManager(entityManager.getEntityManagerFactory().createEntityManager());
         return true;
     }
@@ -126,11 +130,11 @@ public class CodeBrainManager extends CodeBrainServiceImplement {
     }
 
     @Override
-    public boolean disConnexion() {
-        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Deconnexion), new Executable<Boolean>() {
-
-            @Override
-            public void execute() throws Exception {
+    public boolean disConnexion() throws Exception {
+//        Loading.show(null, Dictionnaire.get(EnumLibelle.Business_Libelle_Deconnexion), new Executable<Boolean>() {
+//
+//            @Override
+//            public void execute() throws Exception {
                 connexion = true;
                 if (entityManager.getEntityManager().isOpen()) {
                     entityManager.getEntityManager().close();
@@ -140,27 +144,20 @@ public class CodeBrainManager extends CodeBrainServiceImplement {
 
                 System.out.println("User : " + user.getLogin() + " Deconnecté.");
                 connexion = false;
-            }
-
-            @Override
-            public Boolean success() {
-                return connexion;
-            }
-
-            @Override
-            public void error(Exception ex) {
-                System.out.println(ex.getMessage());
-                MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException), "Message", false, null);
-            }
-        });
+//            }
+//
+//            @Override
+//            public Boolean success() {
+//                return connexion;
+//            }
+//
+//            @Override
+//            public void error(Exception ex) {
+//                System.out.println(ex.getMessage());
+//                MessageForm.showsError(Dictionnaire.get(EnumError.UserLoginException), "Message", false, null);
+//            }
+//        });
         return connexion;
-    }
-
-    public void quit() {
-        if (!disConnexion()) {
-            GlobalParameters.init();
-            System.exit(0);
-        }
     }
 
     public String MD5(String md5) {
@@ -534,7 +531,12 @@ public class CodeBrainManager extends CodeBrainServiceImplement {
                                             modelDel.put(field, null);
 
                                             try {
-                                                updateEntity(tmpEntity, modelDel);
+                                                if(modelMD2.get(Action)==null || modelMD2.get(Action)==Default)
+                                                    updateEntity(tmpEntity, modelDel);
+                                                else if(modelMD2.get(Action)==Update)
+                                                    deleteEntity(tmpEntity, modelDel);
+                                                else if(modelMD2.get(Action)==Delete)
+                                                    delete2Entity(tmpEntity, modelDel);
                                             } catch (Exception ee) {
                                             }
                                         }
@@ -574,7 +576,12 @@ public class CodeBrainManager extends CodeBrainServiceImplement {
                                             modelDel.put(field, null);
 
                                             try {
-                                                updateEntity(tmpEntity, modelDel);
+                                                if(modelMD2.get(Action)==null || modelMD2.get(Action)==Default)
+                                                    updateEntity(tmpEntity, modelDel);
+                                                else if(modelMD2.get(Action)==Update)
+                                                    deleteEntity(tmpEntity, modelDel);
+                                                else if(modelMD2.get(Action)==Delete)
+                                                    delete2Entity(tmpEntity, modelDel);
                                             } catch (Exception ee) {
                                             }
                                         }
@@ -597,7 +604,13 @@ public class CodeBrainManager extends CodeBrainServiceImplement {
                                             modelDel.put(field, null);
 
                                             try {
-                                                deleteEntity(tmpEntity, modelDel);
+                                                
+                                                if(modelMD2.get(Action)==null || modelMD2.get(Action)==Default)
+                                                    updateEntity(tmpEntity, modelDel);
+                                                else if(modelMD2.get(Action)==Update)
+                                                    deleteEntity(tmpEntity, modelDel);
+                                                else if(modelMD2.get(Action)==Delete)
+                                                    delete2Entity(tmpEntity, modelDel);
                                             } catch (Exception ee) {
                                             }
                                         }

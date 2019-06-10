@@ -80,9 +80,9 @@ public class StudentJpaController extends CodeBrainEntityManager implements Seri
 //            em = getEntityManager();
 //            em.getTransaction().begin();
             Student persistentStudent = (Student) find(Student.class, student.getStudentId());
-            Salle salleIdOld = persistentStudent.getSalleId();
+//            Salle salleIdOld = persistentStudent.getSalleId();
             Salle salleIdNew = student.getSalleId();
-            Users userModifiedOld = persistentStudent.getUserModified();
+//            Users userModifiedOld = persistentStudent.getUserModified();
             Users userModifiedNew = student.getUserModified();
             Users userCreatedOld = persistentStudent.getUserCreated();
             Users userCreatedNew = student.getUserCreated();
